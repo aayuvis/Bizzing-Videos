@@ -110,6 +110,32 @@ function narrationSecs(seg) {
       }
     }
 
+    /* THE RIDE CONTRACT. A rider must sit ON the mount: his feet within a hand's breadth
+       of the measured saddle, and horizontally over the mount's body rather than off its
+       nose or past its tail. Same reasoning as the stick -- the thing that would be
+       embarrassing on screen is the thing worth asserting, and "he is floating above the
+       crocodile" is exactly the note a viewer sends back. */
+    if (shot.ride) {
+      const r = await page.evaluate(() => {
+        const g = document.querySelector('#ride');
+        if (!g) return { err: 'no ride group' };
+        const kids = [...g.children].map(e => e.getBoundingClientRect());
+        const mount = kids[0], rider = kids[1];
+        return { mount: [mount.left, mount.right, mount.top],
+                 rider: [rider.left + rider.width / 2, rider.bottom] };
+      });
+      if (r.err) { console.log('  !! ' + shot.id + ': ' + r.err); failures++; }
+      else {
+        const gap = r.rider[1] - r.mount[2];               // feet vs the top of the back
+        const overBody = r.rider[0] > r.mount[0] + 40 && r.rider[0] < r.mount[1] - 40;
+        if (gap < -10 || gap > 130 || !overBody) {
+          console.log('  !! ' + shot.id + ': rider ' + gap.toFixed(0) +
+            'px from the saddle' + (overBody ? '' : ', and not over the body'));
+          failures++;
+        }
+      }
+    }
+
     if (checkOnly) { console.log('  ok ' + shot.id); continue; }
 
     /* ---- render, cut to the narration ---- */
