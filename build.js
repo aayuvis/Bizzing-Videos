@@ -37,7 +37,12 @@ for f in sorted(os.listdir(d)):
     if not f.endswith('.png'): continue
     name=f[:-4]; im=Image.open(os.path.join(d,f)).convert('RGBA'); w,h=im.size; px=im.load()
     rec={'w':w,'h':h}
-    if name.startswith('goose'):
+    if name=='goose-wing':
+        # the shoulder is the bottom-left of the wing shape: where it pins to the body
+        ys=[y for y in range(h) for x in range(w) if px[x,y][3]>200]
+        xs=[x for y in range(h) for x in range(w) if px[x,y][3]>200]
+        rec['pivot']=[0.14,0.90]
+    if name=='goose-body':
         # the beak is the only strong orange on a white bird; its tip is the extreme x
         tip=None
         for y in range(h):
@@ -46,14 +51,16 @@ for f in sorted(os.listdir(d)):
                 if a>200 and r>200 and 100<g<190 and b<90:
                     if tip is None or x<tip[0]: tip=(x,y)
         if tip: rec['beak']=[tip[0]/w, tip[1]/h]
+        rec['shoulder']=[0.56,0.46]      # where the wing pins onto the body
     if name.startswith('tortoise'):
-        # the mouth sits on the vertical centreline; take the widest opaque row in the
-        # upper half as the head, and put the grip just below its middle
-        best=None
-        for y in range(int(h*0.12), int(h*0.62)):
-            n=sum(1 for x in range(w) if px[x,y][3]>200)
-            if best is None or n>best[1]: best=(y,n)
-        rec['mouth']=[0.5, (best[0]+h*0.06)/h]
+        # THE GRIP ANCHOR, calibrated once per drawing. A heuristic was tried first -- the
+        # widest opaque row in the upper half, plus a nudge -- and it put the stick across
+        # the top of his shell, so he read as sitting on it rather than hanging from it.
+        # A drawing's mouth is not derivable from its silhouette, so it is measured by eye
+        # once and written down. That is what a sprite manifest is FOR: the calibration
+        # lives beside the art, and every shot in every film inherits it.
+        rec['mouth']=[0.5, {'tortoise-hang':0.30,'tortoise-cross':0.33,
+                            'tortoise-shout':0.30}.get(name, 0.34)]
     out[name]=rec
 json.dump(out, open(${JSON.stringify(MANIFEST)},'w'), indent=1)
 print(len(out),'sprites measured')
@@ -118,7 +125,8 @@ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#f3dca6
 @keyframes bob{0%,100%{transform:translateY(-15px)}50%{transform:translateY(15px)}}
 @keyframes climb{from{transform:translateY(320px)}to{transform:translateY(-90px)}}
 @keyframes circle{0%,100%{transform:translate(-28px,-10px)}50%{transform:translate(28px,10px)}}
-@keyframes flapA{0%,100%{background-image:var(--up)}50%{background-image:var(--down)}}
+@keyframes flap{0%,100%{transform:rotate(-26deg)}50%{transform:rotate(30deg)}}
+@keyframes hangsway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
 @keyframes cam-in{from{transform:scale(1)}to{transform:scale(1.13)}}
 @keyframes cam-out{from{transform:scale(1.13)}to{transform:scale(1)}}
 @keyframes cam-right{from{transform:translateX(-40px) scale(1.06)}to{transform:translateX(40px) scale(1.06)}}
@@ -130,7 +138,43 @@ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#f3dca6
   animation:sparkle 1.1s ease-in-out infinite}
 `;
 
+/* ONE BIRD, MADE OF PARTS. Both geese in a shot are this same markup, one mirrored, so
+   they are identical to each other by construction rather than by asking twice. The flap
+   is the wing rotating on its shoulder; the body never changes, in any frame, ever. */
+function gooseHTML(h, opts) {
+  const man = opts.man, b = man['goose-body'], wg = man['goose-wing'];
+  const bw = Math.round(h * b.w / b.h);
+  const ww = Math.round(h * 0.86 * wg.w / wg.h), wh = Math.round(h * 0.86);
+  const sx = b.shoulder[0] * bw, sy = b.shoulder[1] * h;
+  const px_ = wg.pivot[0] * ww, py_ = wg.pivot[1] * wh;
+  const wing = (cls, delay, extra) =>
+    `<div style="position:absolute;left:${sx - px_}px;top:${sy - py_}px;width:${ww}px;` +
+    `height:${wh}px;background:url(sprites/goose-wing.png) center/contain no-repeat;` +
+    `transform-origin:${wg.pivot[0] * 100}% ${wg.pivot[1] * 100}%;${extra}` +
+    `animation:flap .62s ease-in-out infinite ${delay}"></div>`;
+  return `<div class="bird" style="position:absolute;width:${bw}px;height:${h}px">` +
+    wing('far', (opts.phase || '0s'), 'filter:brightness(.9);z-index:0;') +
+    `<div style="position:absolute;inset:0;z-index:1;` +
+    `background:url(sprites/goose-body.png) center/contain no-repeat"></div>` +
+    wing('near', (opts.phase || '0s'), 'z-index:2;') +
+    `</div>`;
+}
+
 function layerHTML(L, man) {
+  if (L.sprite === 'goose') {
+    const b = man['goose-body'];
+    const h = L.h || 300, bw = Math.round(h * b.w / b.h);
+    return `<div class="layer" style="width:${bw}px;height:${h}px;margin-left:${-bw / 2}px;` +
+      `margin-top:${-h / 2}px;--tx:${L.x}px;--ty:${L.y}px;--fl:${L.flip ? 'scaleX(-1)' : ''};` +
+      `transform:translate(${L.x}px,${L.y}px) ${L.flip ? 'scaleX(-1)' : ''};` +
+      `animation:${MOTION[L.anim] || 'none'}">${gooseHTML(h, { man, phase: L.phase || '0s' })}</div>`;
+  }
+  if (L.sprite === 'stick-prop') {
+    const w = L.w || 300, th = Math.max(9, Math.round(w * 0.045));
+    return `<div class="layer stick" style="width:${w}px;height:${th}px;margin-left:${-w / 2}px;` +
+      `margin-top:${-th / 2}px;--tx:${L.x}px;--ty:${L.y}px;--fl:;` +
+      `transform:translate(${L.x}px,${L.y}px);animation:${MOTION[L.anim] || 'none'}"></div>`;
+  }
   const s = man[L.sprite];
   if (!s) throw new Error('no sprite "' + L.sprite + '" — run the asset generator');
   const h = L.h || Math.round((L.w || 200) * s.h / s.w);
@@ -145,30 +189,27 @@ function layerHTML(L, man) {
 
 /* THE CARRY GROUP. Geometry, not choreography. */
 function carryHTML(c, man) {
-  const g = man['goose-up'], t = c.hangH ? man[c.hang] : null;
-  const gH = c.gooseH, gW = Math.round(gH * g.w / g.h);
-  const beakX = g.beak[0] * gW, beakY = -gH / 2 + g.beak[1] * gH;
+  const b = man['goose-body'], t = c.hangH ? man[c.hang] : null;
+  const gH = c.gooseH, gW = Math.round(gH * b.w / b.h);
+  const beakX = b.beak[0] * gW, beakY = -gH / 2 + b.beak[1] * gH;
   const half = c.span / 2;
-  // left goose is mirrored, so its beak sits at (width - beakX) from its own left edge
+  // the left bird is mirrored, so its beak sits (gW - beakX) from its own left edge
   const lLeft = -half - (gW - beakX), rLeft = half - beakX;
   let html = `<div id="carry" style="animation:${CARRY[c.anim] || 'none'}">`;
-  for (const [left, flip] of [[lLeft, true], [rLeft, false]]) {
-    html += `<div class="layer" style="position:absolute;left:${left}px;top:${-gH / 2}px;` +
-      `margin:0;width:${gW}px;height:${gH}px;--up:url(sprites/goose-up.png);` +
-      `--down:url(sprites/goose-down.png);background-image:url(sprites/goose-up.png);` +
-      `transform:${flip ? 'scaleX(-1)' : 'none'};transform-origin:50% 50%;` +
-      `animation:flapA .62s steps(1,end) infinite${flip ? '' : ' -.31s'}"></div>`;
+  for (const [left, flip, ph] of [[lLeft, true, '0s'], [rLeft, false, '-.31s']]) {
+    html += `<div style="position:absolute;left:${left}px;top:${-gH / 2}px;width:${gW}px;` +
+      `height:${gH}px;transform:${flip ? 'scaleX(-1)' : 'none'};transform-origin:50% 50%">` +
+      gooseHTML(gH, { man, phase: ph }) + `</div>`;
   }
   const th = Math.max(10, Math.round(c.span * 0.026));
   html += `<div class="stick" style="left:${-half}px;top:${beakY - th / 2}px;` +
     `width:${c.span}px;height:${th}px;z-index:3"></div>`;
   if (t) {
     const hH = c.hangH, hW = Math.round(hH * t.w / t.h);
-    const mouthY = t.mouth[1] * hH;
     html += `<div class="layer" style="position:absolute;left:${-hW / 2}px;` +
-      `top:${beakY - mouthY}px;margin:0;width:${hW}px;height:${hH}px;z-index:2;` +
+      `top:${beakY - t.mouth[1] * hH}px;margin:0;width:${hW}px;height:${hH}px;z-index:2;` +
       `background-image:url(sprites/${c.hang}.png);transform-origin:50% ${t.mouth[1] * 100}%;` +
-      `animation:sway 2.4s ease-in-out infinite;--tx:0px;--ty:0px;--fl:"></div>`;
+      `animation:hangsway 2.4s ease-in-out infinite"></div>`;
   }
   return html + '</div>';
 }

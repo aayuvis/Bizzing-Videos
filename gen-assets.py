@@ -28,7 +28,30 @@ SPRITE_TAIL = (" Draw the character ALONE, centred and complete with nothing cro
                "NO circle, NO sparkles, NO ground, NO scenery, NO text. This is a cut-out "
                "sprite sheet cell. " + STYLE)
 
+# PARTS, NOT POSES. The first pass asked for a standing goose, a wings-up goose and a
+# wings-down goose, and got three different birds -- which is the same drift that ruined
+# four rounds of video, reappearing in the asset library. Asking a model to draw the same
+# character twice is the mistake; it will never be the same twice.
+#
+# Cut-out animation does not ask twice. It draws the bird ONCE, cuts the wing off, and
+# poses it by rotating the wing around a shoulder pivot. The body is then byte-identical
+# in every frame of every shot of every film, and both geese in a shot are the SAME FILE
+# mirrored, so they cannot differ from each other either.
+#
+# So: one body cell and one wing cell per bird. The flap is arithmetic.
 SPRITES = {
+  'goose-body':   "ONE white bird from the reference sheet, FULL BODY, in flat SIDE PROFILE facing "
+                  "LEFT, with NO WINGS DRAWN AT ALL -- just the plump rounded white body, the short "
+                  "thick neck, the round head with one big dark-brown eye and a pink blush cheek, the "
+                  "long straight orange beak, and two thin orange legs trailing back as if in flight. "
+                  "The flank is smooth and unbroken where a wing would be. This is a puppet body that "
+                  "a separate wing will be pinned onto.",
+  'goose-wing':   "A SINGLE bird's wing, alone, seen from the side, pointing UP and slightly back, in "
+                  "the same white with soft grey-cream feather shading and thick warm-brown outlines "
+                  "as the reference sheet. Just the one wing shape -- no bird, no body, no head, "
+                  "nothing else in the picture. The shoulder end (where it would join a body) is at "
+                  "the bottom-left of the shape.",
+
   'tortoise-talk':  "The green tortoise from the reference sheet, FULL BODY, standing on all fours in "
                     "three-quarter view, mouth OPEN mid-chatter, one front paw lifted and gesturing, "
                     "eyes bright and happy.",
@@ -48,14 +71,6 @@ SPRITES = {
                     "alarm. Not smiling. No teeth visible, no fangs -- a soft round open mouth.",
   'tortoise-sit':   "The green tortoise from the reference sheet, FULL BODY, sitting calmly in "
                     "three-quarter view, mouth closed in a small gentle smile, eyes soft.",
-  'goose-stand':    "ONE white bird from the reference sheet, FULL BODY, STANDING on both orange legs "
-                    "in side profile facing LEFT, wings folded neatly against its body, head up.",
-  'goose-up':       "ONE white bird from the reference sheet, FULL BODY, FLYING in side profile facing "
-                    "LEFT, both wings raised HIGH above its back at the top of a wingbeat, legs tucked "
-                    "back and trailing.",
-  'goose-down':     "ONE white bird from the reference sheet, FULL BODY, FLYING in side profile facing "
-                    "LEFT, both wings swept DOWN and forward at the bottom of a wingbeat, legs tucked "
-                    "back and trailing.",
 }
 
 PLATE_TAIL = (" A BACKGROUND PLATE for a cartoon: ABSOLUTELY NO ANIMALS, NO BIRDS, NO PEOPLE and NO "
@@ -91,7 +106,7 @@ PLATES = {
 #
 # The fix is to give each new cell the cell that is already RIGHT, as a reference. A model
 # matching one specific drawing is far steadier than a model matching a description.
-CANON = {'goose': 'goose-up', 'tortoise': 'tortoise-sit'}
+CANON = {'goose': 'goose-body', 'tortoise': 'tortoise-sit'}
 
 
 def gen(prompt, out, ar, canon=None):
