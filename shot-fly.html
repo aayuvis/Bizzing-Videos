@@ -1,0 +1,38 @@
+<!doctype html><meta charset="utf-8">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#f6d99b}
+  #stage{position:relative;width:1920px;height:1080px;overflow:hidden}
+  #bg{position:absolute;inset:-4% -8%;width:116%;height:108%;
+      background:url(bg.png) center/cover no-repeat;
+      animation:pan 8s linear infinite}
+  @keyframes pan{from{transform:translateX(0) scale(1.04)}to{transform:translateX(-90px) scale(1.04)}}
+
+  /* THE RIG. Geese, stick and tortoise are ONE group. The stick's ends sit on the
+     beaks because they are placed there in CSS, not because a model was asked nicely.
+     The whole group bobs together, so contact can never break. */
+  #rig{position:absolute;left:50%;top:46%;width:0;height:0;
+       animation:bob 1.1s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(-16px)}50%{transform:translateY(16px)}}
+
+  .goose{position:absolute;width:360px;height:334px;top:-167px;background:url(goose.png) center/contain no-repeat}
+  #gL{left:-631px;transform:scaleX(-1);animation:flapL 1.1s ease-in-out infinite}
+  #gR{left:271px;animation:flapR 1.1s ease-in-out infinite}
+  @keyframes flapL{0%,100%{transform:scaleX(-1) rotate(-5deg)}50%{transform:scaleX(-1) rotate(5deg)}}
+  @keyframes flapR{0%,100%{transform:rotate(5deg)}50%{transform:rotate(-5deg)}}
+
+  #stick{position:absolute;left:-280px;top:-16px;width:560px;height:14px;border-radius:7px;background:linear-gradient(#b07a42,#7d4f26);z-index:3}
+
+  /* he hangs from the MIDDLE of the stick by his mouth: the sprite's top edge is pinned
+     to the stick line, so his jaws are on the wood in every frame by construction */
+  #tortoise{position:absolute;left:-63px;top:-15px;width:126px;height:192px;background:url(tortoise.png) center/contain no-repeat;z-index:2;transform-origin:50% 3%;animation:swing 2.2s ease-in-out infinite}
+  @keyframes swing{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+</style>
+<div id="stage">
+  <div id="bg"></div>
+  <div id="rig">
+    <div class="goose" id="gL"></div>
+    <div class="goose" id="gR"></div>
+    <div id="stick"></div>
+    <div id="tortoise"></div>
+  </div>
+</div>
