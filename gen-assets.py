@@ -73,8 +73,8 @@ SPRITES = {
                     "three-quarter view, mouth closed in a small gentle smile, eyes soft.",
 }
 
-PLATE_TAIL = (" A BACKGROUND PLATE for a cartoon: ABSOLUTELY NO ANIMALS, NO BIRDS, NO PEOPLE and NO "
-              "CHARACTERS of any kind anywhere in the picture -- an empty landscape only. "
+PLATE_TAIL = (" A BACKGROUND PLATE for a cartoon: NO ANIMALS and NO BIRDS anywhere in the picture, "
+              "and none of the story's characters. "
               "No text, no border, no frame. " + STYLE)
 
 PLATES = {
@@ -89,9 +89,17 @@ PLATES = {
   'fields-air':  "A high aerial view over sunlit Rajasthan: patchwork green and gold fields, a winding "
                  "dust road, scattered mango trees, and a low pink-sandstone walled town on the horizon "
                  "under an ochre sky with sunburst rays.",
+  # THIS PLATE KEEPS ITS PEOPLE. The rule elsewhere is no characters in a plate, because a
+  # painted character cannot be animated and will not match the cast. Villagers are not
+  # cast: they are scenery, they never recur, and the whole beat is the town running out to
+  # look up -- an empty street under that narration is the shot failing to do its one job.
   'village-air': "A high aerial view looking down a small sunlit village street: terracotta rooftops, a "
                  "big neem tree, a stone well, mud-brick walls, the dust road running away towards a "
-                 "pink-sandstone walled town on the horizon. Warm marigold light. The street is EMPTY.",
+                 "pink-sandstone walled town on the horizon. Warm marigold light. Along the street and "
+                 "in the doorways there are about fifteen SMALL villagers in bright clothes -- men, "
+                 "women and children, different ages, several with one arm raised POINTING UP at the "
+                 "sky. They are small and simply drawn, faces barely detailed, nobody a caricature. "
+                 "No birds and no animals anywhere.",
   'lake-night':  "The same round lake full of blue water again at night: green reeds, a flat empty stone "
                  "on the near shore, the pink-sandstone town dark on the horizon, and a deep indigo sky "
                  "with the last gold of sunset low down and the first stars out.",

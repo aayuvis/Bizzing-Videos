@@ -106,6 +106,13 @@
           "y": 150,
           "h": 470,
           "anim": "lean-b"
+        },
+        {
+          "say": "We must fly to a bigger lake.",
+          "x": 250,
+          "y": -250,
+          "at": 1.6,
+          "dur": 5.0
         }
       ],
       "camera": "pull-back"
@@ -128,6 +135,13 @@
           "y": 470,
           "w": 460,
           "anim": "still"
+        },
+        {
+          "say": "I have an idea!",
+          "x": 120,
+          "y": -300,
+          "at": 0.9,
+          "dur": 4.6
         }
       ],
       "camera": "push-in",
@@ -145,7 +159,16 @@
         "hang": "tortoise-hang",
         "anim": "settle"
       },
-      "camera": "push-in"
+      "camera": "push-in",
+      "layers": [
+        {
+          "say": "Whatever anyone says \u2014<br>do not open your mouth.",
+          "x": 0,
+          "y": -300,
+          "at": 1.4,
+          "dur": 6.5
+        }
+      ]
     },
     {
       "id": "05",
@@ -193,6 +216,14 @@
           "y": 40,
           "h": 300,
           "anim": "drop"
+        },
+        {
+          "say": "IT WAS MY IDEA!",
+          "x": 0,
+          "y": -230,
+          "at": 0.15,
+          "dur": 2.6,
+          "shout": true
         }
       ],
       "camera": "hold"
@@ -202,21 +233,13 @@
       "seg": "7",
       "plate": "sky-gold",
       "carry": {
-        "y": -220,
-        "span": 620,
-        "gooseH": 330,
+        "y": -180,
+        "span": 640,
+        "gooseH": 300,
         "hangH": 0,
         "anim": "circle"
       },
-      "layers": [
-        {
-          "sprite": "stick-prop",
-          "x": 60,
-          "y": 260,
-          "w": 200,
-          "anim": "tumble-away"
-        }
-      ],
+      "layers": [],
       "camera": "hold"
     },
     {

@@ -58,33 +58,49 @@ function narrationSecs(seg) {
     /* ---- the contact assertions, measured from the rendered box model ---- */
     if (shot.carry) {
       const r = await page.evaluate(() => {
-        const q = s => document.querySelector(s);
-        const carry = q('#carry'); if (!carry) return { err: 'no carry group' };
-        const stick = carry.querySelector('.stick');
-        const birds = [...carry.children].filter(e => e !== stick && !e.classList.contains('layer'));
+        const carry = document.querySelector('#carry');
+        if (!carry) return { err: 'no carry group' };
+        const sticks = [...carry.querySelectorAll('.stick')]
+          .map(e => e.getBoundingClientRect()).sort((a, b) => a.left - b.left);
+        const birds = [...carry.children]
+          .filter(e => !e.classList.contains('stick') && !e.classList.contains('layer'))
+          .map(e => e.getBoundingClientRect()).sort((a, b) => a.left - b.left);
         const hang = carry.querySelector('.layer');
-        const box = e => e.getBoundingClientRect();
-        // a beak tip is the extreme horizontal edge of each bird's box, facing inward
-        const s = box(stick), bs = birds.map(box);
-        const left = bs[0].left < bs[1].left ? bs[0] : bs[1];
-        const right = bs[0].left < bs[1].left ? bs[1] : bs[0];
+        const h = hang ? hang.getBoundingClientRect() : null;
         return {
-          stick: [s.left, s.right, s.top + s.height / 2],
-          leftBeak: left.right, rightBeak: right.left,
-          hang: hang ? [box(hang).left + box(hang).width / 2, box(hang).top] : null,
+          outerL: sticks[0].left, outerR: sticks[sticks.length - 1].right,
+          innerL: sticks.length > 1 ? sticks[0].right : null,
+          innerR: sticks.length > 1 ? sticks[1].left : null,
+          beakL: birds[0].right, beakR: birds[1].left,
+          stickY: sticks[0].top + sticks[0].height / 2,
+          jaw: h ? [h.left + h.width * 0.28, h.left + h.width * 0.72] : null,
         };
       });
       if (r.err) { console.log('  !! ' + shot.id + ': ' + r.err); failures++; continue; }
-      const dL = Math.abs(r.stick[0] - r.leftBeak), dR = Math.abs(r.stick[1] - r.rightBeak);
-      const okL = dL <= TOL + 120, okR = dR <= TOL + 120;   // beak tip is inside the box
-      if (!okL || !okR) {
-        console.log('  !! ' + shot.id + ': stick ends ' + dL.toFixed(0) + ' / ' +
-                    dR.toFixed(0) + ' px from the beaks');
+      /* THE FULL CONTRACT, now that the stick is two segments:
+           the OUTER ends reach into both beaks   -> the geese are holding it
+           the INNER ends stop inside his jaw     -> he is biting it, not standing behind it
+         The second half is the note that came back after the first cut-out pass, so it is
+         asserted rather than eyeballed from here on. */
+      const inBeak = (edge, beak) => Math.abs(edge - beak) <= 140;
+      if (!inBeak(r.outerL, r.beakL) || !inBeak(r.outerR, r.beakR)) {
+        console.log('  !! ' + shot.id + ': stick ends ' +
+          Math.abs(r.outerL - r.beakL).toFixed(0) + ' / ' +
+          Math.abs(r.outerR - r.beakR).toFixed(0) + ' px from the beaks');
         failures++;
+      }
+      if (r.jaw && r.innerL != null) {
+        const bitten = r.innerL >= r.jaw[0] - 30 && r.innerR <= r.jaw[1] + 30;
+        if (!bitten) {
+          console.log('  !! ' + shot.id + ': the stick does not stop in his jaw ' +
+            '(gap ' + r.innerL.toFixed(0) + '-' + r.innerR.toFixed(0) +
+            ', jaw ' + r.jaw[0].toFixed(0) + '-' + r.jaw[1].toFixed(0) + ')');
+          failures++;
+        }
       }
     }
 
-    if (checkOnly) { console.log('  ok %s', shot.id); continue; }
+    if (checkOnly) { console.log('  ok ' + shot.id); continue; }
 
     /* ---- render, cut to the narration ---- */
     const secs = narrationSecs(shot.seg);

@@ -99,6 +99,27 @@ const CAMERA = {
 };
 
 const CSS = `
+/* CALLOUTS, on the key lines only. The story is narrated, not acted, so a bubble on every
+   sentence would fight the voice and turn a picture book into a comic. Four lines carry
+   the plot -- the problem, the idea, the condition, and the shout that ends him -- and
+   those get a bubble. The rest of the film stays quiet and lets the narrator work.
+   Set in the app's own Fraunces, so a child sees the same lettering as the reader. */
+@font-face{font-family:Fraunces;src:url(../../app/font/fraunces-843e59e4.woff2) format('woff2');
+           font-weight:800;font-display:block}
+.callout{position:absolute;left:50%;top:50%;max-width:900px;padding:30px 44px;
+  border-radius:34px;background:#fffdf7;border:5px solid #3a2f1c;box-shadow:0 8px 0 rgba(58,47,28,.18);
+  font-family:Fraunces,Georgia,serif;font-weight:800;font-size:54px;line-height:1.2;
+  color:#241a34;text-align:center;transform-origin:50% 120%}
+.callout.shout{font-size:74px;background:#fff3d0;border-color:#8a2f18;color:#8a2f18}
+.callout i{position:absolute;left:50%;bottom:-35px;z-index:1;width:0;height:0;margin-left:-18px;
+  border:22px solid transparent;border-top-color:#3a2f1c}
+.callout i b{position:absolute;left:-16px;top:-25px;width:0;height:0;
+  border:16px solid transparent;border-top-color:#fffdf7}
+@keyframes pop{0%{opacity:0;transform:translate(var(--cx),var(--cy)) scale(.6)}
+  12%{opacity:1;transform:translate(var(--cx),var(--cy)) scale(1.06)}
+  18%,86%{opacity:1;transform:translate(var(--cx),var(--cy)) scale(1)}
+  100%{opacity:0;transform:translate(var(--cx),var(--cy)) scale(.96)}}
+
 html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#f3dca6}
 #stage{position:relative;width:1920px;height:1080px;overflow:hidden}
 #plate{position:absolute;inset:-6%;width:112%;height:112%;background-size:cover;
@@ -170,6 +191,12 @@ function layerHTML(L, man) {
       `transform:translate(${L.x}px,${L.y}px) ${L.flip ? 'scaleX(-1)' : ''};` +
       `animation:${MOTION[L.anim] || 'none'}">${gooseHTML(h, { man, phase: L.phase || '0s', still: L.still })}</div>`;
   }
+  if (L.say) {
+    const cls = 'callout' + (L.shout ? ' shout' : '');
+    return `<div class="${cls}" style="--cx:${L.x}px;--cy:${L.y}px;` +
+      `margin-left:-450px;animation:pop ${L.dur || 4}s ease-out forwards ${L.at || 0}s;` +
+      `opacity:0">${L.say}<i><b></b></i></div>`;
+  }
   if (L.sprite === 'stick-prop') {
     const w = L.w || 300, th = Math.max(9, Math.round(w * 0.045));
     return `<div class="layer stick" style="width:${w}px;height:${th}px;margin-left:${-w / 2}px;` +
@@ -203,12 +230,26 @@ function carryHTML(c, man) {
       gooseHTML(gH, { man, phase: ph }) + `</div>`;
   }
   const th = Math.max(10, Math.round(c.span * 0.026));
-  html += `<div class="stick" style="left:${-half}px;top:${beakY - th / 2}px;` +
-    `width:${c.span}px;height:${th}px;z-index:3"></div>`;
+  if (t) {
+    /* HE IS BITING IT, and the way to show that is not to draw a mouth gripping wood --
+       it is to stop the wood AT the mouth from both sides. Two segments, each running from
+       a beak to the edge of his jaw, and his head drawn over the join. A single stick
+       passing behind his head reads as a tortoise standing in front of a stick, which is
+       exactly the note that came back. */
+    const hH = c.hangH, hW = Math.round(hH * t.w / t.h);
+    const jaw = hW * 0.30;                        /* how wide his mouth grips */
+    html += `<div class="stick" style="left:${-half}px;top:${beakY - th / 2}px;` +
+      `width:${half - jaw / 2}px;height:${th}px;z-index:3"></div>`;
+    html += `<div class="stick" style="left:${jaw / 2}px;top:${beakY - th / 2}px;` +
+      `width:${half - jaw / 2}px;height:${th}px;z-index:3"></div>`;
+  } else {
+    html += `<div class="stick" style="left:${-half}px;top:${beakY - th / 2}px;` +
+      `width:${c.span}px;height:${th}px;z-index:3"></div>`;
+  }
   if (t) {
     const hH = c.hangH, hW = Math.round(hH * t.w / t.h);
     html += `<div class="layer" style="position:absolute;left:${-hW / 2}px;` +
-      `top:${beakY - t.mouth[1] * hH}px;margin:0;width:${hW}px;height:${hH}px;z-index:2;` +
+      `top:${beakY - t.mouth[1] * hH}px;margin:0;width:${hW}px;height:${hH}px;z-index:4;` +
       `background-image:url(sprites/${c.hang}.png);transform-origin:50% ${t.mouth[1] * 100}%;` +
       `animation:hangsway 2.4s ease-in-out infinite"></div>`;
   }
