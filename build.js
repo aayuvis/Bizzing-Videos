@@ -248,7 +248,13 @@ function carryHTML(c, man) {
   const half = c.span / 2;
   // the left bird is mirrored, so its beak sits (gW - beakX) from its own left edge
   const lLeft = -half - (gW - beakX), rLeft = half - beakX;
-  let html = `<div id="carry" style="animation:${CARRY[c.anim] || 'none'}">`;
+  /* c.y WAS BEING IGNORED. The stylesheet pins #carry to the stage centre and nothing
+     ever read the offset out of the scene, so every "raise the trio" edit changed a number
+     that no renderer looked at -- which is worse than a wrong number, because the file
+     says one thing and the film does another. In the village shot that left them parked at
+     street level among the people they are supposed to be flying over. */
+  let html = `<div id="carry" style="top:calc(50% + ${c.y || 0}px);` +
+             `animation:${CARRY[c.anim] || 'none'}">`;
   for (const [left, flip, ph] of [[lLeft, true, '0s'], [rLeft, false, '-.31s']]) {
     html += `<div style="position:absolute;left:${left}px;top:${-gH / 2}px;width:${gW}px;` +
       `height:${gH}px;transform:${flip ? 'scaleX(-1)' : 'none'};transform-origin:50% 50%">` +

@@ -189,10 +189,10 @@
       "seg": "5",
       "plate": "village-air",
       "carry": {
-        "y": -330,
-        "span": 600,
-        "gooseH": 360,
-        "hangH": 330,
+        "y": -300,
+        "span": 620,
+        "gooseH": 330,
+        "hangH": 300,
         "hang": "tortoise-cross",
         "anim": "cruise"
       },
@@ -203,7 +203,7 @@
       "seg": "6",
       "plate": "sky-gold",
       "carry": {
-        "y": -60,
+        "y": -160,
         "span": 760,
         "gooseH": 470,
         "hangH": 0,
@@ -233,7 +233,7 @@
       "seg": "7",
       "plate": "sky-gold",
       "carry": {
-        "y": -180,
+        "y": -150,
         "span": 640,
         "gooseH": 300,
         "hangH": 0,
