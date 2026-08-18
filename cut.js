@@ -24,7 +24,7 @@ const run = a => execFileSync(FF, ['-y', '-loglevel', 'error', ...a], { stdio: '
 const cut = path.join(OUT, 'cut'); fs.mkdirSync(cut, { recursive: true });
 const shots = scenes.shots.filter(s => fs.existsSync(path.join(OUT, s.id + '.mp4')));
 if (shots.length !== scenes.shots.length)
-  console.log('note: %d of %d shots present', shots.length, scenes.shots.length);
+  console.log('note: ' + shots.length + ' of ' + scenes.shots.length + ' shots present');
 
 /* the opening title rides on the first shot rather than sitting on a card of its own */
 const title = path.join(CARDS, 'card-title.png');
@@ -74,4 +74,4 @@ run(['-i', master, '-vf', 'scale=1280:720:flags=lanczos', '-c:v', 'libx264', '-b
      '-maxrate', '2600k', '-bufsize', '4400k', '-preset', 'slow', '-pix_fmt', 'yuv420p',
      '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', prev]);
 for (const f of [master, prev])
-  console.log('%-46s %.1f MB', path.basename(f), fs.statSync(f).size / 1e6);
+  console.log(path.basename(f).padEnd(40) + ' ' + (fs.statSync(f).size / 1e6).toFixed(1) + ' MB');

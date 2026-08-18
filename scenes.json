@@ -21,68 +21,68 @@
   "shots": [
     { "id": "00", "seg": "hook", "plate": "lake-full",
       "layers": [
-        { "sprite": "goose", "x": -430, "y": 130, "h": 300, "flip": true, "anim": "idle", "still": true },
-        { "sprite": "tortoise-talk", "x": 0, "y": 232, "h": 200, "anim": "chatter" },
-        { "sprite": "goose", "x": 430, "y": 150, "h": 330, "anim": "idle-b" }
+        { "sprite": "goose", "x": -430, "y": 130, "h": 430, "flip": true, "anim": "idle", "still": true },
+        { "sprite": "tortoise-talk", "x": 0, "y": 232, "h": 300, "anim": "chatter" },
+        { "sprite": "goose", "x": 430, "y": 150, "h": 470, "anim": "idle-b" }
       ],
       "camera": "push-in" },
 
     { "id": "01", "seg": "0", "plate": "lake-full",
       "layers": [
-        { "sprite": "goose", "x": 400, "y": 140, "h": 340, "anim": "idle" },
-        { "sprite": "goose", "x": 610, "y": 150, "h": 330, "anim": "idle-b" },
-        { "sprite": "tortoise-talk", "x": -330, "y": 210, "h": 250, "anim": "chatter" }
+        { "sprite": "goose", "x": 400, "y": 140, "h": 480, "anim": "idle" },
+        { "sprite": "goose", "x": 610, "y": 150, "h": 470, "anim": "idle-b" },
+        { "sprite": "tortoise-talk", "x": -330, "y": 210, "h": 360, "anim": "chatter" }
       ],
       "camera": "drift-right" },
 
     { "id": "02", "seg": "1", "plate": "lake-dry",
       "layers": [
-        { "sprite": "goose", "x": -300, "y": 120, "h": 380, "flip": true, "anim": "lean" },
-        { "sprite": "tortoise-sit", "x": 20, "y": 330, "h": 150, "anim": "small-breathe" },
-        { "sprite": "goose", "x": 330, "y": 120, "h": 380, "anim": "lean-b" }
+        { "sprite": "goose", "x": -300, "y": 120, "h": 520, "flip": true, "anim": "lean" },
+        { "sprite": "tortoise-sit", "x": 20, "y": 330, "h": 230, "anim": "small-breathe" },
+        { "sprite": "goose", "x": 330, "y": 120, "h": 520, "anim": "lean-b" }
       ],
       "camera": "pull-back" },
 
     { "id": "03", "seg": "2", "plate": "lake-dry",
       "layers": [
-        { "sprite": "tortoise-idea", "x": -60, "y": 200, "h": 300, "anim": "bounce" },
-        { "sprite": "stick-prop", "x": 240, "y": 430, "w": 320, "anim": "still" }
+        { "sprite": "tortoise-idea", "x": -60, "y": 200, "h": 430, "anim": "bounce" },
+        { "sprite": "stick-prop", "x": 240, "y": 430, "w": 430, "anim": "still" }
       ],
       "camera": "push-in", "fx": "sparkle" },
 
     { "id": "04", "seg": "3", "plate": "lake-dry",
-      "carry": { "y": 60, "span": 560, "gooseH": 330, "hangH": 300,
+      "carry": { "y": 60, "span": 760, "gooseH": 460, "hangH": 420,
                  "hang": "tortoise-hang", "anim": "settle" },
       "camera": "push-in" },
 
     { "id": "05", "seg": "4", "plate": "sky-gold",
-      "carry": { "y": -20, "span": 600, "gooseH": 360, "hangH": 320,
+      "carry": { "y": -20, "span": 820, "gooseH": 500, "hangH": 440,
                  "hang": "tortoise-hang", "anim": "climb" },
       "camera": "rise" },
 
     { "id": "06", "seg": "5", "plate": "village-air",
-      "carry": { "y": -170, "span": 520, "gooseH": 300, "hangH": 280,
+      "carry": { "y": -170, "span": 700, "gooseH": 430, "hangH": 390,
                  "hang": "tortoise-cross", "anim": "cruise" },
       "camera": "drift-left" },
 
     { "id": "07", "seg": "6", "plate": "sky-gold",
-      "carry": { "y": -60, "span": 560, "gooseH": 340, "hangH": 0, "anim": "cruise" },
+      "carry": { "y": -60, "span": 760, "gooseH": 470, "hangH": 0, "anim": "cruise" },
       "layers": [
-        { "sprite": "tortoise-shout", "x": 0, "y": 40, "h": 200, "anim": "drop" }
+        { "sprite": "tortoise-shout", "x": 0, "y": 40, "h": 300, "anim": "drop" }
       ],
       "camera": "hold" },
 
     { "id": "08", "seg": "7", "plate": "sky-gold",
-      "carry": { "y": -220, "span": 460, "gooseH": 240, "hangH": 0, "anim": "circle" },
+      "carry": { "y": -220, "span": 620, "gooseH": 330, "hangH": 0, "anim": "circle" },
       "layers": [
-        { "sprite": "stick-prop", "x": 60, "y": 260, "w": 150, "anim": "tumble-away" }
+        { "sprite": "stick-prop", "x": 60, "y": 260, "w": 200, "anim": "tumble-away" }
       ],
       "camera": "hold" },
 
     { "id": "09", "seg": "moral", "plate": "lake-night",
       "layers": [
-        { "sprite": "goose", "x": -90, "y": 210, "h": 260, "flip": true, "anim": "idle" },
-        { "sprite": "goose", "x": 120, "y": 210, "h": 260, "anim": "idle-b" }
+        { "sprite": "goose", "x": -90, "y": 210, "h": 380, "flip": true, "anim": "idle" },
+        { "sprite": "goose", "x": 120, "y": 210, "h": 380, "anim": "idle-b" }
       ],
       "camera": "push-in" }
   ]

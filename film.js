@@ -78,7 +78,8 @@ function narrationSecs(seg) {
       const dL = Math.abs(r.stick[0] - r.leftBeak), dR = Math.abs(r.stick[1] - r.rightBeak);
       const okL = dL <= TOL + 120, okR = dR <= TOL + 120;   // beak tip is inside the box
       if (!okL || !okR) {
-        console.log('  !! %s: stick ends %.0f / %.0f px from the beaks', shot.id, dL, dR);
+        console.log('  !! ' + shot.id + ': stick ends ' + dL.toFixed(0) + ' / ' +
+                    dR.toFixed(0) + ' px from the beaks');
         failures++;
       }
     }
@@ -87,7 +88,7 @@ function narrationSecs(seg) {
 
     /* ---- render, cut to the narration ---- */
     const secs = narrationSecs(shot.seg);
-    if (secs == null) { console.log('  !! %s: no narration for seg %s', shot.id, shot.seg); failures++; continue; }
+    if (secs == null) { console.log('  !! ' + shot.id + ': no narration for seg ' + shot.seg); failures++; continue; }
     const dur = secs + 0.35, total = Math.round(dur * FPS);
     const dir = path.join(OUT, 'f-' + shot.id);
     fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
@@ -102,9 +103,11 @@ function narrationSecs(seg) {
                       '-i', path.join(dir, '%04d.png'), '-c:v', 'libx264', '-crf', '18',
                       '-preset', 'medium', '-pix_fmt', 'yuv420p', mp4]);
     fs.rmSync(dir, { recursive: true, force: true });
-    console.log('  ok %-4s %5.2fs  %d frames', shot.id, dur, total);
+    // console.log does not do printf padding — it prints the format string. This line
+    // reported "ok %-4s %5.2fs 1 frames 14.27 342" for ten shots before anyone read it.
+    console.log('  ok ' + shot.id.padEnd(4) + ' ' + dur.toFixed(2) + 's  ' + total + ' frames');
   }
   await b.close();
-  if (failures) { console.log('\n%d shot(s) failed their checks', failures); process.exit(1); }
+  if (failures) { console.log('\n' + failures + ' shot(s) failed their checks'); process.exit(1); }
   console.log('\nall shots rendered and all contact checks passed');
 })();
