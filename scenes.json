@@ -1,0 +1,89 @@
+{
+  "_": [
+    "THE FILM AS DATA. Every shot is a plate plus a list of layers; a layer is a sprite, a",
+    "position and a named motion. Nothing here is a picture that has to be regenerated, so a",
+    "note from a reviewer is an edit to a number in this file and a re-render that costs",
+    "nothing and takes seconds.",
+    "",
+    "`carry` is the one structural idea. A carry group binds two geese, a stick and a hanging",
+    "character so the stick's endpoints ARE the geese's beak tips, computed from the sprite",
+    "manifest, and the hanging character's mouth IS the stick's midpoint. The geese cannot let",
+    "go of the stick because there is no state in which they are not holding it -- that was the",
+    "one fault four rounds of prompting never fixed.",
+    "",
+    "`seg` names the narration clip the shot is cut to, so the film re-times itself when a line",
+    "is re-recorded. Shots sharing a seg split its duration between them."
+  ],
+
+  "story": "pt.talkative-tortoise",
+  "stage": [1920, 1080],
+
+  "shots": [
+    { "id": "00", "seg": "hook", "plate": "lake-full",
+      "layers": [
+        { "sprite": "goose-stand", "x": -430, "y": 150, "h": 330, "flip": true, "anim": "idle" },
+        { "sprite": "tortoise-talk", "x": 0, "y": 232, "h": 200, "anim": "chatter" },
+        { "sprite": "goose-stand", "x": 430, "y": 150, "h": 330, "anim": "idle-b" }
+      ],
+      "camera": "push-in" },
+
+    { "id": "01", "seg": "0", "plate": "lake-full",
+      "layers": [
+        { "sprite": "goose-stand", "x": 400, "y": 140, "h": 340, "anim": "idle" },
+        { "sprite": "goose-stand", "x": 610, "y": 150, "h": 330, "anim": "idle-b" },
+        { "sprite": "tortoise-talk", "x": -330, "y": 210, "h": 250, "anim": "chatter" }
+      ],
+      "camera": "drift-right" },
+
+    { "id": "02", "seg": "1", "plate": "lake-dry",
+      "layers": [
+        { "sprite": "goose-stand", "x": -300, "y": 120, "h": 380, "flip": true, "anim": "lean" },
+        { "sprite": "tortoise-sit", "x": 20, "y": 330, "h": 150, "anim": "small-breathe" },
+        { "sprite": "goose-stand", "x": 330, "y": 120, "h": 380, "anim": "lean-b" }
+      ],
+      "camera": "pull-back" },
+
+    { "id": "03", "seg": "2", "plate": "lake-dry",
+      "layers": [
+        { "sprite": "tortoise-idea", "x": -60, "y": 200, "h": 300, "anim": "bounce" },
+        { "sprite": "stick-prop", "x": 240, "y": 430, "w": 320, "anim": "still" }
+      ],
+      "camera": "push-in", "fx": "sparkle" },
+
+    { "id": "04", "seg": "3", "plate": "lake-dry",
+      "carry": { "y": 60, "span": 560, "gooseH": 330, "hangH": 200,
+                 "hang": "tortoise-hang", "anim": "settle" },
+      "camera": "push-in" },
+
+    { "id": "05", "seg": "4", "plate": "sky-gold",
+      "carry": { "y": -20, "span": 600, "gooseH": 360, "hangH": 210,
+                 "hang": "tortoise-hang", "anim": "climb" },
+      "camera": "rise" },
+
+    { "id": "06", "seg": "5", "plate": "village-air",
+      "carry": { "y": -170, "span": 520, "gooseH": 300, "hangH": 180,
+                 "hang": "tortoise-cross", "anim": "cruise" },
+      "camera": "drift-left" },
+
+    { "id": "07", "seg": "6", "plate": "sky-gold",
+      "carry": { "y": -60, "span": 560, "gooseH": 340, "hangH": 0, "anim": "cruise" },
+      "layers": [
+        { "sprite": "tortoise-shout", "x": 0, "y": 40, "h": 200, "anim": "drop" }
+      ],
+      "camera": "hold" },
+
+    { "id": "08", "seg": "7", "plate": "sky-gold",
+      "carry": { "y": -220, "span": 460, "gooseH": 240, "hangH": 0, "anim": "circle" },
+      "layers": [
+        { "sprite": "stick-prop", "x": 60, "y": 260, "w": 150, "anim": "tumble-away" }
+      ],
+      "camera": "hold" },
+
+    { "id": "09", "seg": "moral", "plate": "lake-night",
+      "layers": [
+        { "sprite": "goose-stand", "x": -90, "y": 210, "h": 260, "flip": true, "anim": "idle" },
+        { "sprite": "goose-stand", "x": 120, "y": 210, "h": 260, "anim": "idle-b" }
+      ],
+      "camera": "push-in" }
+  ]
+}
