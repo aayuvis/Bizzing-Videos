@@ -151,7 +151,8 @@ function gooseHTML(h, opts) {
     `<div style="position:absolute;left:${sx - px_}px;top:${sy - py_}px;width:${ww}px;` +
     `height:${wh}px;background:url(sprites/goose-wing.png) center/contain no-repeat;` +
     `transform-origin:${wg.pivot[0] * 100}% ${wg.pivot[1] * 100}%;${extra}` +
-    `animation:flap .62s ease-in-out infinite ${delay}"></div>`;
+    (opts.still ? 'transform:rotate(64deg) scale(.62);opacity:.95'
+                : `animation:flap .62s ease-in-out infinite ${delay}`) + `"></div>`;
   return `<div class="bird" style="position:absolute;width:${bw}px;height:${h}px">` +
     wing('far', (opts.phase || '0s'), 'filter:brightness(.9);z-index:0;') +
     `<div style="position:absolute;inset:0;z-index:1;` +
@@ -167,7 +168,7 @@ function layerHTML(L, man) {
     return `<div class="layer" style="width:${bw}px;height:${h}px;margin-left:${-bw / 2}px;` +
       `margin-top:${-h / 2}px;--tx:${L.x}px;--ty:${L.y}px;--fl:${L.flip ? 'scaleX(-1)' : ''};` +
       `transform:translate(${L.x}px,${L.y}px) ${L.flip ? 'scaleX(-1)' : ''};` +
-      `animation:${MOTION[L.anim] || 'none'}">${gooseHTML(h, { man, phase: L.phase || '0s' })}</div>`;
+      `animation:${MOTION[L.anim] || 'none'}">${gooseHTML(h, { man, phase: L.phase || '0s', still: L.still })}</div>`;
   }
   if (L.sprite === 'stick-prop') {
     const w = L.w || 300, th = Math.max(9, Math.round(w * 0.045));
