@@ -1,0 +1,60 @@
+<!doctype html><meta charset="utf-8"><style>
+/* CALLOUTS, on the key lines only. The story is narrated, not acted, so a bubble on every
+   sentence would fight the voice and turn a picture book into a comic. Four lines carry
+   the plot -- the problem, the idea, the condition, and the shout that ends him -- and
+   those get a bubble. The rest of the film stays quiet and lets the narrator work.
+   Set in the app's own Fraunces, so a child sees the same lettering as the reader. */
+@font-face{font-family:Fraunces;src:url(../../app/font/fraunces-843e59e4.woff2) format('woff2');
+           font-weight:800;font-display:block}
+.callout{position:absolute;left:50%;top:50%;max-width:900px;padding:30px 44px;
+  border-radius:34px;background:#fffdf7;border:5px solid #3a2f1c;box-shadow:0 8px 0 rgba(58,47,28,.18);
+  font-family:Fraunces,Georgia,serif;font-weight:800;font-size:54px;line-height:1.2;
+  color:#241a34;text-align:center;transform-origin:50% 120%}
+.callout.shout{font-size:74px;background:#fff3d0;border-color:#8a2f18;color:#8a2f18}
+.callout i{position:absolute;left:50%;bottom:-35px;z-index:1;width:0;height:0;margin-left:-18px;
+  border:22px solid transparent;border-top-color:#3a2f1c}
+.callout i b{position:absolute;left:-16px;top:-25px;width:0;height:0;
+  border:16px solid transparent;border-top-color:#fffdf7}
+@keyframes pop{0%{opacity:0;transform:translate(var(--cx),var(--cy)) scale(.6)}
+  12%{opacity:1;transform:translate(var(--cx),var(--cy)) scale(1.06)}
+  18%,86%{opacity:1;transform:translate(var(--cx),var(--cy)) scale(1)}
+  100%{opacity:0;transform:translate(var(--cx),var(--cy)) scale(.96)}}
+
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#f3dca6}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden}
+#plate{position:absolute;inset:-6%;width:112%;height:112%;background-size:cover;
+       background-position:center;transform-origin:50% 50%}
+.layer{position:absolute;left:50%;top:50%;background-repeat:no-repeat;
+       background-size:contain;background-position:center}
+#carry{position:absolute;left:50%;top:50%;width:0;height:0}
+.stick{position:absolute;border-radius:9px;
+       background:linear-gradient(#b7813f,#7d4f26);box-shadow:0 2px 0 rgba(0,0,0,.14)}
+@keyframes sway{0%,100%{transform:translate(var(--tx),var(--ty)) var(--fl) rotate(-2deg)}
+                50%{transform:translate(var(--tx),var(--ty)) var(--fl) rotate(2deg)}}
+@keyframes lean{0%,100%{transform:translate(var(--tx),var(--ty)) var(--fl) rotate(3deg)}
+                50%{transform:translate(var(--tx),var(--ty)) var(--fl) rotate(-4deg)}}
+@keyframes chatter{0%,100%{transform:translate(var(--tx),var(--ty)) var(--fl) scale(1)}
+                   50%{transform:translate(var(--tx),calc(var(--ty) - 6px)) var(--fl) scale(1.02)}}
+@keyframes breathe{0%,100%{transform:translate(var(--tx),var(--ty)) var(--fl) scale(1)}
+                   50%{transform:translate(var(--tx),var(--ty)) var(--fl) scale(1.015)}}
+@keyframes bounce{0%,100%{transform:translate(var(--tx),var(--ty)) var(--fl) translateY(0)}
+                  50%{transform:translate(var(--tx),var(--ty)) var(--fl) translateY(-26px)}}
+@keyframes drop{from{transform:translate(var(--tx),var(--ty)) var(--fl) translateY(0) rotate(0)}
+                to{transform:translate(var(--tx),var(--ty)) var(--fl) translateY(900px) rotate(38deg)}}
+@keyframes tumble{from{transform:translate(var(--tx),var(--ty)) rotate(0)}
+                  to{transform:translate(var(--tx),calc(var(--ty) + 620px)) rotate(420deg)}}
+@keyframes bob{0%,100%{transform:translateY(-15px)}50%{transform:translateY(15px)}}
+@keyframes climb{from{transform:translateY(320px)}to{transform:translateY(-90px)}}
+@keyframes circle{0%,100%{transform:translate(-28px,-10px)}50%{transform:translate(28px,10px)}}
+@keyframes flap{0%,100%{transform:rotate(-26deg)}50%{transform:rotate(30deg)}}
+@keyframes hangsway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes cam-in{from{transform:scale(1)}to{transform:scale(1.13)}}
+@keyframes cam-out{from{transform:scale(1.13)}to{transform:scale(1)}}
+@keyframes cam-right{from{transform:translateX(-40px) scale(1.06)}to{transform:translateX(40px) scale(1.06)}}
+@keyframes cam-left{from{transform:translateX(50px) scale(1.07)}to{transform:translateX(-50px) scale(1.07)}}
+@keyframes cam-rise{from{transform:translateY(-60px) scale(1.1)}to{transform:translateY(40px) scale(1.05)}}
+@keyframes sparkle{0%,100%{opacity:.25;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
+.spark{position:absolute;left:50%;top:50%;width:46px;height:46px;
+  background:radial-gradient(circle,#fff6c9 0 30%,rgba(255,214,102,.85) 45%,transparent 70%);
+  animation:sparkle 1.1s ease-in-out infinite}
+</style><div id="stage"><div id="plate" style="background-image:url(plates/lake-full.png);animation:cam-right 8s linear forwards"></div><div class="layer" style="width:616px;height:480px;margin-left:-308px;margin-top:-240px;--tx:400px;--ty:140px;--fl:;transform:translate(400px,140px) ;animation:sway 3.4s ease-in-out infinite"><div class="bird" style="position:absolute;width:616px;height:480px"><div style="position:absolute;left:292.18px;top:-150.89999999999998px;width:377px;height:413px;background:url(sprites/goose-wing.png) center/contain no-repeat;transform-origin:14.000000000000002% 90%;filter:brightness(.9);z-index:0;animation:flap .62s ease-in-out infinite 0s"></div><div style="position:absolute;inset:0;z-index:1;background:url(sprites/goose-body.png) center/contain no-repeat"></div><div style="position:absolute;left:292.18px;top:-150.89999999999998px;width:377px;height:413px;background:url(sprites/goose-wing.png) center/contain no-repeat;transform-origin:14.000000000000002% 90%;z-index:2;animation:flap .62s ease-in-out infinite 0s"></div></div></div><div class="layer" style="width:604px;height:470px;margin-left:-302px;margin-top:-235px;--tx:610px;--ty:150px;--fl:;transform:translate(610px,150px) ;animation:sway 3.9s ease-in-out infinite -1.2s"><div class="bird" style="position:absolute;width:604px;height:470px"><div style="position:absolute;left:286.44px;top:-147.4px;width:370px;height:404px;background:url(sprites/goose-wing.png) center/contain no-repeat;transform-origin:14.000000000000002% 90%;filter:brightness(.9);z-index:0;animation:flap .62s ease-in-out infinite 0s"></div><div style="position:absolute;inset:0;z-index:1;background:url(sprites/goose-body.png) center/contain no-repeat"></div><div style="position:absolute;left:286.44px;top:-147.4px;width:370px;height:404px;background:url(sprites/goose-wing.png) center/contain no-repeat;transform-origin:14.000000000000002% 90%;z-index:2;animation:flap .62s ease-in-out infinite 0s"></div></div></div><div class="layer" style="width:357px;height:360px;margin-left:-178.5px;margin-top:-180px;--tx:-330px;--ty:210px;--fl:;background-image:url(sprites/tortoise-talk.png);transform:translate(-330px,210px) ;animation:chatter .5s ease-in-out infinite"></div></div>

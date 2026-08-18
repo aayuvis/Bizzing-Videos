@@ -11,12 +11,17 @@
  */
 'use strict';
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
+/* WHICH FILM. One env var picks the story; every path hangs off it, so this file knows
+   nothing about any particular film. Story two is where you find out whether the first
+   one was a pipeline or just a thing that happened to work. */
+const STORY = process.env.STORY || 'pt-talkative-tortoise';
+const FILM = path.join(__dirname, STORY);
 const HERE = __dirname, ROOT = path.join(HERE, '..', '..');
-const OUT = path.join(ROOT, 'build', 'anim');
+const OUT = path.join(ROOT, 'build', 'anim', STORY);
 const VOICE = path.join(ROOT, 'app', 'voice', 'st');
-const CARDS = path.join(ROOT, 'build', 'video', 'frames');
-const SLUG = 'pt-talkative-tortoise';
-const scenes = JSON.parse(fs.readFileSync(path.join(HERE, 'scenes.json'), 'utf8'));
+const CARDS = FILM;
+const SLUG = STORY;
+const scenes = JSON.parse(fs.readFileSync(path.join(FILM, 'scenes.json'), 'utf8'));
 const FF = execFileSync('python3',
   ['-c', 'import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())'], { encoding: 'utf8' }).trim();
 const run = a => execFileSync(FF, ['-y', '-loglevel', 'error', ...a], { stdio: 'inherit' });
@@ -64,12 +69,12 @@ run([...inputs, '-filter_complex',
      `concat=n=${alist.length}:v=0:a=1[o]`,
      '-map', '[o]', '-c:a', 'aac', '-b:a', '160k', aud]);
 
-const master = path.join(OUT, 'kambugriva-cutout.mp4');
+const master = path.join(OUT, STORY + '.mp4');
 run(['-i', vid, '-i', aud, '-map', '0:v:0', '-map', '1:a:0',
      '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000',
      '-c:v', 'libx264', '-crf', '20', '-preset', 'slow', '-pix_fmt', 'yuv420p',
      '-c:a', 'aac', '-b:a', '192k', '-ac', '2', '-shortest', '-movflags', '+faststart', master]);
-const prev = path.join(OUT, 'kambugriva-cutout-preview.mp4');
+const prev = path.join(OUT, STORY + '-preview.mp4');
 run(['-i', master, '-vf', 'scale=1280:720:flags=lanczos', '-c:v', 'libx264', '-b:v', '2200k',
      '-maxrate', '2600k', '-bufsize', '4400k', '-preset', 'slow', '-pix_fmt', 'yuv420p',
      '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', prev]);

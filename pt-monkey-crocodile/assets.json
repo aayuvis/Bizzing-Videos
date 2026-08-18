@@ -1,0 +1,22 @@
+{
+  "_": "Story two. Bengal, not Rajasthan: a wide slow river, a jamun tree heavy with purple fruit, and a green riverbank instead of a dry plain. Nothing is shared with story one except the machinery -- which is the point of the exercise.",
+  "canon": { "monkey": "monkey-sit", "croc": "croc-swim" },
+  "sprites": {
+    "monkey-sit":   "A small friendly cartoon monkey for a children's picture book, FULL BODY, sitting in three-quarter view with his tail curled, warm golden-brown fur, a paler cream face and belly, very large dark-brown eyes with a bright highlight, small pink blush ovals on the cheeks, a gentle closed smile, thick soft warm-brown outlines. Never frightening, no bared teeth.",
+    "monkey-offer": "The same golden-brown monkey, FULL BODY, three-quarter view, leaning down and holding out one open paw with a few small round purple jamun fruits in it, the other paw gripping a branch, eyes bright and friendly, mouth in a happy open smile.",
+    "monkey-ride":  "The same golden-brown monkey, FULL BODY, seen from the SIDE facing LEFT, sitting upright as if perched on something, both paws holding on in front of him, tail curled behind, eyes wide and trusting, small closed smile.",
+    "monkey-laugh": "The same golden-brown monkey, FULL BODY, side view facing LEFT, head thrown back laughing with his mouth open in a wide happy laugh, one paw on his belly, eyes crinkled shut, tail up.",
+    "monkey-climb": "The same golden-brown monkey, FULL BODY, seen from the side, climbing upward with both arms stretched up above his head and legs mid-stride, tail streaming down behind, eyes wide and determined, mouth closed.",
+    "monkey-call":  "The same golden-brown monkey, FULL BODY, side view facing LEFT, sitting on a branch and calling downward with both paws cupped around his mouth, eyes bright, mouth open in a shout. Cheerful, not angry.",
+    "croc-swim":    "A friendly cartoon crocodile for a children's picture book, FULL BODY, seen from the SIDE facing LEFT, swimming level with his long body horizontal and his tail out behind, soft sage-green scaly back, pale cream belly, very large dark-brown eyes with a bright highlight, a small pink blush cheek, and a long snout with the mouth CLOSED in a gentle line. NO visible teeth, no fangs, never frightening -- he is a friend in this story.",
+    "croc-sad":     "The same sage-green crocodile, FULL BODY, side view facing LEFT, swimming but with his head lowered and his big eyes turned down and sorrowful, brows tilted unhappily, mouth closed. Never scary -- just miserable.",
+    "croc-bank":    "The same sage-green crocodile, FULL BODY, side view facing LEFT, resting on land with his legs tucked under him and his tail curved round, head up, eyes soft and tired, mouth closed in a small friendly smile."
+  },
+  "plates": {
+    "river-tree":   "A wide slow green-brown river in Bengal seen from the near bank, with a big spreading jamun tree on the left heavy with small round PURPLE fruit, its roots at the water's edge, tall green grass and reeds along the bank, and the far bank low and green in the distance under a warm afternoon sky with soft cream clouds.",
+    "river-wide":   "The middle of a wide slow green-brown river filling the frame, gentle ripples and a few floating leaves, the near bank out of sight, and both distant banks low and green along the top of the picture under a warm afternoon sky.",
+    "river-deep":   "The deepest middle of a wide river under a heavy late-afternoon sky, the water darker green and glassy with slow ripples, banks far away and small on the horizon, the light going amber and low.",
+    "river-evening":"A muddy river bank at dusk with reeds and a hollow under the roots of a tree, the water dark and still, the far bank a low silhouette, the sky deep amber going to indigo with the first stars.",
+    "tree-top":     "Looking up into the crown of a big jamun tree from just below the highest branches: thick green leaves, clusters of small round purple fruit, strong brown branches crossing the frame, and bright warm sky showing through the gaps."
+  }
+}

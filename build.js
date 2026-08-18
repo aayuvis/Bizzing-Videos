@@ -17,10 +17,19 @@
  */
 'use strict';
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
+/* WHICH FILM. One env var picks the story; every path hangs off it, so this file knows
+   nothing about any particular film. Story two is where you find out whether the first
+   one was a pipeline or just a thing that happened to work. */
+const STORY = process.env.STORY || 'pt-talkative-tortoise';
+const FILM = path.join(__dirname, STORY);
 const HERE = __dirname, ROOT = path.join(HERE, '..', '..');
-const OUT = path.join(ROOT, 'build', 'anim');
-const scenes = JSON.parse(fs.readFileSync(path.join(HERE, 'scenes.json'), 'utf8'));
-const MANIFEST = path.join(HERE, 'sprites.json');
+const OUT = path.join(ROOT, 'build', 'anim', STORY);
+const scenes = JSON.parse(fs.readFileSync(path.join(FILM, 'scenes.json'), 'utf8'));
+const MANIFEST = path.join(FILM, 'sprites.json');
+/* the carry group's two-part flier, named per film: the next story's carrier is not a
+   goose, and a rig that only knows the word "goose" is not a rig */
+const BODY = (scenes.rig && scenes.rig.body) || 'goose-body';
+const WING = (scenes.rig && scenes.rig.wing) || 'goose-wing';
 
 /* ---------------------------------------------------------------- anchors --
    A sprite's contract with the rig: where its beak tip is, where its mouth is. Measured
@@ -32,17 +41,17 @@ function measure() {
 import json,os,sys
 from PIL import Image
 out={}
-d=os.path.join(${JSON.stringify(HERE)},'sprites')
+d=os.path.join(${JSON.stringify(FILM)},'sprites')
 for f in sorted(os.listdir(d)):
     if not f.endswith('.png'): continue
     name=f[:-4]; im=Image.open(os.path.join(d,f)).convert('RGBA'); w,h=im.size; px=im.load()
     rec={'w':w,'h':h}
-    if name=='goose-wing':
+    if name==${JSON.stringify(WING)}:
         # the shoulder is the bottom-left of the wing shape: where it pins to the body
         ys=[y for y in range(h) for x in range(w) if px[x,y][3]>200]
         xs=[x for y in range(h) for x in range(w) if px[x,y][3]>200]
         rec['pivot']=[0.14,0.90]
-    if name=='goose-body':
+    if name==${JSON.stringify(BODY)}:
         # the beak is the only strong orange on a white bird; its tip is the extreme x
         tip=None
         for y in range(h):
@@ -52,6 +61,16 @@ for f in sorted(os.listdir(d)):
                     if tip is None or x<tip[0]: tip=(x,y)
         if tip: rec['beak']=[tip[0]/w, tip[1]/h]
         rec['shoulder']=[0.56,0.46]      # where the wing pins onto the body
+    if name.startswith('croc'):
+        # THE SADDLE. A rider must sit ON the mount, not float above it or sink into it,
+        # and that is the same class of promise as the stick in both beaks: structural,
+        # not something to ask an artist for twice. Measured as the highest opaque pixel
+        # along the back, sampled where a rider actually sits -- 55% of the way from the
+        # snout, behind the shoulder and in front of the tail.
+        col=int(w*0.55); top=None
+        for y in range(h):
+            if px[col,y][3]>200: top=y; break
+        if top is not None: rec['saddle']=[0.55, top/h]
     if name.startswith('tortoise'):
         # THE GRIP ANCHOR, MEASURED. Guessed twice and wrong twice -- 0.30 put the stick
         # across his brow, 0.42 across his chest -- so it is derived from the drawing now.
@@ -188,28 +207,28 @@ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#f3dca6
    they are identical to each other by construction rather than by asking twice. The flap
    is the wing rotating on its shoulder; the body never changes, in any frame, ever. */
 function gooseHTML(h, opts) {
-  const man = opts.man, b = man['goose-body'], wg = man['goose-wing'];
+  const man = opts.man, b = man[BODY], wg = man[WING];
   const bw = Math.round(h * b.w / b.h);
   const ww = Math.round(h * 0.86 * wg.w / wg.h), wh = Math.round(h * 0.86);
   const sx = b.shoulder[0] * bw, sy = b.shoulder[1] * h;
   const px_ = wg.pivot[0] * ww, py_ = wg.pivot[1] * wh;
   const wing = (cls, delay, extra) =>
     `<div style="position:absolute;left:${sx - px_}px;top:${sy - py_}px;width:${ww}px;` +
-    `height:${wh}px;background:url(sprites/goose-wing.png) center/contain no-repeat;` +
+    `height:${wh}px;background:url(sprites/${WING}.png) center/contain no-repeat;` +
     `transform-origin:${wg.pivot[0] * 100}% ${wg.pivot[1] * 100}%;${extra}` +
     (opts.still ? 'transform:rotate(64deg) scale(.62);opacity:.95'
                 : `animation:flap .62s ease-in-out infinite ${delay}`) + `"></div>`;
   return `<div class="bird" style="position:absolute;width:${bw}px;height:${h}px">` +
     wing('far', (opts.phase || '0s'), 'filter:brightness(.9);z-index:0;') +
     `<div style="position:absolute;inset:0;z-index:1;` +
-    `background:url(sprites/goose-body.png) center/contain no-repeat"></div>` +
+    `background:url(sprites/${BODY}.png) center/contain no-repeat"></div>` +
     wing('near', (opts.phase || '0s'), 'z-index:2;') +
     `</div>`;
 }
 
 function layerHTML(L, man) {
   if (L.sprite === 'goose') {
-    const b = man['goose-body'];
+    const b = man[BODY];
     const h = L.h || 300, bw = Math.round(h * b.w / b.h);
     return `<div class="layer" style="width:${bw}px;height:${h}px;margin-left:${-bw / 2}px;` +
       `margin-top:${-h / 2}px;--tx:${L.x}px;--ty:${L.y}px;--fl:${L.flip ? 'scaleX(-1)' : ''};` +
@@ -242,7 +261,7 @@ function layerHTML(L, man) {
 
 /* THE CARRY GROUP. Geometry, not choreography. */
 function carryHTML(c, man) {
-  const b = man['goose-body'], t = c.hangH ? man[c.hang] : null;
+  const b = man[BODY], t = c.hangH ? man[c.hang] : null;
   const gH = c.gooseH, gW = Math.round(gH * b.w / b.h);
   const beakX = b.beak[0] * gW, beakY = -gH / 2 + b.beak[1] * gH;
   const half = c.span / 2;
@@ -279,10 +298,36 @@ function carryHTML(c, man) {
   return html + '</div>';
 }
 
+/* A RIDE GROUP: a mount, and a rider pinned to the measured saddle on its back. Same
+   promise as the carry group and made the same way -- the rider cannot drift off, cannot
+   sink in, and cannot end up behind the animal it is sitting on, because none of those
+   are states the markup can express. Story one had a stick between two beaks; story two
+   has a monkey on a crocodile. The rig is the part that carries over. */
+function rideHTML(r, man) {
+  const m = man[r.mount], k = man[r.rider];
+  if (!m || !k) throw new Error('ride needs sprites "' + r.mount + '" and "' + r.rider + '"');
+  const mH = r.mountH, mW = Math.round(mH * m.w / m.h);
+  const kH = r.riderH, kW = Math.round(kH * k.w / k.h);
+  const sx = (m.saddle ? m.saddle[0] : 0.55) * mW;
+  const sy = (m.saddle ? m.saddle[1] : 0.30) * mH;
+  const sink = Math.round(kH * 0.06);         // he sits INTO the back a little, not on top of it
+  return `<div id="ride" style="position:absolute;left:50%;top:calc(50% + ${r.y || 0}px);` +
+    `width:0;height:0;animation:${CARRY[r.anim] || 'none'}">` +
+    `<div style="position:absolute;left:${-mW / 2}px;top:${-mH / 2}px;width:${mW}px;` +
+    `height:${mH}px;z-index:1;background:url(sprites/${r.mount}.png) center/contain no-repeat;` +
+    `${r.flip ? 'transform:scaleX(-1);' : ''}"></div>` +
+    `<div style="position:absolute;left:${-mW / 2 + sx - kW / 2}px;` +
+    `top:${-mH / 2 + sy - kH + sink}px;width:${kW}px;height:${kH}px;z-index:2;` +
+    `background:url(sprites/${r.rider}.png) center/contain no-repeat;` +
+    `transform-origin:50% 100%;animation:hangsway 3s ease-in-out infinite"></div>` +
+    `</div>`;
+}
+
 function shotHTML(shot, man) {
   const body = [`<div id="plate" style="background-image:url(plates/${shot.plate}.png);` +
     `animation:${CAMERA[shot.camera] || 'none'}"></div>`];
   if (shot.carry) body.push(carryHTML(shot.carry, man));
+  if (shot.ride) body.push(rideHTML(shot.ride, man));
   for (const L of shot.layers || []) body.push(layerHTML(L, man));
   if (shot.fx === 'sparkle')
     body.push('<div class="spark" style="transform:translate(-30px,-190px)"></div>' +
@@ -299,7 +344,7 @@ fs.mkdirSync(OUT, { recursive: true });
 let n = 0;
 for (const shot of scenes.shots) {
   if (only && !only.has(shot.id)) continue;
-  const f = path.join(HERE, 'shot-' + shot.id + '.html');
+  const f = path.join(FILM, 'shot-' + shot.id + '.html');
   fs.writeFileSync(f, shotHTML(shot, man));
   n++;
 }

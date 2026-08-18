@@ -1,0 +1,21 @@
+{
+  "canon": { "goose": "goose-body", "tortoise": "tortoise-sit" },
+  "sprites": {
+    "goose-body": "ONE white bird from the reference sheet, FULL BODY, in flat SIDE PROFILE facing LEFT, with NO WINGS DRAWN AT ALL -- just the plump rounded white body, the short thick neck, the round head with one big dark-brown eye and a pink blush cheek, the long straight orange beak, and two thin orange legs trailing back as if in flight. The flank is smooth and unbroken where a wing would be. This is a puppet body that a separate wing will be pinned onto.",
+    "goose-wing": "A SINGLE bird's wing, alone, seen from the side, pointing UP and slightly back, in the same white with soft grey-cream feather shading and thick warm-brown outlines as the reference sheet. Just the one wing shape -- no bird, no body, no head, nothing else in the picture. The shoulder end is at the bottom-left of the shape.",
+    "tortoise-talk": "The green tortoise from the reference sheet, FULL BODY, standing on all fours in three-quarter view, mouth OPEN mid-chatter, one front paw lifted and gesturing, eyes bright and happy.",
+    "tortoise-idea": "The green tortoise from the reference sheet, FULL BODY, up on his back legs with both front paws raised high in the air, eyes wide and delighted, mouth open in a happy grin.",
+    "tortoise-hang": "The green tortoise from the reference sheet, FULL BODY, seen from the FRONT, hanging in the air with all four legs dangling straight down and loose, head up, mouth CLOSED in a firm straight line as if gripping something, eyes calm and wide.",
+    "tortoise-cross": "The green tortoise from the reference sheet, FULL BODY, seen from the FRONT, hanging with legs dangling loose, mouth CLOSED in a firm line, but eyes NARROWED with indignation and cheeks flushed a deep hot pink.",
+    "tortoise-shout": "The green tortoise from the reference sheet, FULL BODY, seen from the FRONT, tumbling in the air with legs splayed, mouth WIDE OPEN in a shout, eyes wide with alarm. Not smiling, no teeth.",
+    "tortoise-sit": "The green tortoise from the reference sheet, FULL BODY, sitting calmly in three-quarter view, mouth closed in a small gentle smile, eyes soft."
+  },
+  "plates": {
+    "lake-full": "A round blue lake ringed with green reeds and small white flowers, a flat warm stone at the near shore, dusty green fields beyond and a low pink-sandstone walled town far on the horizon under an ochre and marigold sky with sunburst rays.",
+    "lake-dry": "The same lake bed after a failed monsoon: shrunk to one small brown puddle in a wide plain of cracked dry mud, the reeds yellow and bent, the flat stone bare, the same pink-sandstone town small on the horizon under a hot pale sky.",
+    "sky-gold": "An empty warm sky filling the whole frame -- marigold and gold with a soft sunburst and a few cream clouds, and only a thin strip of distant hills along the very bottom.",
+    "fields-air": "A high aerial view over sunlit Rajasthan: patchwork green and gold fields, a winding dust road, scattered mango trees, and a low pink-sandstone walled town on the horizon.",
+    "village-air": "A high aerial view looking down a small sunlit village street: terracotta rooftops, a big neem tree, a stone well, mud-brick walls. Along the street and in the doorways about fifteen SMALL villagers in bright clothes -- men, women and children, several with one arm raised POINTING UP at the sky.",
+    "lake-night": "The same round lake full of blue water again at night: green reeds, a flat empty stone on the near shore, the town dark on the horizon, a deep indigo sky with the last gold of sunset low down and the first stars out."
+  }
+}

@@ -17,8 +17,14 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 HERE = os.path.join(ROOT, 'tools', 'anim')
 API = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image:generateContent'
-SHEET = os.path.join(ROOT, 'build', 'video', 'frames', 'charsheet.png')
-PAINT = os.path.join(ROOT, 'app', 'art', 'story', 'pt-talkative-tortoise.jpg')
+# WHICH FILM. Everything below is read out of tools/anim/<story>/assets.json, so the
+# generator carries no knowledge of any particular story -- which is the whole test of
+# whether this scales past the first one.
+STORY = os.environ.get('STORY', 'pt-talkative-tortoise')
+FILM = os.path.join(HERE, STORY)
+CFG = json.load(open(os.path.join(FILM, 'assets.json'), encoding='utf-8'))
+SHEET = os.path.join(FILM, 'charsheet.png')
+PAINT = os.path.join(ROOT, 'app', 'art', 'story', STORY + '.jpg')
 
 STYLE = ("Flat cel shading, thick soft warm-brown outlines, light paper grain, the warm "
          "marigold-and-gold palette of the reference images. Children's picture-book cartoon.")
@@ -39,83 +45,9 @@ SPRITE_TAIL = (" Draw the character ALONE, centred and complete with nothing cro
 # mirrored, so they cannot differ from each other either.
 #
 # So: one body cell and one wing cell per bird. The flap is arithmetic.
-SPRITES = {
-  'goose-body':   "ONE white bird from the reference sheet, FULL BODY, in flat SIDE PROFILE facing "
-                  "LEFT, with NO WINGS DRAWN AT ALL -- just the plump rounded white body, the short "
-                  "thick neck, the round head with one big dark-brown eye and a pink blush cheek, the "
-                  "long straight orange beak, and two thin orange legs trailing back as if in flight. "
-                  "The flank is smooth and unbroken where a wing would be. This is a puppet body that "
-                  "a separate wing will be pinned onto.",
-  'goose-wing':   "A SINGLE bird's wing, alone, seen from the side, pointing UP and slightly back, in "
-                  "the same white with soft grey-cream feather shading and thick warm-brown outlines "
-                  "as the reference sheet. Just the one wing shape -- no bird, no body, no head, "
-                  "nothing else in the picture. The shoulder end (where it would join a body) is at "
-                  "the bottom-left of the shape.",
-
-  'tortoise-talk':  "The green tortoise from the reference sheet, FULL BODY, standing on all fours in "
-                    "three-quarter view, mouth OPEN mid-chatter, one front paw lifted and gesturing, "
-                    "eyes bright and happy.",
-  'tortoise-idea':  "The green tortoise from the reference sheet, FULL BODY, up on his back legs with "
-                    "both front paws raised high in the air, eyes wide and delighted, mouth open in a "
-                    "happy grin.",
-  'tortoise-hang':  "The green tortoise from the reference sheet, FULL BODY, seen from the FRONT, "
-                    "hanging in the air with all four legs dangling straight down and loose, head up, "
-                    "mouth CLOSED in a firm straight line as if gripping something, eyes calm and wide. "
-                    "Nothing in his mouth -- draw the mouth closed and empty.",
-  'tortoise-cross': "The green tortoise from the reference sheet, FULL BODY, seen from the FRONT, "
-                    "hanging with legs dangling loose, mouth CLOSED in a firm line, but eyes NARROWED "
-                    "with indignation and cheeks flushed a deep hot pink. Face still round and soft, "
-                    "no teeth, not ugly.",
-  'tortoise-shout': "The green tortoise from the reference sheet, FULL BODY, seen from the FRONT, "
-                    "tumbling in the air with legs splayed, mouth WIDE OPEN in a shout, eyes wide with "
-                    "alarm. Not smiling. No teeth visible, no fangs -- a soft round open mouth.",
-  'tortoise-sit':   "The green tortoise from the reference sheet, FULL BODY, sitting calmly in "
-                    "three-quarter view, mouth closed in a small gentle smile, eyes soft.",
-}
-
 PLATE_TAIL = (" A BACKGROUND PLATE for a cartoon: NO ANIMALS and NO BIRDS anywhere in the picture, "
               "and none of the story's characters. "
               "No text, no border, no frame. " + STYLE)
-
-PLATES = {
-  'lake-full':   "A round blue lake ringed with green reeds and small white flowers, a flat warm stone "
-                 "at the near shore, dusty green fields beyond and a low pink-sandstone walled town far "
-                 "on the horizon under an ochre and marigold sky with sunburst rays.",
-  'lake-dry':    "The same lake bed after a failed monsoon: shrunk to one small brown puddle in a wide "
-                 "plain of cracked dry mud, the reeds yellow and bent, the flat stone bare, the same "
-                 "pink-sandstone town small on the horizon under a hot pale sky. Dust in the air.",
-  'sky-gold':    "An empty warm sky filling the whole frame -- marigold and gold with a soft sunburst "
-                 "and a few cream clouds, and only a thin strip of distant hills along the very bottom.",
-  'fields-air':  "A high aerial view over sunlit Rajasthan: patchwork green and gold fields, a winding "
-                 "dust road, scattered mango trees, and a low pink-sandstone walled town on the horizon "
-                 "under an ochre sky with sunburst rays.",
-  # THIS PLATE KEEPS ITS PEOPLE. The rule elsewhere is no characters in a plate, because a
-  # painted character cannot be animated and will not match the cast. Villagers are not
-  # cast: they are scenery, they never recur, and the whole beat is the town running out to
-  # look up -- an empty street under that narration is the shot failing to do its one job.
-  'village-air': "A high aerial view looking down a small sunlit village street: terracotta rooftops, a "
-                 "big neem tree, a stone well, mud-brick walls, the dust road running away towards a "
-                 "pink-sandstone walled town on the horizon. Warm marigold light. Along the street and "
-                 "in the doorways there are about fifteen SMALL villagers in bright clothes -- men, "
-                 "women and children, different ages, several with one arm raised POINTING UP at the "
-                 "sky. They are small and simply drawn, faces barely detailed, nobody a caricature. "
-                 "No birds and no animals anywhere.",
-  'lake-night':  "The same round lake full of blue water again at night: green reeds, a flat empty stone "
-                 "on the near shore, the pink-sandstone town dark on the horizon, and a deep indigo sky "
-                 "with the last gold of sunset low down and the first stars out.",
-}
-
-
-# THE CANONICAL SPRITE. The first pass drew a white goose twice and a yellow-and-blue
-# goose once, and gave the tortoise a brown shell in some cells and a green one in others.
-# That is the same drift as before -- except here it is a ONE-TIME defect in an asset, not
-# a defect that recurs in every shot of every film. Fix the cell once and 500 videos are
-# fixed with it.
-#
-# The fix is to give each new cell the cell that is already RIGHT, as a reference. A model
-# matching one specific drawing is far steadier than a model matching a description.
-CANON = {'goose': 'goose-body', 'tortoise': 'tortoise-sit'}
-
 
 def gen(prompt, out, ar, canon=None):
     key = os.environ.get('GEMKEY') or sys.exit('GEMKEY is not set')
@@ -192,21 +124,21 @@ def key_out(path, tol=26):
 def main(argv):
     only = set(a for a in argv if not a.startswith('-'))
     force = '--force' in argv
-    for name, desc in SPRITES.items():
+    for name, desc in CFG['sprites'].items():
         if only and name not in only:
             continue
-        out = os.path.join(HERE, 'sprites', name + '.png')
+        out = os.path.join(FILM, 'sprites', name + '.png')
         if os.path.exists(out) and not force:
             print('  %-16s cached' % name); continue
-        canon = CANON.get(name.split('-')[0])
-        canon = os.path.join(HERE, 'sprites', canon + '.png') if canon and canon != name else None
+        canon = CFG.get('canon', {}).get(name.split('-')[0])
+        canon = os.path.join(FILM, 'sprites', canon + '.png') if canon and canon != name else None
         ok = gen(desc + SPRITE_TAIL, out, '1:1', canon)
         print('  %-16s %s  %s' % (name, 'drawn' if ok else 'FAILED',
                                   key_out(out) if ok else ''))
-    for name, desc in PLATES.items():
+    for name, desc in CFG['plates'].items():
         if only and name not in only:
             continue
-        out = os.path.join(HERE, 'plates', name + '.png')
+        out = os.path.join(FILM, 'plates', name + '.png')
         if os.path.exists(out) and not force:
             print('  %-16s cached' % name); continue
         ok = gen(desc + PLATE_TAIL, out, '16:9')

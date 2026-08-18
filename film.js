@@ -18,12 +18,17 @@
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const { chromium } = require('playwright');
 
+/* WHICH FILM. One env var picks the story; every path hangs off it, so this file knows
+   nothing about any particular film. Story two is where you find out whether the first
+   one was a pipeline or just a thing that happened to work. */
+const STORY = process.env.STORY || 'pt-talkative-tortoise';
+const FILM = path.join(__dirname, STORY);
 const HERE = __dirname, ROOT = path.join(HERE, '..', '..');
-const OUT = path.join(ROOT, 'build', 'anim');
+const OUT = path.join(ROOT, 'build', 'anim', STORY);
 const VOICE = path.join(ROOT, 'app', 'voice', 'st');
-const SLUG = 'pt-talkative-tortoise';
+const SLUG = STORY;
 const FPS = 24, TOL = 14;          // px: the stick may overlap a beak, never miss it
-const scenes = JSON.parse(fs.readFileSync(path.join(HERE, 'scenes.json'), 'utf8'));
+const scenes = JSON.parse(fs.readFileSync(path.join(FILM, 'scenes.json'), 'utf8'));
 const FF = require('child_process')
   .execFileSync('python3', ['-c', 'import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())'],
                 { encoding: 'utf8' }).trim();
@@ -51,7 +56,7 @@ function narrationSecs(seg) {
 
   let failures = 0;
   for (const shot of scenes.shots) {
-    const html = path.join(HERE, 'shot-' + shot.id + '.html');
+    const html = path.join(FILM, 'shot-' + shot.id + '.html');
     if (!fs.existsSync(html)) { console.log('  !! no page for shot ' + shot.id); failures++; continue; }
     await page.goto('file://' + html, { waitUntil: 'networkidle' });
 
@@ -77,7 +82,7 @@ function narrationSecs(seg) {
                     h.top + h.height * MOUTH, h.left + h.width / 2] : null,
         };
       }, shot.carry.hang
-           ? JSON.parse(fs.readFileSync(path.join(HERE, 'sprites.json'), 'utf8'))[shot.carry.hang].mouth[1]
+           ? JSON.parse(fs.readFileSync(path.join(FILM, 'sprites.json'), 'utf8'))[shot.carry.hang].mouth[1]
            : 0.3);
       if (r.err) { console.log('  !! ' + shot.id + ': ' + r.err); failures++; continue; }
       /* THE CONTRACT, asserted per shot:
