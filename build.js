@@ -53,14 +53,39 @@ for f in sorted(os.listdir(d)):
         if tip: rec['beak']=[tip[0]/w, tip[1]/h]
         rec['shoulder']=[0.56,0.46]      # where the wing pins onto the body
     if name.startswith('tortoise'):
-        # THE GRIP ANCHOR, calibrated once per drawing. A heuristic was tried first -- the
-        # widest opaque row in the upper half, plus a nudge -- and it put the stick across
-        # the top of his shell, so he read as sitting on it rather than hanging from it.
-        # A drawing's mouth is not derivable from its silhouette, so it is measured by eye
-        # once and written down. That is what a sprite manifest is FOR: the calibration
-        # lives beside the art, and every shot in every film inherits it.
-        rec['mouth']=[0.5, {'tortoise-hang':0.30,'tortoise-cross':0.33,
-                            'tortoise-shout':0.30}.get(name, 0.34)]
+        # THE GRIP ANCHOR, MEASURED. Guessed twice and wrong twice -- 0.30 put the stick
+        # across his brow, 0.42 across his chest -- so it is derived from the drawing now.
+        # A front-facing cartoon face has three dark bands down it: the eyes, the mouth,
+        # then the shell's top edge. The mouth is the SECOND band. Clustering rows by ink
+        # and taking that band means a new tortoise sprite is calibrated the moment it is
+        # drawn, with nobody squinting at a render -- which is what has to be true if this
+        # is going to make hundreds of films.
+        ink=[]
+        for y in range(int(h*0.04), int(h*0.60)):
+            n=sum(1 for x in range(w) if px[x,y][3]>200 and sum(px[x,y][:3])<230)
+            ink.append((y,n))
+        thresh=max(n for _,n in ink)*0.72
+        bands=[]; cur=None
+        for y,n in ink:
+            if n>=thresh:
+                if cur and y-cur[-1]<=3: cur.append(y)
+                else:
+                    if cur: bands.append(cur)
+                    cur=[y]
+        if cur: bands.append(cur)
+        # "the second band" was too fragile -- a stray line above the eyes (a brow, the top
+        # of the head) shifts every index by one and the stick lands on his forehead. The
+        # eyes are the HEAVIEST band in the upper part of the face; the mouth is whichever
+        # band comes next. That survives a stray line, and it survives a different drawing.
+        weight={}
+        for i,bd in enumerate(bands):
+            weight[i]=sum(n for y,n in ink if bd[0]<=y<=bd[-1])
+        upper=[i for i,bd in enumerate(bands) if (bd[0]+bd[-1])/2 < h*0.42]
+        rec['mouth']=[0.5,0.24]
+        if upper:
+            eyes=max(upper,key=lambda i:weight[i])
+            if eyes+1 < len(bands):
+                b=bands[eyes+1]; rec['mouth']=[0.5,(b[0]+b[-1])/2/h]
     out[name]=rec
 json.dump(out, open(${JSON.stringify(MANIFEST)},'w'), indent=1)
 print(len(out),'sprites measured')
@@ -230,26 +255,18 @@ function carryHTML(c, man) {
       gooseHTML(gH, { man, phase: ph }) + `</div>`;
   }
   const th = Math.max(10, Math.round(c.span * 0.026));
-  if (t) {
-    /* HE IS BITING IT, and the way to show that is not to draw a mouth gripping wood --
-       it is to stop the wood AT the mouth from both sides. Two segments, each running from
-       a beak to the edge of his jaw, and his head drawn over the join. A single stick
-       passing behind his head reads as a tortoise standing in front of a stick, which is
-       exactly the note that came back. */
-    const hH = c.hangH, hW = Math.round(hH * t.w / t.h);
-    const jaw = hW * 0.30;                        /* how wide his mouth grips */
-    html += `<div class="stick" style="left:${-half}px;top:${beakY - th / 2}px;` +
-      `width:${half - jaw / 2}px;height:${th}px;z-index:3"></div>`;
-    html += `<div class="stick" style="left:${jaw / 2}px;top:${beakY - th / 2}px;` +
-      `width:${half - jaw / 2}px;height:${th}px;z-index:3"></div>`;
-  } else {
-    html += `<div class="stick" style="left:${-half}px;top:${beakY - th / 2}px;` +
-      `width:${c.span}px;height:${th}px;z-index:3"></div>`;
-  }
+  /* ONE STICK, DRAWN IN FRONT OF HIM. The first attempt cut it into two segments stopping
+     at his jaw, with his head over the join -- reasonable on paper, wrong on screen: it
+     read as a tortoise standing in front of a broken stick. A bite reads when the wood
+     passes ACROSS the face at mouth height, so the stick goes above him in z, not behind.
+     Depth is the whole vocabulary of cut-out; getting it backwards is the standard way to
+     make a puppet look like a sticker. */
+  html += `<div class="stick" style="left:${-half}px;top:${beakY - th / 2}px;` +
+    `width:${c.span}px;height:${th}px;z-index:5"></div>`;
   if (t) {
     const hH = c.hangH, hW = Math.round(hH * t.w / t.h);
     html += `<div class="layer" style="position:absolute;left:${-hW / 2}px;` +
-      `top:${beakY - t.mouth[1] * hH}px;margin:0;width:${hW}px;height:${hH}px;z-index:4;` +
+      `top:${beakY - t.mouth[1] * hH}px;margin:0;width:${hW}px;height:${hH}px;z-index:2;` +
       `background-image:url(sprites/${c.hang}.png);transform-origin:50% ${t.mouth[1] * 100}%;` +
       `animation:hangsway 2.4s ease-in-out infinite"></div>`;
   }

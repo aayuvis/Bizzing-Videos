@@ -57,7 +57,7 @@ function narrationSecs(seg) {
 
     /* ---- the contact assertions, measured from the rendered box model ---- */
     if (shot.carry) {
-      const r = await page.evaluate(() => {
+      const r = await page.evaluate((MOUTH) => {
         const carry = document.querySelector('#carry');
         if (!carry) return { err: 'no carry group' };
         const sticks = [...carry.querySelectorAll('.stick')]
@@ -73,15 +73,19 @@ function narrationSecs(seg) {
           innerR: sticks.length > 1 ? sticks[1].left : null,
           beakL: birds[0].right, beakR: birds[1].left,
           stickY: sticks[0].top + sticks[0].height / 2,
-          jaw: h ? [h.left + h.width * 0.28, h.left + h.width * 0.72] : null,
+          jaw: h ? [h.left + h.width * 0.28, h.left + h.width * 0.72,
+                    h.top + h.height * MOUTH, h.left + h.width / 2] : null,
         };
-      });
+      }, shot.carry.hang
+           ? JSON.parse(fs.readFileSync(path.join(HERE, 'sprites.json'), 'utf8'))[shot.carry.hang].mouth[1]
+           : 0.3);
       if (r.err) { console.log('  !! ' + shot.id + ': ' + r.err); failures++; continue; }
-      /* THE FULL CONTRACT, now that the stick is two segments:
-           the OUTER ends reach into both beaks   -> the geese are holding it
-           the INNER ends stop inside his jaw     -> he is biting it, not standing behind it
-         The second half is the note that came back after the first cut-out pass, so it is
-         asserted rather than eyeballed from here on. */
+      /* THE CONTRACT, asserted per shot:
+           the stick's ends reach into both beaks   -> the geese are holding it
+           the stick crosses his MOUTH, not his shell or his chin, and he is centred on it
+                                                    -> he is biting it
+         The second one exists because "he is at the right height but reads as standing
+         behind the stick" was a real note, twice, and an assertion is cheaper than an eye. */
       const inBeak = (edge, beak) => Math.abs(edge - beak) <= 140;
       if (!inBeak(r.outerL, r.beakL) || !inBeak(r.outerR, r.beakR)) {
         console.log('  !! ' + shot.id + ': stick ends ' +
@@ -89,12 +93,13 @@ function narrationSecs(seg) {
           Math.abs(r.outerR - r.beakR).toFixed(0) + ' px from the beaks');
         failures++;
       }
-      if (r.jaw && r.innerL != null) {
-        const bitten = r.innerL >= r.jaw[0] - 30 && r.innerR <= r.jaw[1] + 30;
-        if (!bitten) {
-          console.log('  !! ' + shot.id + ': the stick does not stop in his jaw ' +
-            '(gap ' + r.innerL.toFixed(0) + '-' + r.innerR.toFixed(0) +
-            ', jaw ' + r.jaw[0].toFixed(0) + '-' + r.jaw[1].toFixed(0) + ')');
+      if (r.jaw) {
+        const onMouth = Math.abs(r.stickY - r.jaw[2]) <= 26;
+        const centred = Math.abs(r.jaw[3] - (r.outerL + r.outerR) / 2) <= 40;
+        if (!onMouth || !centred) {
+          console.log('  !! ' + shot.id + ': stick is ' + (r.stickY - r.jaw[2]).toFixed(0) +
+            'px off his mouth line, and he is ' +
+            (r.jaw[3] - (r.outerL + r.outerR) / 2).toFixed(0) + 'px off centre');
           failures++;
         }
       }
