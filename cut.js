@@ -75,8 +75,13 @@ run(['-i', vid, '-i', aud, '-map', '0:v:0', '-map', '1:a:0',
      '-c:v', 'libx264', '-crf', '20', '-preset', 'slow', '-pix_fmt', 'yuv420p',
      '-c:a', 'aac', '-b:a', '192k', '-ac', '2', '-shortest', '-movflags', '+faststart', master]);
 const prev = path.join(OUT, STORY + '-preview.mp4');
-run(['-i', master, '-vf', 'scale=1280:720:flags=lanczos', '-c:v', 'libx264', '-b:v', '2200k',
-     '-maxrate', '2600k', '-bufsize', '4400k', '-preset', 'slow', '-pix_fmt', 'yuv420p',
-     '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', prev]);
+/* THE PREVIEW MUST BE SMALLER THAN THE MASTER, which sounds too obvious to state until
+   it is not true: a fixed 2.2 Mbps produced a 720p "preview" 0.6 MB LARGER than the 1080p
+   master, because flat cel animation at CRF 20 already lands below that. A fixed bitrate
+   is not a smaller encode, it is just a different one. Quality-targeted at both sizes, so
+   the relationship holds whatever the content does. */
+run(['-i', master, '-vf', 'scale=1280:720:flags=lanczos', '-c:v', 'libx264', '-crf', '28',
+     '-preset', 'slow', '-pix_fmt', 'yuv420p',
+     '-c:a', 'aac', '-b:a', '112k', '-movflags', '+faststart', prev]);
 for (const f of [master, prev])
   console.log(path.basename(f).padEnd(40) + ' ' + (fs.statSync(f).size / 1e6).toFixed(1) + ' MB');
