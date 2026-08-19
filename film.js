@@ -54,6 +54,32 @@ function narrationSecs(seg) {
 
 (async () => {
   const checkOnly = process.argv.includes('--check');
+  /* ONE RENDERER PER FILM. A render started in an earlier session kept going for half an
+     hour after it was thought dead, writing shot mp4s into this same directory -- so cuts
+     assembled from "the finished shots" were a mix of two builds, and a film published as
+     the fixed one got clobbered by the old one minutes later. That is what "still the old
+     video" actually was. A stale lock (no such pid) is cleared and reported. */
+  const lock = path.join(OUT, '.render.lock');
+  if (!checkOnly) {
+    fs.mkdirSync(OUT, { recursive: true });
+    if (fs.existsSync(lock)) {
+      const pid = Number(fs.readFileSync(lock, 'utf8').trim());
+      let alive = true;
+      try { process.kill(pid, 0); } catch (e) { alive = false; }
+      if (alive) {
+        console.error('another render of ' + STORY + ' is running as pid ' + pid + '.\n' +
+                      'Two renderers share one output directory and produce a film that is ' +
+                      'neither build.\nStop it, or wait for it.');
+        process.exit(2);
+      }
+      console.log('  (cleared a stale lock from pid ' + pid + ')');
+    }
+    fs.writeFileSync(lock, String(process.pid) + '\n');
+    const drop = () => { try { fs.unlinkSync(lock); } catch (e) {} };
+    process.on('exit', drop);
+    for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP'])
+      process.on(sig, () => { drop(); process.exit(130); });
+  }
   const force = process.argv.includes('--force');   // re-render even an unchanged shot
   fs.mkdirSync(OUT, { recursive: true });
   const pre = '/opt/pw-browsers/chromium';
