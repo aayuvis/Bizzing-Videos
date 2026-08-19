@@ -226,6 +226,20 @@ function gooseHTML(h, opts) {
     `</div>`;
 }
 
+/* A PERCH: a point on the PLATE that a character stands on, given as a fraction of the
+   plate image. The monkey was placed by raw x/y and ended up sitting on air a foot below
+   the branch -- the same failure as a stick that misses a beak, and it deserves the same
+   treatment. The plate is drawn at 112% with a -6% inset, so a plate fraction maps to the
+   stage by that scale; the sprite's FEET land on the point, not its centre.
+
+   The camera transform is deliberately not compensated for: when the camera drifts, the
+   branch drifts, and so should whoever is sitting on it. */
+function perchXY(p, w, h) {
+  const S = 1.12;
+  return { x: Math.round((p[0] - 0.5) * 1920 * S),
+           y: Math.round((p[1] - 0.5) * 1080 * S - h / 2) };
+}
+
 function layerHTML(L, man) {
   if (L.sprite === 'goose') {
     const b = man[BODY];
@@ -252,6 +266,7 @@ function layerHTML(L, man) {
   const h = L.h || Math.round((L.w || 200) * s.h / s.w);
   const w = L.w || Math.round(h * s.w / s.h);
   const fl = L.flip ? 'scaleX(-1)' : '';
+  if (L.perch) { const q = perchXY(L.perch, w, h); L = Object.assign({}, L, { x: q.x, y: q.y }); }
   return `<div class="layer" style="width:${w}px;height:${h}px;margin-left:${-w / 2}px;` +
     `margin-top:${-h / 2}px;--tx:${L.x}px;--ty:${L.y}px;--fl:${fl};` +
     `background-image:url(sprites/${L.sprite}.png);` +

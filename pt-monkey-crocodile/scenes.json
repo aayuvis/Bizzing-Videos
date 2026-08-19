@@ -12,80 +12,277 @@
     "evening shots are the crocodile alone with what he has been asked to do, which is",
     "also the more interesting picture."
   ],
-
   "story": "pt.monkey-crocodile",
-  "stage": [1920, 1080],
-
+  "stage": [
+    1920,
+    1080
+  ],
   "shots": [
-    { "id": "00", "seg": "hook", "plate": "river-tree",
-      "layers": [ { "sprite": "monkey-sit", "x": -430, "y": -160, "h": 300, "anim": "idle" } ],
-      "camera": "push-in" },
-
-    { "id": "01", "seg": "0", "plate": "river-tree",
-      "layers": [ { "sprite": "monkey-sit", "x": -400, "y": -120, "h": 340, "anim": "idle" } ],
-      "camera": "drift-right" },
-
-    { "id": "02", "seg": "1", "plate": "river-tree",
+    {
+      "id": "00",
+      "seg": "hook",
+      "plate": "river-tree",
       "layers": [
-        { "sprite": "croc-bank", "x": 250, "y": 300, "h": 260, "flip": true, "anim": "small-breathe" },
-        { "sprite": "monkey-offer", "x": -330, "y": -60, "h": 330, "anim": "chatter" },
-        { "say": "You look tired.<br>Try these.", "x": -60, "y": -330, "at": 2.4, "dur": 5.0 }
+        {
+          "sprite": "monkey-sit",
+          "h": 300,
+          "anim": "idle",
+          "perch": [
+            0.315,
+            0.235
+          ]
+        }
       ],
-      "camera": "push-in" },
-
-    { "id": "03", "seg": "2", "plate": "river-tree",
+      "camera": "push-in"
+    },
+    {
+      "id": "01",
+      "seg": "0",
+      "plate": "river-tree",
       "layers": [
-        { "sprite": "croc-bank", "x": 280, "y": 300, "h": 280, "flip": true, "anim": "idle" },
-        { "sprite": "monkey-sit", "x": -350, "y": -80, "h": 320, "anim": "idle-b" }
+        {
+          "sprite": "monkey-sit",
+          "h": 340,
+          "anim": "idle",
+          "perch": [
+            0.315,
+            0.235
+          ]
+        }
       ],
-      "camera": "drift-left" },
-
-    { "id": "04", "seg": "3", "plate": "river-evening",
-      "layers": [ { "sprite": "croc-bank", "x": 60, "y": 210, "h": 340, "anim": "small-breathe" } ],
-      "camera": "push-in" },
-
-    { "id": "05", "seg": "4", "plate": "river-evening",
+      "camera": "drift-right"
+    },
+    {
+      "id": "02",
+      "seg": "1",
+      "plate": "river-tree",
       "layers": [
-        { "sprite": "croc-sad", "x": 0, "y": 180, "h": 340, "anim": "lean" },
-        { "say": "He is my friend.", "x": -40, "y": -280, "at": 1.2, "dur": 4.4 }
+        {
+          "sprite": "croc-bank",
+          "x": 250,
+          "y": 300,
+          "h": 260,
+          "flip": true,
+          "anim": "small-breathe"
+        },
+        {
+          "sprite": "monkey-offer",
+          "h": 330,
+          "anim": "chatter",
+          "perch": [
+            0.315,
+            0.235
+          ],
+          "flip": true
+        },
+        {
+          "say": "You look tired.<br>Try these.",
+          "x": -60,
+          "y": -330,
+          "at": 2.4,
+          "dur": 5.0
+        }
       ],
-      "camera": "pull-back" },
-
-    { "id": "06", "seg": "5", "plate": "river-tree",
-      "ride": { "y": 210, "mount": "croc-swim", "rider": "monkey-ride",
-                "mountH": 300, "riderH": 210, "anim": "cruise" },
-      "camera": "drift-left" },
-
-    { "id": "07", "seg": "6", "plate": "river-deep",
-      "ride": { "y": 150, "mount": "croc-swim", "rider": "monkey-ride",
-                "mountH": 330, "riderH": 230, "anim": "settle" },
+      "camera": "push-in"
+    },
+    {
+      "id": "03",
+      "seg": "2",
+      "plate": "river-tree",
       "layers": [
-        { "say": "My wife wants to<br>eat your heart.", "x": 300, "y": -240, "at": 3.6, "dur": 5.2 }
+        {
+          "sprite": "croc-bank",
+          "x": 280,
+          "y": 300,
+          "h": 280,
+          "flip": true,
+          "anim": "idle"
+        },
+        {
+          "sprite": "monkey-sit",
+          "h": 320,
+          "anim": "idle-b",
+          "perch": [
+            0.315,
+            0.235
+          ]
+        }
       ],
-      "camera": "push-in" },
-
-    { "id": "08", "seg": "7", "plate": "river-deep",
-      "ride": { "y": 150, "mount": "croc-swim", "rider": "monkey-laugh",
-                "mountH": 330, "riderH": 240, "anim": "settle" },
+      "camera": "drift-left"
+    },
+    {
+      "id": "04",
+      "seg": "3",
+      "plate": "river-evening",
       "layers": [
-        { "say": "I left my heart<br>in the tree!", "x": 280, "y": -250, "at": 3.0, "dur": 5.6 }
+        {
+          "sprite": "croc-bank",
+          "x": -300,
+          "y": 230,
+          "h": 300,
+          "anim": "small-breathe"
+        },
+        {
+          "sprite": "croc-wife",
+          "x": 330,
+          "y": 215,
+          "h": 320,
+          "anim": "lean"
+        },
+        {
+          "say": "I want his heart.",
+          "x": 300,
+          "y": -230,
+          "at": 4.6,
+          "dur": 4.2
+        }
       ],
-      "camera": "hold" },
-
-    { "id": "09", "seg": "8", "plate": "river-wide",
-      "ride": { "y": 130, "mount": "croc-swim", "rider": "monkey-ride", "flip": true,
-                "mountH": 300, "riderH": 210, "anim": "cruise" },
-      "camera": "drift-right" },
-
-    { "id": "10", "seg": "9", "plate": "tree-top",
+      "camera": "push-in"
+    },
+    {
+      "id": "05",
+      "seg": "4",
+      "plate": "river-evening",
       "layers": [
-        { "sprite": "monkey-climb", "x": -120, "y": 120, "h": 340, "anim": "bounce" },
-        { "say": "My heart is where it has<br>always been — inside me.", "x": 120, "y": -300, "at": 6.5, "dur": 5.4 }
+        {
+          "sprite": "croc-sad",
+          "x": -270,
+          "y": 200,
+          "h": 320,
+          "anim": "lean"
+        },
+        {
+          "sprite": "croc-wife",
+          "x": 340,
+          "y": 210,
+          "h": 320,
+          "anim": "lean-b"
+        },
+        {
+          "say": "He is my friend.",
+          "x": -300,
+          "y": -260,
+          "at": 1.2,
+          "dur": 4.0
+        }
       ],
-      "camera": "rise" },
-
-    { "id": "11", "seg": "moral", "plate": "river-tree",
-      "layers": [ { "sprite": "monkey-sit", "x": -400, "y": -120, "h": 330, "anim": "idle" } ],
-      "camera": "push-in" }
+      "camera": "pull-back"
+    },
+    {
+      "id": "06",
+      "seg": "5",
+      "plate": "river-tree",
+      "ride": {
+        "y": 210,
+        "mount": "croc-swim",
+        "rider": "monkey-ride",
+        "mountH": 300,
+        "riderH": 210,
+        "anim": "cruise"
+      },
+      "camera": "drift-left"
+    },
+    {
+      "id": "07",
+      "seg": "6",
+      "plate": "river-deep",
+      "ride": {
+        "y": 150,
+        "mount": "croc-swim",
+        "rider": "monkey-ride",
+        "mountH": 330,
+        "riderH": 230,
+        "anim": "settle"
+      },
+      "layers": [
+        {
+          "say": "My wife wants to<br>eat your heart.",
+          "x": 300,
+          "y": -240,
+          "at": 3.6,
+          "dur": 5.2
+        }
+      ],
+      "camera": "push-in"
+    },
+    {
+      "id": "08",
+      "seg": "7",
+      "plate": "river-deep",
+      "ride": {
+        "y": 150,
+        "mount": "croc-swim",
+        "rider": "monkey-laugh",
+        "mountH": 330,
+        "riderH": 240,
+        "anim": "settle"
+      },
+      "layers": [
+        {
+          "say": "I left my heart<br>in the tree!",
+          "x": 280,
+          "y": -250,
+          "at": 3.0,
+          "dur": 5.6
+        }
+      ],
+      "camera": "hold"
+    },
+    {
+      "id": "09",
+      "seg": "8",
+      "plate": "river-wide",
+      "ride": {
+        "y": 130,
+        "mount": "croc-swim",
+        "rider": "monkey-ride",
+        "flip": true,
+        "mountH": 300,
+        "riderH": 210,
+        "anim": "cruise"
+      },
+      "camera": "drift-right"
+    },
+    {
+      "id": "10",
+      "seg": "9",
+      "plate": "tree-top",
+      "layers": [
+        {
+          "sprite": "monkey-climb",
+          "h": 340,
+          "anim": "bounce",
+          "perch": [
+            0.42,
+            0.7
+          ]
+        },
+        {
+          "say": "My heart is where it has<br>always been \u2014 inside me.",
+          "x": 120,
+          "y": -300,
+          "at": 6.5,
+          "dur": 5.4
+        }
+      ],
+      "camera": "rise"
+    },
+    {
+      "id": "11",
+      "seg": "moral",
+      "plate": "river-tree",
+      "layers": [
+        {
+          "sprite": "monkey-sit",
+          "h": 330,
+          "anim": "idle",
+          "perch": [
+            0.315,
+            0.235
+          ]
+        }
+      ],
+      "camera": "push-in"
+    }
   ]
 }
