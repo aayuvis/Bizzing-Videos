@@ -6,11 +6,14 @@
     "on the crocodile's back, at a saddle point measured off the crocodile's own drawing.",
     "He cannot drift off it, sink into it, or end up behind the animal he is riding.",
     "",
-    "THE WIFE IS NEVER DRAWN. She wants to eat the monkey's heart, and she is the reason",
-    "the story happens -- but the app's telling keeps her a voice from off the page, and",
-    "docs/14 says harm stays as elliptical on the channel as it is in the text. So the",
-    "evening shots are the crocodile alone with what he has been asked to do, which is",
-    "also the more interesting picture."
+    "THE WIFE IS DRAWN, AND SHE IS A CROCODILE. The first pass kept her a voice from off the",
+    "page; the note back was that the evening shots need TWO crocodiles, because a crocodile",
+    "talking to nobody reads as a crocodile talking to nobody. So she is on the bank with him",
+    "in 04 and 05. What stays elliptical is the harm itself -- she asks, he refuses to like",
+    "it, and nothing is ever shown being eaten. docs/14: never braver than the text.",
+    "",
+    "Every bubble names its speaker with `from`. The builder puts it above them and above",
+    "anything standing under it, and film.js fails the shot if it lands on a body."
   ],
   "story": "pt.monkey-crocodile",
   "stage": [
@@ -178,8 +181,9 @@
         "mount": "croc-swim",
         "rider": "monkey-ride",
         "mountH": 300,
-        "riderH": 210,
-        "anim": "cruise"
+        "riderH": 285,
+        "anim": "cruise",
+        "riderFlip": true
       },
       "camera": "drift-left"
     },
@@ -188,20 +192,22 @@
       "seg": "6",
       "plate": "river-deep",
       "ride": {
-        "y": 150,
+        "y": 205,
         "mount": "croc-swim",
         "rider": "monkey-ride",
         "mountH": 330,
-        "riderH": 230,
-        "anim": "settle"
+        "riderH": 310,
+        "anim": "settle",
+        "riderFlip": true
       },
       "layers": [
         {
           "say": "My wife wants to<br>eat your heart.",
           "at": 3.6,
           "dur": 5.2,
-          "x": 0,
-          "y": -300
+          "from": "croc-swim",
+          "boxW": 700,
+          "boxH": 200
         }
       ],
       "camera": "push-in"
@@ -211,20 +217,22 @@
       "seg": "7",
       "plate": "river-deep",
       "ride": {
-        "y": 150,
+        "y": 205,
         "mount": "croc-swim",
         "rider": "monkey-laugh",
         "mountH": 330,
-        "riderH": 240,
-        "anim": "settle"
+        "riderH": 320,
+        "anim": "settle",
+        "riderFlip": true
       },
       "layers": [
         {
           "say": "I left my heart<br>in the tree!",
           "at": 3.0,
           "dur": 5.6,
-          "x": 0,
-          "y": -320
+          "from": "monkey-laugh",
+          "boxW": 700,
+          "boxH": 200
         }
       ],
       "camera": "hold"
@@ -239,7 +247,7 @@
         "rider": "monkey-ride",
         "flip": true,
         "mountH": 300,
-        "riderH": 210,
+        "riderH": 285,
         "anim": "cruise"
       },
       "camera": "drift-right"
@@ -259,7 +267,7 @@
           ]
         },
         {
-          "say": "My heart is where it has<br>always been \u2014 inside me.",
+          "say": "My heart is where it has<br>always been — inside me.",
           "at": 6.5,
           "dur": 5.4,
           "from": "monkey-climb",

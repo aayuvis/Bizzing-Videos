@@ -148,7 +148,7 @@ function narrationSecs(seg) {
         for (const c of document.querySelectorAll('.callout')) {
           const b = c.getBoundingClientRect();
           if (b.left < 8 || b.right > 1912 || b.top < 8) out.push('off-frame');
-          for (const l of document.querySelectorAll('.layer')) {
+          for (const l of document.querySelectorAll('.char')) {
             const r = l.getBoundingClientRect();
             const overlap = !(b.right < r.left || b.left > r.right ||
                               b.bottom < r.top || b.top > r.bottom);

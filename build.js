@@ -71,6 +71,12 @@ for f in sorted(os.listdir(d)):
         for y in range(h):
             if px[col,y][3]>200: top=y; break
         if top is not None: rec['saddle']=[0.55, top/h]
+        # THE HEAD END. A speech bubble comes from a mouth, and on a side-facing animal the
+        # mouth is at the leading edge, not the middle of a body that may be most of the
+        # frame wide. Leftmost opaque column, and the top of the silhouette there.
+        for x in range(w):
+            col=[y for y in range(h) if px[x,y][3]>200]
+            if col: rec['head']=[x/w, min(col)/h]; break
     if name.startswith('tortoise'):
         # THE GRIP ANCHOR, MEASURED. Guessed twice and wrong twice -- 0.30 put the stick
         # across his brow, 0.42 across his chest -- so it is derived from the drawing now.
@@ -155,10 +161,19 @@ const CSS = `
   font-family:Fraunces,Georgia,serif;font-weight:800;font-size:54px;line-height:1.2;
   color:#241a34;text-align:center;transform-origin:50% 120%}
 .callout.shout{font-size:74px;background:#fff3d0;border-color:#8a2f18;color:#8a2f18}
-.callout i{position:absolute;left:50%;bottom:-35px;z-index:1;width:0;height:0;margin-left:-18px;
+.callout i{position:absolute;left:var(--tail,50%);bottom:-35px;z-index:1;width:0;height:0;margin-left:-18px;
   border:22px solid transparent;border-top-color:#3a2f1c}
 .callout i b{position:absolute;left:-16px;top:-25px;width:0;height:0;
   border:16px solid transparent;border-top-color:#fffdf7}
+/* A BUBBLE PLACED BESIDE ITS SPEAKER POINTS SIDEWAYS. Left the tail on the bottom edge and
+   it aimed at the floor while the speaker stood off to one side -- the reader then hangs
+   the line on whoever happens to be under it. */
+.callout.side i{left:auto;top:50%;bottom:auto;margin:-22px 0 0;border-top-color:transparent}
+.callout.side i b{left:auto;top:-16px}
+.callout.side-l i{right:-40px;border-left-color:#3a2f1c}
+.callout.side-l i b{right:-9px;border-left-color:#fffdf7}
+.callout.side-r i{left:-40px;border-right-color:#3a2f1c}
+.callout.side-r i b{left:-9px;border-right-color:#fffdf7}
 @keyframes pop{0%{opacity:0;scale:.6}
   12%{opacity:1;scale:1.06}
   18%,86%{opacity:1;scale:1}
@@ -258,31 +273,54 @@ function layerHTML(L, man) {
 
        An off-centre speaker gets an off-centre TAIL rather than a shifted box, so a bubble
        near the frame edge stays fully on screen instead of hanging off it. */
-    const cls = 'callout' + (L.shout ? ' shout' : '');
+    let side = '';
+    const cls0 = 'callout' + (L.shout ? ' shout' : '');
     const W = L.boxW || 820, GAP = 46;
     let cx = L.x || 0, cy = L.y || -300, tail = 50;
     if (L.from) {
       const sp = L._speaker;
       if (!sp) throw new Error('callout from "' + L.from + '" but that layer is not in this shot');
       const boxH = L.boxH || 150;
-      cy = sp.y - sp.h / 2 - GAP - boxH;
       cx = Math.max(-860 + W / 2, Math.min(860 - W / 2, sp.x));
+      /* CLEAR OF EVERY BODY IT PASSES, NOT JUST THE SPEAKER'S. Above the crocodile's head
+         is still on top of the crocodile: he is 1,266px of animal and his head is the far
+         tip of it, so a bubble hung off that one anchor sat squarely across his back. The
+         bubble rises above the highest thing standing under it -- the speaker plus any
+         character whose column the box actually crosses -- and nothing else has to move. */
+      let ceil = sp.y - sp.h / 2;
+      for (const o of (L._boxes || [])) {
+        if (o.x + o.w / 2 < cx - W / 2 - 12 || o.x - o.w / 2 > cx + W / 2 + 12) continue;
+        ceil = Math.min(ceil, o.y - o.h / 2);
+      }
+      cy = ceil - GAP - boxH;
       /* A SPEAKER HIGH IN FRAME HAS NO ROOM ABOVE THEM. The monkey sits near the top of the
          jamun tree, so "above his head" is off the top of the picture. When that happens the
          bubble goes BESIDE him instead, at his own height, on whichever side has more room --
          which is what a comic does, and it keeps the tail pointing at the speaker either
          way. Falling back to a clamped position would just pin it to the ceiling on top of
-         him, which is the fault being fixed. */
-      if (cy - boxH / 2 < -540 + 24) {
+         him, which is the fault being fixed.
+
+         `cy` is the box's TOP edge (the element is positioned from top:50%, not centred),
+         so the room-above test reads cy itself. Comparing cy - boxH/2 declared a bubble
+         that fitted with 48px to spare to be off-frame, and threw it sideways onto the
+         speaker -- which is how shot 08 ended up with a bubble across the crocodile. */
+      if (cy < -540 + 24) {
         cy = sp.y - sp.h * 0.15;
         const room = sp.x < 0 ? 1 : -1;                     // put it on the emptier side
         cx = Math.max(-860 + W / 2, Math.min(860 - W / 2,
              sp.x + room * (sp.w / 2 + W / 2 + 40)));
+        side = room > 0 ? ' side side-r' : ' side side-l';  // tail points back at him
       }
       tail = Math.max(14, Math.min(86, 50 + (sp.x - cx) / W * 100));
     }
-    return `<div class="${cls}" style="translate:${cx}px ${cy}px;--tail:${tail}%;` +
-      `max-width:${W}px;margin-left:${-W / 2}px;` +
+    /* CENTRE IT ON ITS OWN WIDTH. `margin-left:-W/2` centres a box that is exactly W wide;
+       these shrink to fit their text, so a short line sat (W - actual)/2 to the left of the
+       speaker -- which is how the monkey's bubble ended up hanging over open water with the
+       tail pointing at nothing. translateX(-50%) centres whatever width the text produces.
+       `transform` is free here: the pop animation drives `scale` and `opacity`, which are
+       separate properties, so the two do not fight. */
+    return `<div class="${cls0}${side}" style="translate:${cx}px ${cy}px;--tail:${tail}%;` +
+      `max-width:${W}px;transform:translateX(-50%);` +
       `animation:pop ${L.dur || 4}s ease-out forwards ${L.at || 0}s;` +
       `opacity:0">${L.say}<i><b></b></i></div>`;
   }
@@ -298,7 +336,7 @@ function layerHTML(L, man) {
   const w = L.w || Math.round(h * s.w / s.h);
   const fl = L.flip ? 'scaleX(-1)' : '';
   if (L.perch) { const q = perchXY(L.perch, w, h); L = Object.assign({}, L, { x: q.x, y: q.y }); }
-  return `<div class="layer" style="width:${w}px;height:${h}px;margin-left:${-w / 2}px;` +
+  return `<div class="layer char" style="width:${w}px;height:${h}px;margin-left:${-w / 2}px;` +
     `margin-top:${-h / 2}px;--tx:${L.x}px;--ty:${L.y}px;--fl:${fl};` +
     `background-image:url(sprites/${L.sprite}.png);` +
     `transform:translate(${L.x}px,${L.y}px) ${fl};` +
@@ -336,7 +374,7 @@ function carryHTML(c, man) {
     `width:${c.span}px;height:${th}px;z-index:5"></div>`;
   if (t) {
     const hH = c.hangH, hW = Math.round(hH * t.w / t.h);
-    html += `<div class="layer" style="position:absolute;left:${-hW / 2}px;` +
+    html += `<div class="layer char" style="position:absolute;left:${-hW / 2}px;` +
       `top:${beakY - t.mouth[1] * hH}px;margin:0;width:${hW}px;height:${hH}px;z-index:2;` +
       `background-image:url(sprites/${c.hang}.png);transform-origin:50% ${t.mouth[1] * 100}%;` +
       `animation:hangsway 2.4s ease-in-out infinite"></div>`;
@@ -359,12 +397,17 @@ function rideHTML(r, man) {
   const sink = Math.round(kH * 0.06);         // he sits INTO the back a little, not on top of it
   return `<div id="ride" style="position:absolute;left:50%;top:calc(50% + ${r.y || 0}px);` +
     `width:0;height:0;animation:${CARRY[r.anim] || 'none'}">` +
-    `<div style="position:absolute;left:${-mW / 2}px;top:${-mH / 2}px;width:${mW}px;` +
+    `<div class="char" style="position:absolute;left:${-mW / 2}px;top:${-mH / 2}px;width:${mW}px;` +
     `height:${mH}px;z-index:1;background:url(sprites/${r.mount}.png) center/contain no-repeat;` +
     `${r.flip ? 'transform:scaleX(-1);' : ''}"></div>` +
-    `<div style="position:absolute;left:${-mW / 2 + sx - kW / 2}px;` +
+    `<div class="char" style="position:absolute;left:${-mW / 2 + sx - kW / 2}px;` +
     `top:${-mH / 2 + sy - kH + sink}px;width:${kW}px;height:${kH}px;z-index:2;` +
     `background:url(sprites/${r.rider}.png) center/contain no-repeat;` +
+    /* A passenger faces the way the boat is pointing; the mount's head end decides it.
+       Mirrored with the standalone `scale` property, not with `transform`: hangsway drives
+       `transform: rotate()`, and an animated transform replaces an inline one outright --
+       the flip would exist for exactly as long as it took the first frame to render. */
+    `${r.riderFlip ? 'scale:-1 1;' : ''}` +
     `transform-origin:50% 100%;animation:hangsway 3s ease-in-out infinite"></div>` +
     `</div>`;
 }
@@ -377,6 +420,35 @@ function shotHTML(shot, man) {
   /* resolve every `from` against this shot's own layers, once their geometry is known --
      a callout cannot be placed until the character it belongs to has a position */
   const placed = {};
+  /* what a bubble must CLEAR, as opposed to what it points at: real drawn boxes, including
+     the whole of a mount whose speaking anchor is only its head */
+  const boxes = [];
+  if (shot.ride) {
+    /* Register the mount and the rider SEPARATELY, not as one box. Treating the group as
+       the speaker made a 1,266px-wide crocodile the thing to place a bubble above -- so
+       "above" ran off the top of frame and "beside" had no side to go to. A bubble belongs
+       to whoever is talking, and on a side-facing animal it belongs at the HEAD end. */
+    const r = shot.ride, m = man[r.mount], k = man[r.rider];
+    const mH = r.mountH, mW = Math.round(mH * m.w / m.h);
+    const kH = r.riderH || 0, kW = kH ? Math.round(kH * k.w / k.h) : 0;
+    const sy = (m.saddle ? m.saddle[1] : 0.3) * mH;
+    const hx = (m.head ? m.head[0] : 0.12) * mW, hy = (m.head ? m.head[1] : 0.3) * mH;
+    const flip = r.flip ? -1 : 1;
+    placed[r.mount] = { x: flip * (-mW / 2 + hx) + (mW * 0.06),
+                        y: (r.y || 0) - mH / 2 + hy + 40, w: 300, h: 120 };
+    boxes.push({ x: 0, y: r.y || 0, w: mW, h: mH });
+    if (kH) {
+      placed[r.rider] = { x: flip * (-mW / 2 + (m.saddle ? m.saddle[0] : .55) * mW),
+                          y: (r.y || 0) - mH / 2 + sy - kH / 2, w: kW, h: kH };
+      boxes.push(placed[r.rider]);
+    }
+  }
+  if (shot.carry) {
+    const c = shot.carry;
+    placed.carry = { x: 0, y: c.y || 0, w: c.span + c.gooseH,
+                     h: c.gooseH + (c.hangH || 0) };
+    boxes.push(placed.carry);
+  }
   for (const L of shot.layers || []) {
     if (L.say || !L.sprite) continue;
     const sp = man[L.sprite]; if (!sp) continue;
@@ -384,9 +456,11 @@ function shotHTML(shot, man) {
     const w = L.w || Math.round(h * sp.w / sp.h);
     const q = L.perch ? perchXY(L.perch, w, h) : { x: L.x || 0, y: L.y || 0 };
     placed[L.sprite] = { x: q.x, y: q.y, w: w, h: h };
+    boxes.push(placed[L.sprite]);
   }
   for (const L of shot.layers || []) {
-    body.push(layerHTML(L.say && L.from ? Object.assign({}, L, { _speaker: placed[L.from] }) : L, man));
+    body.push(layerHTML(L.say && L.from
+      ? Object.assign({}, L, { _speaker: placed[L.from], _boxes: boxes }) : L, man));
   }
   if (shot.fx === 'sparkle')
     body.push('<div class="spark" style="transform:translate(-30px,-190px)"></div>' +
