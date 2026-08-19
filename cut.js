@@ -27,9 +27,29 @@ const FF = execFileSync('python3',
 const run = a => execFileSync(FF, ['-y', '-loglevel', 'error', ...a], { stdio: 'inherit' });
 
 const cut = path.join(OUT, 'cut'); fs.mkdirSync(cut, { recursive: true });
+/* REFUSE TO CUT A FILM THAT IS NOT ACTUALLY THERE, OR NOT ACTUALLY CURRENT. This used to
+   print a note and carry on, which is how a cut goes out missing shots, and how a cut goes
+   out built from mp4s that predate the edit they were supposed to contain. A shot page is
+   rebuilt every time scenes.json changes, so an mp4 older than its own page is stale by
+   definition. --anyway overrides, for looking at work in progress. */
+const anyway = process.argv.includes('--anyway');
 const shots = scenes.shots.filter(s => fs.existsSync(path.join(OUT, s.id + '.mp4')));
-if (shots.length !== scenes.shots.length)
-  console.log('note: ' + shots.length + ' of ' + scenes.shots.length + ' shots present');
+const missing = scenes.shots.filter(s => !fs.existsSync(path.join(OUT, s.id + '.mp4')))
+  .map(s => s.id);
+const stale = shots.filter(s => {
+  const page = path.join(FILM, 'shot-' + s.id + '.html');
+  return fs.existsSync(page) &&
+         fs.statSync(page).mtimeMs > fs.statSync(path.join(OUT, s.id + '.mp4')).mtimeMs;
+}).map(s => s.id);
+if ((missing.length || stale.length) && !anyway) {
+  if (missing.length) console.error('not rendered: ' + missing.join(' '));
+  if (stale.length) console.error('older than their own shot page: ' + stale.join(' '));
+  console.error('run film.js first, or pass --anyway to cut what is here.');
+  process.exit(2);
+}
+if (missing.length || stale.length)
+  console.log('note: cutting anyway — missing [' + missing.join(' ') +
+              '] stale [' + stale.join(' ') + ']');
 
 /* the opening title rides on the first shot rather than sitting on a card of its own */
 const title = path.join(CARDS, 'card-title.png');
