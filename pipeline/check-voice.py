@@ -172,6 +172,10 @@ def check(story, quiet=False):
     med, band, pair_dev, batch = verdict(scenes, ends.get('hook'), ends.get('moral'))
 
     warn = [seg for seg, hz in rows if hz and abs(hz - med) > band]
+    # A clip with no measurable pitch is silence, and the synthesiser is known to return
+    # 200 OK with an empty mp3 -- 34 shipped that way once. That is not a shrug, it is a
+    # missing line, and on hook or moral it is the first or last shot of the film.
+    silent = [seg for seg, hz in rows if hz is None]
 
     if not quiet:
         print('%s  -- %d clips, scenes median %.0f Hz, band +/-%.0f Hz' %
@@ -185,10 +189,13 @@ def check(story, quiet=False):
             elif seg in warn:
                 mark = '  <-- outside the band (check it; emphasis reads like this too)'
             print('   %-6s %5.0f Hz  %+5.0f%s' % (seg, hz, hz - med, mark))
+        if silent:
+            print('   SILENT (no measurable pitch): %s -- the synthesiser can return 200 OK '
+                  'with an empty mp3' % ' '.join(silent))
         if batch:
             print('   hook and moral are both %.0f Hz %s the scenes -- the docs/02 §5.6 shape'
                   % (abs(pair_dev), 'below' if pair_dev < 0 else 'above'))
-    return batch, warn
+    return batch or bool(silent), warn
 
 
 def main(argv):

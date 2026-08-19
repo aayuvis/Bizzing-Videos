@@ -100,6 +100,27 @@ Binding: [docs/01 §3](docs/01-look-and-feel.md), plus Bizzing India's own
   honesty.
 - **Publishing is a human action.** Nothing in this repo uploads to YouTube.
 
+### The voices
+
+| use | voice | rate |
+|---|---|---|
+| English story narration | `en-IN-Chirp3-HD-Laomedeia` | 1.02 |
+| Hindi | `hi-IN-Neural2-A` | 0.88 |
+
+An Indian narrator is the point, not a preference — the old `en-US-Neural2-F` read the names
+as a foreigner would, and it was noticed the first time a film ended. All 646 hook and moral
+clips across the app's 323 stories have been re-recorded in it; a film's **first and last
+shots are the hook and the moral**, so this is a film-facing fact, not just an app one.
+
+Two failure modes in the app's narration that will reach a film:
+
+- The synthesiser can return **200 OK with an empty MP3**. 34 silent clips shipped that way
+  once. `repair-voice.py` in the app repo measures every clip and re-records anything under
+  −20 dB or 0.35s.
+- A **failed clip keeps its previous audio on disk.** A batch reporting "9 failed" has not
+  left 9 missing files, it has left a *mixed corpus that looks fine*. Find them by mtime —
+  whatever the pass did not touch — and re-record at fewer workers.
+
 ### Code
 
 - The app is reached only through `pipeline/sources.js` / `sources.py`. **Never hard-code a
@@ -112,6 +133,52 @@ Binding: [docs/01 §3](docs/01-look-and-feel.md), plus Bizzing India's own
   71.8 MiB. Record what shipped in `films/<story>/released.json`: the film rebuilds from this
   repo, but *which cut is live* is the one fact that does not. docs/01 §6.
 - **Never** put a real model identifier in commits, PRs, code, or any pushed artefact.
+
+## Where things stand
+
+Three films. Each introduced one rig primitive, which is the unit of progress here:
+
+| film | primitive | what it makes impossible to get wrong |
+|---|---|---|
+| `pt-talkative-tortoise` | `carry` | the stick's endpoints **are** the two geese's beak tips |
+| `pt-monkey-crocodile` | `ride` | the rider is pinned to a saddle measured off the mount |
+| `jt-crocodile-rock` | `rock` | the stone is the same stone, on the same waterline, all film |
+
+The third one is a different **kind** of promise, and worth knowing about before you write the
+fourth: it is about the world rather than about two characters touching, and it spans the
+whole film rather than one frame. Get it wrong and *no single shot is wrong* — so `film.js`
+now accumulates measurements across shots and checks the set after the loop. It also refuses
+a film that never shows both versions of the rock, because "higher than it has ever sat"
+means nothing to a viewer who was never shown how it usually sits.
+
+Put an invariant in the **scene format** before you put it in an assertion. A shot may write
+only `"rock": {}` or `"rock": {"on": "croc-lie"}` — there is no field for moving or resizing
+it, so that is not a mistake anyone can make. Cheaper than any test.
+
+The app has **323 stories** and a cast of roughly 69. **The cast is shared**: cells live in
+`cast/<character>/` and a film names what it needs in its `scenes.json` `cast` list. Story
+three reused story two's monkey and crocodile and its cast cost was zero — six generated
+assets for the whole film against fifteen for each of the first two. Per film after that is
+authoring a `scenes.json` and waiting for a render.
+
+Renders stream frames straight into ffmpeg and run `JOBS` shots at once (default: cores).
+A 98-frame shot went from ~4 minutes to 101 seconds on four cores. Combined with the per-shot
+cache, one changed shot costs one render rather than twelve.
+
+**Never show a cut you have not just rendered.** Check the timestamps. If a note arrived
+after the render started, the render does not contain the fix — and from the outside that is
+indistinguishable from the note being ignored. This cost a whole evening once.
+
+## Where to pick up
+
+1. **Story three.** Two films and two primitives is not yet a pipeline. Pick a story that
+   needs a primitive neither has — a crowd, a character entering frame, or a scale change
+   inside a shot — and find out.
+2. **Cast reuse.** Every film so far generated its own sprites. The monkey in story two and
+   any future monkey should be the same drawing. A shared cast library keyed by *character*
+   rather than by film is the structural move that makes 323 stories affordable.
+3. **Bizzing Bee.** Same machinery, different property. The seam is already
+   `sources.js`, so pointing it at a Bee checkout should be configuration, not a fork.
 
 ## Branch
 
