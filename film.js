@@ -13,10 +13,15 @@
  *
  *   node tools/anim/film.js            # every shot, cut to its narration
  *   node tools/anim/film.js --check    # assertions only, render nothing
+ *   node tools/anim/film.js --force    # ignore the cache, re-render everything
+ *
+ * Shots are cached on a hash of their own page, the art it loads and the narration length,
+ * so changing one shot costs one render rather than twelve. The checks always run.
  */
 'use strict';
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const { chromium } = require('playwright');
+const crypto = require('crypto');
 
 /* WHICH FILM. One env var picks the story; every path hangs off it, so this file knows
    nothing about any particular film. Story two is where you find out whether the first
@@ -49,6 +54,7 @@ function narrationSecs(seg) {
 
 (async () => {
   const checkOnly = process.argv.includes('--check');
+  const force = process.argv.includes('--force');   // re-render even an unchanged shot
   fs.mkdirSync(OUT, { recursive: true });
   const pre = '/opt/pw-browsers/chromium';
   const b = await chromium.launch(fs.existsSync(pre) ? { executablePath: pre } : {});
@@ -171,6 +177,29 @@ function narrationSecs(seg) {
     const secs = narrationSecs(shot.seg);
     if (secs == null) { console.log('  !! ' + shot.id + ': no narration for seg ' + shot.seg); failures++; continue; }
     const dur = secs + 0.35, total = Math.round(dur * FPS);
+    const mp4 = path.join(OUT, shot.id + '.mp4');
+
+    /* ONE CHANGED SHOT SHOULD NOT COST TWELVE RENDERS. Nothing about a shot's output
+       depends on anything but its own page, the art that page loads and the length of its
+       narration -- so hash exactly that. Twelve shots at ~4 minutes each is 45 minutes,
+       which on story two is what stood between a fix and seeing it, which is how cuts that
+       predated their fixes kept getting shown. */
+    const stamp = crypto.createHash('sha1');
+    stamp.update(fs.readFileSync(page.url().replace('file://', '')));
+    stamp.update(String(dur));
+    for (const rel of [...new Set((fs.readFileSync(page.url().replace('file://', ''), 'utf8')
+                                     .match(/(?:sprites|plates)\/[\w-]+\.png/g) || []))]) {
+      const f = path.join(FILM, rel);
+      if (fs.existsSync(f)) { stamp.update(rel); stamp.update(fs.readFileSync(f)); }
+    }
+    const key = stamp.digest('hex');
+    const keyFile = path.join(OUT, shot.id + '.key');
+    if (!force && fs.existsSync(mp4) && fs.existsSync(keyFile) &&
+        fs.readFileSync(keyFile, 'utf8').trim() === key) {
+      console.log('  -- ' + shot.id.padEnd(4) + ' unchanged, kept');
+      continue;
+    }
+
     const dir = path.join(OUT, 'f-' + shot.id);
     fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
     await page.evaluate(() => document.getAnimations().forEach(a => a.pause()));
@@ -179,11 +208,11 @@ function narrationSecs(seg) {
                           (i / FPS) * 1000);
       await page.screenshot({ path: path.join(dir, String(i).padStart(4, '0') + '.png') });
     }
-    const mp4 = path.join(OUT, shot.id + '.mp4');
     execFileSync(FF, ['-y', '-loglevel', 'error', '-framerate', String(FPS),
                       '-i', path.join(dir, '%04d.png'), '-c:v', 'libx264', '-crf', '18',
                       '-preset', 'medium', '-pix_fmt', 'yuv420p', mp4]);
     fs.rmSync(dir, { recursive: true, force: true });
+    fs.writeFileSync(keyFile, key + '\n');
     // console.log does not do printf padding — it prints the format string. This line
     // reported "ok %-4s %5.2fs 1 frames 14.27 342" for ten shots before anyone read it.
     console.log('  ok ' + shot.id.padEnd(4) + ' ' + dur.toFixed(2) + 's  ' + total + ' frames');
