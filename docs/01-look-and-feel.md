@@ -346,6 +346,27 @@ Not automated, on purpose — publishing is outward-facing and stays a human act
   the characters and backgrounds are drawn by an image model and animated by us, and the
   description must not go on claiming a video model that no longer touches these films.
 
+### Where a finished film lives
+
+**Not in git.** This repo holds the recipe, not the dish: `scenes.json`, the sprites and the
+plates, plus the app's narration, rebuild any cut byte-identically in about forty-five minutes
+with no API calls. So a master in version control buys nothing and costs permanently — every
+cut ever pushed stays in the branch history, a re-cut is an *addition* rather than a
+replacement, GitHub warns above 50 MiB and **refuses above 100 MiB**, and episode one's master
+is 71.8 MiB already. Pages is not a media host and is not meant to be one.
+
+| | |
+| --- | --- |
+| **The channel** | **YouTube.** The finished film goes out there. Nothing else ever serves a film to a child. |
+| **The archive** | **Drive**, one file per cut, named `<story>-<commit>.mp4`. Insurance, so what shipped can be re-uploaded without a re-render. |
+| **Review** | `pipeline/publish.sh` — the **720p preview only**, about 7 MB. It refuses anything larger. A new cut gets a content-addressed URL, so a link you hand someone cannot be stale. |
+
+And then the one thing here that is *not* reproducible, which is therefore the one thing that
+belongs in the repo: **which cut is live.** `films/<story>/released.json` records the date, the
+commit, the duration and the YouTube id. Without it nothing can answer *"is the film on the
+channel the current story?"* — which is exactly how a 720p preview sat two cuts stale, six
+seconds short of its own master, with nobody able to see that it had.
+
 ### The description, ready to paste
 
 ```

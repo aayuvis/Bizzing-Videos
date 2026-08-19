@@ -106,6 +106,11 @@ Binding: [docs/01 §3](docs/01-look-and-feel.md), plus Bizzing India's own
   path into a sibling checkout**, and never vendor a copy of the app's narration or art here
   — a copy is a fork, and a fork drifts.
 - `build/` is never committed. Every input is in the repo and any cut rebuilds in minutes.
+- **A finished film never goes in git.** YouTube is the channel, Drive is the archive, and
+  `pipeline/publish.sh` publishes the 720p review preview only. git does not forget, so every
+  master pushed is permanent, and GitHub refuses anything over 100 MiB — episode one's is
+  71.8 MiB. Record what shipped in `films/<story>/released.json`: the film rebuilds from this
+  repo, but *which cut is live* is the one fact that does not. docs/01 §6.
 - **Never** put a real model identifier in commits, PRs, code, or any pushed artefact.
 
 ## Branch

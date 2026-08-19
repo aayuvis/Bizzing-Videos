@@ -20,6 +20,28 @@ SRC=${1:?usage: publish.sh <local file> <path on the site>}
 DEST=${2:?usage: publish.sh <local file> <path on the site>}
 [ -f "$SRC" ] || { echo "no such file: $SRC" >&2; exit 1; }
 
+# THE PREVIEW CAP. Deliberately a wall you have to step over rather than a hard refusal --
+# PUBLISH_MAX_MB=60 is one keystroke -- but stepping over it should be a decision, not the
+# thing you discover at 100 MiB when the push is rejected and the cut is already made.
+MAX_MB=${PUBLISH_MAX_MB:-25}
+SIZE=$(wc -c < "$SRC")
+if [ "$SIZE" -gt $((MAX_MB * 1024 * 1024)) ]; then
+  cat >&2 <<EOF
+refusing $SRC
+  $((SIZE / 1048576)) MiB, over the ${MAX_MB} MiB review-preview cap.
+
+This publishes review previews -- the 720p, about 7 MB. Masters do not go in git: every cut
+pushed stays in the gh-pages history forever, GitHub refuses anything over 100 MiB, and
+episode one's master is 71.8 MiB already.
+
+A finished film goes to YouTube (the channel) and to Drive (the archive), and what shipped
+is recorded in films/<story>/released.json. See docs/01 §6.
+
+If you really do mean to put this in git:  PUBLISH_MAX_MB=$(( SIZE / 1048576 + 1 )) $0 ...
+EOF
+  exit 1
+fi
+
 # A NEW CUT GETS A NEW URL. Republishing to a fixed path means the bytes change and the
 # address does not, so the browser and the CDN both go on serving what they already have --
 # and the reviewer, quite reasonably, reports that the fix is not there. It was; they could

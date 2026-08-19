@@ -1,0 +1,59 @@
+{
+  "_": [
+    "WHAT SHIPPED. A film is a build artefact -- scenes.json, the art in this folder and the",
+    "app's narration rebuild any cut byte-identically, with no API calls -- so the master does",
+    "not belong in git (docs/01 §6). That leaves exactly one fact about a film that is NOT",
+    "reproducible from this repo, and this file is where it goes: WHICH CUT IS LIVE.",
+    "",
+    "Without it nothing can answer 'is the film on the channel the current story?'. That is not",
+    "hypothetical: the 720p below sat two cuts behind its own master, six seconds short, and",
+    "there was no place to notice.",
+    "",
+    "Update it when you publish. `duration` is the measured length of the file that went out;",
+    "`expected` is what the current scenes.json plus the app's narration predict, so the two",
+    "drifting apart is the signal that the live cut is stale."
+  ],
+  "film": "pt-monkey-crocodile",
+  "title": "The Monkey Who Kept His Heart in a Tree",
+  "expected": 119.74,
+
+  "cuts": [
+    {
+      "published": "2026-08-19T05:31:38Z",
+      "duration": 119.83,
+      "resolution": "1920x1080",
+      "bytes": 34226813,
+      "sha1": "bb1cc3c2b86021da0ff3289d11621f2fb82fb7a1",
+      "commit": null,
+      "youtube": null,
+      "master": null,
+      "at": "bizzingindia.com gh-pages: video/monkey-crocodile-1080p.mp4 (and -bb1cc3c2.mp4)",
+      "current": true,
+      "notes": [
+        "Matches the current scenes.json and narration: 119.83s measured against 119.74s expected.",
+        "CARRIES THE CALLOUT FONT FAULT. Every speech bubble is set in Georgia, the silent",
+        "fallback, not the app's Fraunces -- this cut was made before that was fixed. Needs a",
+        "re-render to carry the fix; nothing else about it is wrong.",
+        "commit unrecorded: published before this file existed.",
+        "master is on gh-pages only because it predates docs/01 §6. It does not belong there."
+      ]
+    },
+    {
+      "published": "2026-08-19T03:44:18Z",
+      "duration": 113.9,
+      "resolution": "1280x720",
+      "bytes": 6861493,
+      "sha1": "993d71874dba2177afcc8cb9e182a84ee7d9985d",
+      "commit": null,
+      "youtube": null,
+      "master": null,
+      "at": "bizzingindia.com gh-pages: video/monkey-crocodile-720p.mp4",
+      "current": false,
+      "notes": [
+        "STALE. Two cuts behind the master above and 5.93s shorter. The 1080p was republished",
+        "twice after it; the 720p never was, and it sits at a stable path with no content hash,",
+        "so anyone handed that link watched an old edit and had no way to tell."
+      ]
+    }
+  ]
+}

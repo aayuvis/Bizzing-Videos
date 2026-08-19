@@ -62,15 +62,20 @@ npm run film        # render every shot, each cut to exactly its narration
 npm run cut         # join, mux the app's narration, master + preview
 ```
 
-Then publish the cut to gh-pages — a new cut gets a new content-addressed URL, so a link
-you hand someone cannot be stale:
+Then, if a reviewer needs to watch the whole thing, publish the **preview** — a new cut gets
+a content-addressed URL, so a link you hand someone cannot be stale:
 
 ```bash
-pipeline/publish.sh build/$STORY/$STORY-preview.mp4 video/kambugriva.mp4
+pipeline/publish.sh build/$STORY/$STORY-preview.mp4 video/monkey-crocodile-720p.mp4
 ```
 
-Uploading to YouTube stays a human action, on purpose. docs/01 §6 has the title, the
-description and the disclosure line.
+**The master never goes in git.** It goes to YouTube, which is the channel, and to Drive,
+which is the archive; `publish.sh` refuses anything over 25 MB for exactly that reason.
+Record what went out in `films/<story>/released.json` — a film rebuilds from this repo, but
+*which cut is live* does not, so that is the one thing worth committing. docs/01 §6 covers
+all of it, along with the title, the description and the disclosure line.
+
+Uploading to YouTube stays a human action, on purpose.
 
 ### The three habits that pay for themselves
 
@@ -90,6 +95,7 @@ docs/01-look-and-feel.md     binding: the look, the editorial rules, publishing
 docs/02-production-brief.md  binding: how films are made, and every trap already paid for
 pipeline/                    the renderer — sources.js is the seam onto the app
 films/<story>/               scenes.json, assets.json, sprites, plates, cards, charsheet
+                             released.json — which cut is live, and what is wrong with it
 archive/veo-story.py         the abandoned generative path, kept as evidence
 build/                       output; not committed, rebuilt from source in minutes
 ```
