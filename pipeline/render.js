@@ -9,7 +9,7 @@
  * The clock is driven, not waited on: Playwright pauses CSS animations and steps them to
  * an exact time per frame, so the output is identical on every run and on every machine.
  *
- *   node tools/anim/render.js shot-fly.html out/ 4      # 4 seconds at 24fps
+ *   node pipeline/render.js shot-fly.html out/ 4      # 4 seconds at 24fps
  */
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');

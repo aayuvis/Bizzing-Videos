@@ -11,14 +11,12 @@
  */
 'use strict';
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
-/* WHICH FILM. One env var picks the story; every path hangs off it, so this file knows
-   nothing about any particular film. Story two is where you find out whether the first
-   one was a pipeline or just a thing that happened to work. */
-const STORY = process.env.STORY || 'pt-talkative-tortoise';
-const FILM = path.join(__dirname, STORY);
-const HERE = __dirname, ROOT = path.join(HERE, '..', '..');
-const OUT = path.join(ROOT, 'build', 'anim', STORY);
-const VOICE = path.join(ROOT, 'app', 'voice', 'st');
+/* WHICH FILM, and where the app it is cut from lives. One env var picks the story; every
+   path hangs off it, so this file knows nothing about any particular film. Story two is
+   where you find out whether the first one was a pipeline or just a thing that happened
+   to work. */
+const S = require('./sources');
+const { STORY, FILM, OUT } = S;
 const CARDS = FILM;
 const SLUG = STORY;
 const scenes = JSON.parse(fs.readFileSync(path.join(FILM, 'scenes.json'), 'utf8'));
@@ -76,7 +74,7 @@ const vlist = path.join(cut, 'v.txt'), alist = [];
 fs.writeFileSync(vlist, shots.map((s, i) =>
   "file '" + (i === 0 ? firstOut : path.join(OUT, s.id + '.mp4')) + "'").join('\n') +
   (fs.existsSync(endV) ? "\nfile '" + endV + "'" : '') + '\n');
-shots.forEach(s => alist.push(path.join(VOICE, SLUG + '-' + s.seg + '.mp3')));
+shots.forEach(s => alist.push(S.narration(SLUG, s.seg)));
 if (fs.existsSync(endA)) alist.push(endA);
 
 const vid = path.join(cut, 'video.mp4'), aud = path.join(cut, 'audio.m4a');

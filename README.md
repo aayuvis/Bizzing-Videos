@@ -1,54 +1,104 @@
-# Local shot rendering — the deterministic path
+# Bizzing Videos
 
-## Why this exists
+The story films that go out on the Bizzing YouTube channels — the pipeline that makes them,
+the assets they are made of, and the two documents that are binding on anything published
+under the brand.
 
-`tools/veo-story.py` asks a model to imagine eight seconds. It has no model of the scene,
-so **"both geese are holding the stick" can be requested but never guaranteed** — every
-generation is a fresh sample. Four rounds of increasingly precise prompting, a character
-model sheet, a continuity block and both endpoints pinned all reduced the failure rate and
-none of them removed it. The last surviving fault was the first one reported: the geese
-letting go of the stick.
+This repo serves every Bizzing property. Today that is
+[Bizzing India](https://github.com/aayuvis/bizzingindia.com); the same pipeline and the same
+rules apply to [Bizzing Bee](https://github.com/aayuvis/Bizzing-Bee) when it starts a
+channel.
 
-Here the stick is between the beaks because a stylesheet puts it there. It cannot be
-otherwise, in any frame, on any run.
+## Read these two things first
 
-## How it works
+- **[docs/02 — the production brief](docs/02-production-brief.md).** Written to be read
+  cold, by someone who was not in the room. Its first section is the one that costs money.
+- **[docs/01 — the look and feel](docs/01-look-and-feel.md).** Binding on every video
+  published under the brand.
 
-1. **Sprites** — characters cut out once, on transparent ground (`sprite-*.png` → keyed by
-   `cut()`, an edge flood-fill rather than a white threshold, so the eye highlights and the
-   bird's white body survive).
-2. **Plates** — backgrounds with *no characters in them*, generated once per location.
-3. **A rig** — one HTML file per shot. Geese, stick and tortoise are a single group, so the
-   contact between them cannot break no matter how the group moves.
-4. **Measured geometry** — the beak tip is found in the sprite by colour, and the stick's
-   endpoints are computed from it. Change the sprite and the numbers follow. Nothing is
-   eyeballed, and "the stick reaches both beaks" is arithmetic that can be asserted in a
-   test rather than checked by watching.
-5. **A driven clock** — `render.js` pauses every CSS animation and steps `currentTime` to an
-   exact value per frame. No sleeping, no dropped frames, byte-identical on every run.
+Two rules carry everything else:
+
+> **Nothing on the channel is invented for the channel.** The words, the narration, the
+> characters and the world all come out of the app. A child who watches a video and then
+> opens the app must meet the *same* tortoise. If the video has a better tortoise than the
+> app, the video is wrong — go and fix the app.
+
+> **No generated motion.** Films are composited locally from generated sprites and plates.
+> Generative *image* models draw the sprites, the plates and the model sheets; generative
+> *video* is out, because a model with no scene cannot guarantee a structural fact like
+> "both geese are holding the stick" — it can only be asked for. Four full rounds proved
+> that on one eighty-seven-second film. See docs/02 §1 before you spend anything.
+
+## What it needs
+
+- **A Bizzing India checkout**, because the app is the source of truth for the words, the
+  narration, the type and the story paintings. Put it beside this one, or name it:
+
+  ```bash
+  git clone https://github.com/aayuvis/bizzingindia.com ../bizzingindia.com
+  # or
+  export BIZZING_INDIA=~/src/bizzingindia.com
+  ```
+
+  Every stage resolves it through `pipeline/sources.js` (and `sources.py`), which fails with
+  instructions rather than half-rendering a film.
+- **Node** with `npm install` (Playwright drives a headless Chromium frame by frame).
+- **Python 3** with `pillow` and `imageio-ffmpeg`.
+- **`GEMKEY`** in the environment, for the asset generator only. Nothing else calls an API.
+
+## Making a film
+
+The order matters and it is the order that saves money — the long version is docs/02 §4.
 
 ```bash
-node tools/anim/render.js tools/anim/shot-fly.html out/ 4     # 4s at 24fps
+export STORY=pt-monkey-crocodile      # one env var picks the film, everywhere
+
+npm run assets      # ONE-TIME per story: sprites and character-free plates (costs API calls)
+npm run cards       # title and end cards, set in the app's own type
+npm run build       # scenes.json -> one HTML page per shot, with measured anchors
+npm run check       # the contact assertions, rendering nothing
+npm run still -- 07 # one paused frame of shot 07, in about a second
+npm run film        # render every shot, each cut to exactly its narration
+npm run cut         # join, mux the app's narration, master + preview
 ```
 
-## What it costs
+Then publish the cut to gh-pages — a new cut gets a new content-addressed URL, so a link
+you hand someone cannot be stale:
 
-| | Veo path | this path |
-| --- | --- | --- |
-| First build of a shot | 1 video generation | 1 plate + sprites, shared across shots |
-| **Re-render after a note** | **another video generation** | **zero — seconds, locally** |
-| Result is repeatable | no | yes, byte for byte |
-| "Both geese hold the stick" | requested | guaranteed |
+```bash
+pipeline/publish.sh build/$STORY/$STORY-preview.mp4 video/kambugriva.mp4
+```
 
-The expensive part of the Veo path was never one clip; it was that *every note meant
-re-rolling the dice on all sixteen*, and a re-roll could introduce a new fault while fixing
-the old one. Here a note is a number in a stylesheet.
+Uploading to YouTube stays a human action, on purpose. docs/01 §6 has the title, the
+description and the disclosure line.
 
-## What it does not do yet
+### The three habits that pay for themselves
 
-Honest gap: the sprites are placeholders taken from the sticker set and one generated pose.
-To match the polish of the generated shots this needs a proper sprite set drawn for
-animation — a tortoise drawn *hanging with his jaws closed on a stick*, and two or three
-wing positions per bird to flap between instead of rotating the whole body. That is a
-one-time art cost, not a per-iteration one, and it is the only thing standing between this
-and finished.
+- **Assert what a viewer would complain about.** A harness, a bird-ride and a set of bared
+  teeth all got through review by eye. Contact is measured out of the live DOM per shot and
+  a failure is an exit code (`npm run check`).
+- **Look at a still before you render.** Almost every note is about a single moment — where
+  the bubble sits, who is facing where, what is touching what. None of them need a video.
+- **One renderer per film.** `film.js` takes a pid lock. Two renderers sharing an output
+  directory produce a film that is neither build, which from the outside looks exactly like
+  your fixes being ignored.
+
+## Layout
+
+```
+docs/01-look-and-feel.md     binding: the look, the editorial rules, publishing
+docs/02-production-brief.md  binding: how films are made, and every trap already paid for
+pipeline/                    the renderer — sources.js is the seam onto the app
+films/<story>/               scenes.json, assets.json, sprites, plates, cards, charsheet
+archive/veo-story.py         the abandoned generative path, kept as evidence
+build/                       output; not committed, rebuilt from source in minutes
+```
+
+A film is `films/<story>/scenes.json` plus its art. A note from a reviewer is an edit to a
+number in that file and a re-render that costs nothing.
+
+## History
+
+The pipeline was built inside `bizzingindia.com` and split out here with its history intact
+— `git log` runs back through both films, and the commit subjects are the record of what
+went wrong. `git log --follow` works across the move.

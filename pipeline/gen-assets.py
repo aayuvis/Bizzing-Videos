@@ -14,17 +14,15 @@ import base64, json, os, sys, urllib.request, urllib.error
 from collections import deque
 from PIL import Image
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-HERE = os.path.join(ROOT, 'tools', 'anim')
+# WHICH FILM, and where the app it is drawn from lives. Everything below is read out of
+# films/<story>/assets.json, so the generator carries no knowledge of any particular story
+# -- which is the whole test of whether this scales past the first one.
+from sources import STORY, FILM, painting
+
 API = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image:generateContent'
-# WHICH FILM. Everything below is read out of tools/anim/<story>/assets.json, so the
-# generator carries no knowledge of any particular story -- which is the whole test of
-# whether this scales past the first one.
-STORY = os.environ.get('STORY', 'pt-talkative-tortoise')
-FILM = os.path.join(HERE, STORY)
 CFG = json.load(open(os.path.join(FILM, 'assets.json'), encoding='utf-8'))
 SHEET = os.path.join(FILM, 'charsheet.png')
-PAINT = os.path.join(ROOT, 'app', 'art', 'story', STORY + '.jpg')
+PAINT = painting(STORY)
 
 STYLE = ("Flat cel shading, thick soft warm-brown outlines, light paper grain, the warm "
          "marigold-and-gold palette of the reference images. Children's picture-book cartoon.")

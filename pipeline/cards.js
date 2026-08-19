@@ -6,28 +6,21 @@
  * setting the script properly. These are laid out in a headless browser against the app's
  * own stylesheet and self-hosted faces, so a child sees the same lettering as in the reader.
  *
- *   STORY=pt-monkey-crocodile node tools/anim/cards.js
+ *   STORY=pt-monkey-crocodile node pipeline/cards.js
  *
  * The words come from the story itself -- title, hook and moral straight out of
- * data-stories.js -- so a card cannot drift from what the app says. Change the moral in the
+ * the app's data-stories files -- so a card cannot drift from what the app says. Change the moral in the
  * app and the end card changes with it.
  */
 'use strict';
-const fs = require('fs'), path = require('path'), vm = require('vm');
+const fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
+const S = require('./sources');
 
-const STORY = process.env.STORY || 'pt-talkative-tortoise';
-const HERE = __dirname, ROOT = path.join(HERE, '..', '..'), APP = path.join(ROOT, 'app');
-const FILM = path.join(HERE, STORY);
+const { STORY, FILM } = S;
 
 /* the story, read from the app rather than retyped */
-const W = { window: {} }; W.window = W; vm.createContext(W);
-fs.readdirSync(APP).filter(f => /^data-stories.*\.js$/.test(f)).sort()
-  .forEach(f => vm.runInContext(fs.readFileSync(path.join(APP, f), 'utf8'), W, { filename: f }));
-const all = ['IND_STORIES','IND_STORIES_REGIONAL','IND_STORIES_MORE','IND_STORIES_SOUTH',
-  'IND_STORIES_NORTH','IND_STORIES_EAST','IND_STORIES_WEST','IND_STORIES_NE_A',
-  'IND_STORIES_NE_B','IND_STORIES_MODERN','IND_STORIES_VIGYAN']
-  .reduce((a, k) => a.concat(W[k] || []), []);
+const all = S.stories();
 const slug = s => String(s).replace(/[^a-z0-9]+/gi, '-').toLowerCase().replace(/^-|-$/g, '').slice(0, 60);
 const story = all.find(s => slug(s.id) === STORY);
 if (!story) { console.error('no story with slug ' + STORY); process.exit(2); }
@@ -75,8 +68,8 @@ function page(spec) {
   let css = CSS;
   for (const [k, v] of Object.entries(spec.vars)) css = css.split('__' + k + '__').join(v);
   return `<!doctype html><meta charset="utf-8">` +
-    `<link rel="stylesheet" href="../../../app/tokens.css">` +
-    `<link rel="stylesheet" href="../../../app/fonts.css">` +
+    `<link rel="stylesheet" href="${S.url('tokens.css')}">` +
+    `<link rel="stylesheet" href="${S.url('fonts.css')}">` +
     `<style>${css}</style><div class="wrap">${spec.body}</div>`;
 }
 
@@ -93,7 +86,7 @@ const cards = {
     vars: { ALIGN: 'center', BG: '#fdf4e4', PAD: '0 180px',
             FG: '#1e1440', SUB: '#5a4a72', KICK: '#d94f3d', SIZE: '58' },
     body: `<div class="rule"></div><h1>${esc(story.moral)}</h1>` +
-      `<div class="brand"><img src="../../../app/art/logo.png" alt="">Bizzing <i>India</i></div>` +
+      `<div class="brand"><img src="${S.url('art', 'logo.png')}" alt="">Bizzing <i>India</i></div>` +
       `<p class="tag">bizzingindia.com</p>`,
   },
 };

@@ -11,9 +11,9 @@
  *
  * A failure is an exit code, not something a person has to notice.
  *
- *   node tools/anim/film.js            # every shot, cut to its narration
- *   node tools/anim/film.js --check    # assertions only, render nothing
- *   node tools/anim/film.js --force    # ignore the cache, re-render everything
+ *   node pipeline/film.js            # every shot, cut to its narration
+ *   node pipeline/film.js --check    # assertions only, render nothing
+ *   node pipeline/film.js --force    # ignore the cache, re-render everything
  *
  * Shots are cached on a hash of their own page, the art it loads and the narration length,
  * so changing one shot costs one render rather than twelve. The checks always run.
@@ -23,14 +23,12 @@ const fs = require('fs'), path = require('path'), { execFileSync } = require('ch
 const { chromium } = require('playwright');
 const crypto = require('crypto');
 
-/* WHICH FILM. One env var picks the story; every path hangs off it, so this file knows
-   nothing about any particular film. Story two is where you find out whether the first
-   one was a pipeline or just a thing that happened to work. */
-const STORY = process.env.STORY || 'pt-talkative-tortoise';
-const FILM = path.join(__dirname, STORY);
-const HERE = __dirname, ROOT = path.join(HERE, '..', '..');
-const OUT = path.join(ROOT, 'build', 'anim', STORY);
-const VOICE = path.join(ROOT, 'app', 'voice', 'st');
+/* WHICH FILM, and where the app it is cut from lives. One env var picks the story; every
+   path hangs off it, so this file knows nothing about any particular film. Story two is
+   where you find out whether the first one was a pipeline or just a thing that happened
+   to work. */
+const S = require('./sources');
+const { STORY, FILM, OUT } = S;
 const SLUG = STORY;
 const FPS = 24, TOL = 14;          // px: the stick may overlap a beak, never miss it
 const scenes = JSON.parse(fs.readFileSync(path.join(FILM, 'scenes.json'), 'utf8'));
@@ -43,7 +41,7 @@ function seconds(file) {
   return e;
 }
 function narrationSecs(seg) {
-  const f = path.join(VOICE, SLUG + '-' + seg + '.mp3');
+  const f = S.narration(SLUG, seg);
   if (!fs.existsSync(f)) return null;
   let err = '';
   try { execFileSync(FF, ['-i', f], { stdio: ['ignore', 'pipe', 'pipe'] }); }

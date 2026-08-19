@@ -12,18 +12,17 @@
  * costs nothing, and the result is byte-identical on every run because render.js drives the
  * clock rather than waiting on it.
  *
- *   node tools/anim/build.js            # sprite manifest, then every shot
- *   node tools/anim/build.js --only 05
+ *   node pipeline/build.js            # sprite manifest, then every shot
+ *   node pipeline/build.js --only 05
  */
 'use strict';
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
-/* WHICH FILM. One env var picks the story; every path hangs off it, so this file knows
-   nothing about any particular film. Story two is where you find out whether the first
-   one was a pipeline or just a thing that happened to work. */
-const STORY = process.env.STORY || 'pt-talkative-tortoise';
-const FILM = path.join(__dirname, STORY);
-const HERE = __dirname, ROOT = path.join(HERE, '..', '..');
-const OUT = path.join(ROOT, 'build', 'anim', STORY);
+/* WHICH FILM, and where the app it is set in lives. One env var picks the story; every
+   path hangs off it, so this file knows nothing about any particular film. Story two is
+   where you find out whether the first one was a pipeline or just a thing that happened
+   to work. */
+const S = require('./sources');
+const { STORY, FILM, OUT } = S;
 const scenes = JSON.parse(fs.readFileSync(path.join(FILM, 'scenes.json'), 'utf8'));
 const MANIFEST = path.join(FILM, 'sprites.json');
 /* the carry group's two-part flier, named per film: the next story's carrier is not a
@@ -153,9 +152,8 @@ const CSS = `
    sentence would fight the voice and turn a picture book into a comic. Four lines carry
    the plot -- the problem, the idea, the condition, and the shout that ends him -- and
    those get a bubble. The rest of the film stays quiet and lets the narrator work.
-   Set in the app's own Fraunces, so a child sees the same lettering as the reader. */
-@font-face{font-family:Fraunces;src:url(../../app/font/fraunces-843e59e4.woff2) format('woff2');
-           font-weight:800;font-display:block}
+   Set in the app's own Fraunces, so a child sees the same lettering as the reader --
+   linked from the app's own stylesheet, see shotHTML. */
 .callout{position:absolute;left:50%;top:50%;max-width:900px;padding:30px 44px;
   border-radius:34px;background:#fffdf7;border:5px solid #3a2f1c;box-shadow:0 8px 0 rgba(58,47,28,.18);
   font-family:Fraunces,Georgia,serif;font-weight:800;font-size:54px;line-height:1.2;
@@ -465,7 +463,15 @@ function shotHTML(shot, man) {
   if (shot.fx === 'sparkle')
     body.push('<div class="spark" style="transform:translate(-30px,-190px)"></div>' +
               '<div class="spark" style="transform:translate(24px,-232px) scale(.7);animation-delay:-.4s"></div>');
-  return `<!doctype html><meta charset="utf-8"><style>${CSS}</style>` +
+  /* THE APP'S OWN TYPE, LINKED OUT OF THE APP. This used to be a hand-rolled @font-face
+     with a relative path, and it had two faults at once: the path stopped resolving when
+     each film got its own folder, and it named the latin-EXT subset, which contains no
+     ASCII. Both fail the same silent way -- the browser drops to Georgia and renders a
+     perfectly reasonable-looking callout in the wrong face. Linking the app's stylesheet
+     fixes both and cannot drift from what the reader sets. */
+  return `<!doctype html><meta charset="utf-8">` +
+         `<link rel="stylesheet" href="${S.url('fonts.css')}">` +
+         `<style>${CSS}</style>` +
          `<div id="stage">${body.join('')}</div>`;
 }
 

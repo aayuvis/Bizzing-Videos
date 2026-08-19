@@ -1,0 +1,25 @@
+# secrets — never commit API keys
+.env
+.env.local
+*.key
+keys.env
+
+node_modules/
+.DS_Store
+*.log
+
+# Python bytecode from the generator scripts.
+__pycache__/
+*.pyc
+
+# Rendered frames, shots, stills and finished films. Every input is in this repo (scenes.json,
+# the sprites, the plates) and the narration is in the app, so any cut rebuilds from source in
+# minutes and costs no API calls. A hundred megabytes of mp4 in git would only go stale the
+# first time a line is re-recorded. Published cuts live on gh-pages — see pipeline/publish.sh.
+build/
+
+# Generated shot pages and the measured sprite manifest. build.js writes one page per shot from
+# scenes.json plus anchors read out of the sprite pixels, so they are output, not source —
+# committing them means every geometry tweak shows up as ten meaningless diffs.
+films/*/shot-*.html
+films/*/sprites.json

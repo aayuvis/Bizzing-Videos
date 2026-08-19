@@ -1,0 +1,17 @@
+{
+  "name": "bizzing-videos",
+  "private": true,
+  "description": "Story films for the Bizzing channels, composited locally from the app's own words, voice and art",
+  "scripts": {
+    "assets": "python3 pipeline/gen-assets.py",
+    "cards": "node pipeline/cards.js",
+    "build": "node pipeline/build.js",
+    "check": "node pipeline/film.js --check",
+    "still": "node pipeline/still.js",
+    "film": "node pipeline/film.js",
+    "cut": "node pipeline/cut.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}
