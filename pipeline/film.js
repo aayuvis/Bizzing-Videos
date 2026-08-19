@@ -85,6 +85,7 @@ function narrationSecs(seg) {
   const page = await b.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
 
   let failures = 0;
+  const rocks = [];        // cross-shot: the rock has to be the same rock every time
   for (const shot of scenes.shots) {
     const html = path.join(FILM, 'shot-' + shot.id + '.html');
     if (!fs.existsSync(html)) { console.log('  !! no page for shot ' + shot.id); failures++; continue; }
@@ -163,6 +164,59 @@ function narrationSecs(seg) {
             'px from the saddle' + (overBody ? '' : ', and not over the body'));
           failures++;
         }
+      }
+    }
+
+    /* THE WATERLINE CONTRACT, part one: within the shot.
+       The rock sits ON the water, and anything lying on the rock sits ON the rock. Both are
+       the same class of promise as the stick in two beaks -- a number shared, not two numbers
+       that happen to be close. Part two is across shots, after the loop. */
+    if (shot.rock) {
+      const r = await page.evaluate(() => {
+        const g = document.querySelector('#rock');
+        if (!g) return { err: 'no rock group' };
+        const base = g.querySelector('.rock-base'), on = g.querySelector('.rock-on');
+        const bb = base.getBoundingClientRect();
+        const anchor = g.getBoundingClientRect();      // the zero-size group IS the waterline
+        return { water: anchor.top, base: [bb.left, bb.top, bb.right, bb.bottom],
+                 on: on ? [...(o => [o.left, o.top, o.right, o.bottom])(on.getBoundingClientRect())] : null };
+      });
+      if (r.err) { console.log('  !! ' + shot.id + ': ' + r.err); failures++; }
+      else {
+        const floatBy = r.base[3] - r.water;
+        if (Math.abs(floatBy) > 2) {
+          console.log('  !! ' + shot.id + ': the rock sits ' + floatBy.toFixed(0) +
+            'px off the waterline');
+          failures++;
+        }
+        if (r.on) {
+          const gap = r.on[3] - r.base[1];             // his bottom vs the rock's top
+          if (Math.abs(gap) > 2) {
+            console.log('  !! ' + shot.id + ': what is lying on the rock is ' + gap.toFixed(0) +
+              'px off it -- floating, or sunk into the stone');
+            failures++;
+          }
+          /* "AS FAR AS ANYBODY COULD TELL FROM THE BANK, A SLIGHTLY LARGER ROCK." That is the
+             story's own spec for this shot and it is a proportion, so it is a test. A
+             crocodile scaled to a believable thickness is 2.6x the width of a stone drawn at
+             1.4:1 -- he hangs off both ends and reads as a crocodile draped over a pebble,
+             which is a different scene from the one the narration is describing. Caught by
+             looking at a still; asserted so nobody has to look twice. */
+          const over = (r.on[2] - r.on[0]) / (r.base[2] - r.base[0]);
+          if (over > 1.4) {
+            console.log('  !! ' + shot.id + ': what is on the rock is ' + over.toFixed(2) +
+              'x its width — it hangs off both ends and cannot read as "a slightly larger ' +
+              'rock". Draw the stone broader, or the animal more compact.');
+            failures++;
+          }
+        }
+        const top = r.on ? r.on[1] : r.base[1];
+        if (r.base[0] < 0 || r.base[2] > 1920 || top < 0) {
+          console.log('  !! ' + shot.id + ': the rock is not wholly in frame');
+          failures++;
+        }
+        rocks.push({ id: shot.id, water: r.water, base: r.base,
+                     proud: r.water - top, high: !!r.on });
       }
     }
 
@@ -276,6 +330,50 @@ function narrationSecs(seg) {
     // reported "ok %-4s %5.2fs 1 frames 14.27 342" for ten shots before anyone read it.
     console.log('  ok ' + shot.id.padEnd(4) + ' ' + dur.toFixed(2) + 's  ' + total + ' frames');
   }
+  /* THE WATERLINE CONTRACT, part two: ACROSS shots -- the new thing story three needed.
+     carry and ride each promise something about one frame. This promises something about the
+     FILM: that the rock the monkey has crossed by for years is the same rock, in the same
+     place, every time we see it, and that the one night it is different is different by a
+     visible amount. Get that wrong and no single shot looks wrong -- which is exactly why it
+     has to be measured rather than watched. */
+  if (rocks.length) {
+    const px = n => n.toFixed(0) + 'px';
+    const ref = rocks[0];
+    for (const r of rocks.slice(1)) {
+      const dx = Math.abs((r.base[0] + r.base[2]) / 2 - (ref.base[0] + ref.base[2]) / 2);
+      const dw = Math.abs((r.base[2] - r.base[0]) - (ref.base[2] - ref.base[0]));
+      const dwater = Math.abs(r.water - ref.water);
+      if (dx > 2 || dw > 2 || dwater > 2) {
+        console.log('  !! shot ' + r.id + ': the rock moved since shot ' + ref.id +
+          ' — ' + px(dx) + ' across, ' + px(dw) + ' wider, waterline ' + px(dwater) + ' off.' +
+          '\n     It is the same rock every night; that is the whole story.');
+        failures++;
+      }
+    }
+    const low = rocks.filter(r => !r.high), high = rocks.filter(r => r.high);
+    /* THE FILM HAS TO SHOW BOTH. "Higher than it has ever sat before" means nothing to
+       someone who was never shown how it usually sits. A film that only ever shows the
+       crocodile on the rock has cut the comparison the plot runs on. */
+    if (!low.length || !high.length) {
+      console.log('  !! the film shows the rock ' + (low.length ? 'only as it always is' :
+        'only with the crocodile on it') + '. The story is the difference between the two, ' +
+        'so both have to be on screen.');
+      failures++;
+    } else {
+      const rise = Math.min(...high.map(r => r.proud)) - Math.max(...low.map(r => r.proud));
+      const MIN_VISIBLE = 28;      // 1080p: below this "a hand's width higher" is not a thing a child sees
+      if (rise < MIN_VISIBLE) {
+        console.log('  !! the crocodile only makes the rock ' + px(rise) + ' higher. ' +
+          'The monkey notices it across a river at dusk, so a viewer has to notice it too — ' +
+          'wants at least ' + MIN_VISIBLE + 'px.');
+        failures++;
+      } else {
+        console.log('\n  rock: same stone in ' + rocks.length + ' shots, ' + px(rise) +
+          ' higher on the night the crocodile is on it');
+      }
+    }
+  }
+
   await b.close();
   if (failures) { console.log('\n' + failures + ' shot(s) failed their checks'); process.exit(1); }
   console.log('\nall shots rendered and all contact checks passed');

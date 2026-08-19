@@ -1,0 +1,126 @@
+{
+  "_": [
+    "STORY THREE -- The Rock That Answered Back (Vanarinda Jataka).",
+    "",
+    "THE PRIMITIVE IS `rock`, and it is the first one about the WORLD rather than about two",
+    "characters touching. carry put a stick in two beaks; ride put a monkey on a crocodile;",
+    "both are promises about a single frame. This one is a promise about the FILM: the stone",
+    "the monkey has crossed by twice a day for years is the same stone, in the same place, on",
+    "the same waterline, every time we see it -- and on one night it stands a hand's width",
+    "higher, because there is a crocodile lying on it. If that does not hold, the monkey's",
+    "suspicion is nonsense and the story has no engine.",
+    "",
+    "So a shot cannot say much about the rock. Its sprite, its x, its height and the waterline",
+    "are film-level, in `rig` below, and a shot may write only:",
+    "",
+    "    \"rock\": {}                    the rock as it always is",
+    "    \"rock\": { \"on\": \"croc-lie\" }  tonight",
+    "",
+    "There is no field for moving it, resizing it or floating it. What film.js then checks is",
+    "that the renderer honoured that, that anything lying on the rock is ON it, and -- across",
+    "the whole film -- that both versions actually appear and differ by enough for a child to",
+    "see. \"Higher than it has ever sat\" means nothing to someone never shown how it usually",
+    "sits, so the film failing to show both is a failure the assertions catch.",
+    "",
+    "NOT DRAWN YET. The rig, the shot list and the assertions are done and were verified on",
+  "stand-in art; the stone, croc-lie and the five plates need one `npm run assets` run with",
+  "GEMKEY set. Nothing else is outstanding.",
+  "",
+  "KNOWN GAP: `water` is a promise ABOUT the plate that nothing checks. The rig asserts the",
+  "rock sits on the declared waterline; it cannot see where the water actually is in the",
+  "picture. A still caught this once already -- 0.605 put the stone on the far horizon",
+  "instead of in the river -- so look at one shot after the real plates land, and expect to",
+  "adjust this number once.",
+  "",
+  "THE CAST IS BORROWED. monkey and crocodile were drawn for story two and cost this film",
+    "nothing; the only new drawing is the stone. That is the 69-characters-for-323-stories",
+    "arithmetic in docs/02 §7 actually happening."
+  ],
+  "story": "jt.crocodile-rock",
+  "cast": ["monkey", "crocodile"],
+  "stage": [1920, 1080],
+
+  "rig": {
+    "rockSprite": "rock-mid",
+    "water": 0.72,
+    "rockX": 90,
+    "rockH": 104,
+    "rise": 62
+  },
+
+  "shots": [
+    { "id": "00", "seg": "hook", "plate": "river-dusk", "camera": "hold",
+      "rock": { "on": "croc-lie" } },
+
+    { "id": "01a", "seg": "0", "plate": "river-wide", "camera": "drift-right",
+      "layers": [
+        { "sprite": "monkey-sit", "x": -560, "y": 300, "h": 250, "anim": "idle" }
+      ] },
+    { "id": "01b", "seg": "0", "plate": "river-wide", "camera": "hold",
+      "rock": {},
+      "layers": [
+        { "sprite": "monkey-climb", "x": -620, "y": 250, "h": 230, "anim": "bounce" }
+      ] },
+
+    { "id": "02", "seg": "1", "plate": "river-wide", "camera": "hold",
+      "rock": {},
+      "layers": [
+        { "sprite": "croc-swim", "x": -430, "y": 330, "h": 150, "anim": "small-breathe" }
+      ] },
+
+    { "id": "03a", "seg": "2", "plate": "river-dusk", "camera": "drift-left",
+      "layers": [
+        { "sprite": "croc-swim", "x": -180, "y": 300, "h": 165, "anim": "small-breathe" }
+      ] },
+    { "id": "03b", "seg": "2", "plate": "river-dusk", "camera": "hold",
+      "rock": { "on": "croc-lie" } },
+
+    { "id": "04a", "seg": "3", "plate": "bank-trees", "camera": "hold",
+      "layers": [
+        { "sprite": "monkey-sit", "x": -430, "y": 240, "h": 330, "anim": "idle" }
+      ] },
+    { "id": "04b", "seg": "3", "plate": "river-dusk", "camera": "hold",
+      "rock": { "on": "croc-lie" } },
+
+    { "id": "05a", "seg": "4", "plate": "bank-trees", "camera": "hold",
+      "layers": [
+        { "sprite": "monkey-call", "x": -430, "y": 230, "h": 340, "anim": "chatter" },
+        { "say": "HEY, ROCK!", "shout": true, "at": 1.1, "dur": 3.4, "from": "monkey-call" }
+      ] },
+    { "id": "05b", "seg": "4", "plate": "river-dusk", "camera": "hold",
+      "rock": { "on": "croc-lie" } },
+
+    { "id": "06a", "seg": "5", "plate": "river-dusk", "camera": "hold",
+      "rock": { "on": "croc-lie" } },
+    { "id": "06b", "seg": "5", "plate": "river-dusk", "camera": "hold",
+      "rock": { "on": "croc-lie" },
+      "layers": [
+        { "say": "GOOD EVENING.", "at": 1.6, "dur": 4.2, "from": "croc-lie" }
+      ] },
+
+    { "id": "07", "seg": "6", "plate": "bank-trees", "camera": "hold",
+      "layers": [
+        { "sprite": "monkey-sit", "x": -420, "y": 250, "h": 330, "anim": "idle" },
+        { "say": "Ah. There you are.", "at": 1.3, "dur": 4.0, "from": "monkey-sit" }
+      ] },
+
+    { "id": "08a", "seg": "7", "plate": "river-dusk", "camera": "hold",
+      "rock": {},
+      "layers": [
+        { "sprite": "croc-swim", "x": 340, "y": 330, "h": 155, "anim": "small-breathe" }
+      ] },
+    { "id": "08b", "seg": "7", "plate": "river-down", "camera": "drift-left",
+      "layers": [
+        { "sprite": "croc-sad", "x": 120, "y": 300, "h": 175, "anim": "small-breathe" }
+      ] },
+
+    { "id": "09", "seg": "8", "plate": "river-night", "camera": "hold",
+      "rock": {},
+      "layers": [
+        { "sprite": "monkey-climb", "x": -600, "y": 250, "h": 225, "anim": "bounce" }
+      ] },
+
+    { "id": "10", "seg": "moral", "plate": "river-night", "camera": "hold",
+      "rock": {} }
+  ]
+}

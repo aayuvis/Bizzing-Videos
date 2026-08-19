@@ -1,0 +1,30 @@
+{
+ "_": [
+  "STORY THREE. The cast -- monkey and crocodile -- is NOT here: it is in cast/, drawn for",
+  "story two and reused for nothing (docs/02 §7). What this film pays for is one prop and",
+  "its own plates.",
+  "",
+  "THE PLATES ARE THE UNUSUAL PART. Three of them are the SAME VIEW at three times of day,",
+  "and they have to match each other frame for frame, because the rig asserts that the rock",
+  "sits at the same x and on the same waterline in every shot of the film. If river-dusk",
+  "puts the far bank higher than river-wide does, the stone will float in one and sink in",
+  "the other and no single shot will look wrong. Compose the daylight one first and treat",
+  "it as the plan for the other two.",
+  "",
+  "And no rock in any plate: the stepping stone is a sprite, because the whole story is",
+  "that it is a hand's width higher on one particular night."
+ ],
+ "canon": {
+  "rock": "rock-mid"
+ },
+ "sprites": {
+  "rock-mid": "A single grey river stepping stone, ALONE, seen from the side and slightly above. BROAD AND LOW -- about three times as wide as it is tall -- with a wide flat top a monkey could stand on, like a loaf lying on its side. Weathered grey granite with warm ochre lichen in the hollows and a darker damp band low down where the water reaches. Thick soft warm-brown outlines. NO water, NO reeds, NO ground, NO animals -- just the stone. It has to be wide enough that a crocodile lying along it reads as a slightly larger rock rather than as a crocodile draped over a pebble; the rig asserts that."
+ },
+ "plates": {
+  "river-wide": "A wide slow green-brown river in warm afternoon light, seen straight on from a low bank. The NEAR bank runs along the bottom of the frame with warm sandy earth and a few tufts of grass. The FAR bank is a low green island about two thirds up the frame, crowded with heavy mango and jamun trees hanging with fruit. Between them nothing but open water with soft ripple lines. The horizon and the far bank sit at exactly two thirds of the frame height. NO rocks or stones anywhere in the water.",
+  "river-dusk": "EXACTLY the same river view as river-wide -- the same near bank along the bottom, the same fruit-tree island two thirds up, the same open water between, the same composition and the same horizon line at exactly two thirds height -- but at dusk: a deep marigold and rose sky, long warm light on the water, the trees gone to soft dark silhouettes. Only the light changes. NO rocks or stones anywhere in the water.",
+  "river-night": "EXACTLY the same river view as river-wide -- the same near bank, the same fruit-tree island two thirds up, the same open water, the same composition and the same horizon at two thirds height -- but at night: deep indigo sky, a low moon, cool silver light lying along the ripples, the trees very dark. Only the light changes. NO rocks or stones anywhere in the water.",
+  "bank-trees": "A closer view of the near river bank at dusk: warm sandy earth, tufts of grass, one leaning tree trunk at the left edge, the green-brown water filling the right half of the frame and running out of shot. Marigold dusk sky above. NO animals, NO stones in the water.",
+  "river-down": "The same river seen looking downstream at dusk, the banks converging away from the camera, reeds along both edges, the water carrying the last warm light. Empty and quiet. NO animals, NO stones."
+ }
+}

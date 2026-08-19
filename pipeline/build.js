@@ -362,6 +362,66 @@ function layerHTML(L, man) {
     `animation:${MOTION[L.anim] || 'none'}"></div>`;
 }
 
+/* THE WATERLINE STACK — story three's primitive, and the first one that is about the WORLD
+   rather than about two characters touching.
+ *
+ * "The Rock That Answered Back" turns on a measurement. The monkey crosses by the same rock
+ * twice a day for years; tonight it "was sitting a hand's width higher out of the water than
+ * it had ever sat before", because there is a crocodile lying on it. If the rock is not
+ * recognisably the SAME rock in the same place across the whole film, the monkey's suspicion
+ * is nonsense and the story has no engine.
+ *
+ * carry and ride are within-shot invariants: a stick in two beaks, a rider on a saddle. This
+ * one is ACROSS shots, which is a new thing for this pipeline to be able to promise, and the
+ * kind of promise a 323-film channel actually runs on.
+ *
+ * It is enforced in the SCENE FORMAT first, which is the cheapest place. The rock's sprite,
+ * its x, its height and the waterline are film-level constants in `rig`; a shot may say only
+ *
+ *     "rock": {}                    the rock as it always is
+ *     "rock": { "on": "croc-lie" }  tonight
+ *
+ * so a shot CANNOT move the rock, resize it, or float it — there is no field for any of that.
+ * What the assertions then check is that the renderer honoured it, and that the difference
+ * between the two is big enough for a child to see. */
+function rockHTML(rock, man) {
+  const rig = scenes.rig || {};
+  for (const k of ['water', 'rockX', 'rockH', 'rise']) {
+    if (typeof rig[k] !== 'number') {
+      throw new Error('a shot has a "rock" but scenes.json rig.' + k + ' is not set.\n' +
+        'The rock is the same rock in every shot, so its sprite, x, height and the waterline ' +
+        'are film-level — see rig in scenes.json.');
+    }
+  }
+  const b = man[rig.rockSprite || 'rock-mid'];
+  if (!b) throw new Error('rig names rock sprite "' + (rig.rockSprite || 'rock-mid') +
+    '" and it is not drawn yet — run npm run assets');
+  const bH = rig.rockH, bW = Math.round(bH * b.w / b.h);
+  // the waterline is a point on the PLATE, so it goes through the same 1.12 the plate does
+  const waterY = Math.round((rig.water - 0.5) * 1080 * 1.12);
+
+  let on = '';
+  if (rock.on) {
+    const o = man[rock.on];
+    if (!o) throw new Error('rock.on names "' + rock.on + '" and it is not drawn yet');
+    const oH = rig.rise, oW = Math.round(oH * o.w / o.h);
+    /* He lies ON the rock: his bottom edge is the rock's top edge. Not "near" it — the same
+       number, so there is no floating crocodile and no crocodile sunk into the stone. */
+    on = `<div class="char rock-on" style="position:absolute;left:${-oW / 2}px;` +
+      `top:${-bH - oH}px;width:${oW}px;height:${oH}px;z-index:2;` +
+      `background:url(${spriteURL(rock.on)}) center/contain no-repeat;` +
+      `${rock.flip ? 'transform:scaleX(-1);' : ''}"></div>`;
+  }
+  /* Bottom of the base sits ON the waterline: top = waterY - bH, so bottom = waterY. */
+  return `<div id="rock" style="position:absolute;left:calc(50% + ${rig.rockX}px);` +
+    `top:calc(50% + ${waterY}px);width:0;height:0">` +
+    `<div class="rock-base" style="position:absolute;left:${-bW / 2}px;top:${-bH}px;` +
+    `width:${bW}px;height:${bH}px;z-index:1;` +
+    `background:url(${spriteURL(rig.rockSprite || 'rock-mid')}) center/contain no-repeat"></div>` +
+    on +
+    `</div>`;
+}
+
 /* THE CARRY GROUP. Geometry, not choreography. */
 function carryHTML(c, man) {
   const b = man[BODY], t = c.hangH ? man[c.hang] : null;
@@ -434,6 +494,18 @@ function rideHTML(r, man) {
 function shotHTML(shot, man) {
   const body = [`<div id="plate" style="background-image:url(plates/${shot.plate}.png);` +
     `animation:${CAMERA[shot.camera] || 'none'}"></div>`];
+  if (shot.rock) {
+    /* A CAMERA MOVE SLIDES THE WATERLINE OUT FROM UNDER THE ROCK. The plate is what has water
+       painted on it and the plate is what the camera moves; the rock is positioned in stage
+       coordinates. Push in on a rock shot and the stone climbs out of the river over eight
+       seconds. Refused at build time — cheaper than noticing it in a render. */
+    if (shot.camera && shot.camera !== 'hold') {
+      throw new Error('shot ' + shot.id + ' has a rock and camera "' + shot.camera + '".\n' +
+        'The waterline is painted on the plate, so moving the plate moves the water and not ' +
+        'the rock. Rock shots hold.');
+    }
+    body.push(rockHTML(shot.rock, man));
+  }
   if (shot.carry) body.push(carryHTML(shot.carry, man));
   if (shot.ride) body.push(rideHTML(shot.ride, man));
   /* resolve every `from` against this shot's own layers, once their geometry is known --
@@ -460,6 +532,21 @@ function shotHTML(shot, man) {
       placed[r.rider] = { x: flip * (-mW / 2 + (m.saddle ? m.saddle[0] : .55) * mW),
                           y: (r.y || 0) - mH / 2 + sy - kH / 2, w: kW, h: kH };
       boxes.push(placed[r.rider]);
+    }
+  }
+  if (shot.rock) {
+    /* The thing on the rock can talk -- that is the story's punchline -- so it registers as a
+       speaker like any other character. Centre-relative, same convention as the rest: the
+       bubble then lands above it by the ordinary rule and clears the stone underneath. */
+    const rig = scenes.rig;
+    const b = man[rig.rockSprite || 'rock-mid'];
+    const bH = rig.rockH, bW = Math.round(bH * b.w / b.h);
+    const waterY = Math.round((rig.water - 0.5) * 1080 * 1.12);
+    boxes.push({ x: rig.rockX, y: waterY - bH / 2, w: bW, h: bH });
+    if (shot.rock.on && man[shot.rock.on]) {
+      const o = man[shot.rock.on], oH = rig.rise, oW = Math.round(oH * o.w / o.h);
+      placed[shot.rock.on] = { x: rig.rockX, y: waterY - bH - oH / 2, w: oW, h: oH };
+      boxes.push(placed[shot.rock.on]);
     }
   }
   if (shot.carry) {

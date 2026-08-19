@@ -126,7 +126,40 @@ they are not holding it.
 Episode two's invariant was a *ride group*: a rider pinned to a **saddle** measured off the
 mount's own drawing. He cannot drift off, sink in, or end up behind the animal.
 
+Episode three's is a *rock on a waterline*, and it is a different **kind** of promise — the
+first one about the world rather than about two characters touching, and the first one that
+spans the whole film rather than one frame. *The Rock That Answered Back* turns on a
+measurement: the monkey has crossed by the same stepping stone twice a day for years, and
+tonight it sits "a hand's width higher out of the water than it had ever sat before", because
+a crocodile is lying on it. If the stone is not recognisably the same stone in the same place
+every time it is seen, the monkey's suspicion is nonsense and the story has no engine.
+
+**Put the invariant in the scene format before you put it in an assertion.** The rock's
+sprite, its x, its height and the waterline are film-level constants; a shot may write only
+`"rock": {}` or `"rock": { "on": "croc-lie" }`. There is no field for moving it, resizing it
+or floating it, so those are not mistakes anyone can make — which is cheaper than any test.
+The assertions then cover what the format cannot: that the renderer honoured it, that what
+lies on the rock is *on* it, and, across the whole film, that both versions appear and differ
+by enough to see.
+
 Ask of every shot: *what would be embarrassing on screen here?* That is your rig primitive.
+
+### An assertion can span the film, and some of them have to
+
+carry and ride each check one rendered frame. "The rock is the same rock all evening" cannot
+be checked that way: **no single shot is wrong.** So `film.js` accumulates the rock's measured
+rectangle per shot and checks the set after the loop — same x, same width, same waterline
+across every shot that shows it, and:
+
+- **Both versions must actually be on screen.** "Higher than it has ever sat" means nothing
+  to a viewer never shown how it usually sits. A film that only ever shows the crocodile on
+  the rock has cut the comparison the plot runs on, and that is a whole-film fault by
+  definition.
+- **The difference must be big enough to see** — at least 28px at 1080p. The monkey notices
+  it across a river at dusk; a child has to notice it too.
+
+This is the class of check a 323-film channel actually needs, and it did not exist until a
+story demanded it.
 
 ### Rule 3 — Anchors are measured from the drawing, never typed by hand
 
@@ -146,7 +179,14 @@ drawn**, with nobody squinting at a render. That has to be true to make hundreds
 
 Anchors built so far: `beak` (extreme orange pixel), `mouth` (band below the eyes),
 `saddle` (highest opaque pixel along the back at 55% of length), `perch` (a point on the
-*plate*, declared, where a character's feet land).
+*plate*, declared, where a character's feet land), `waterline` (a point on the *plate*,
+declared, where things float).
+
+The last one is the weak one, and it is worth knowing why: **`waterline` is a promise about
+the plate that nothing verifies.** The rig can prove the rock sits on the declared line; it
+cannot see where the water actually is in the painting. On story three the first value put
+the stone on the far horizon instead of in the river, every assertion passed, and a still
+caught it in one look. Declared anchors need an eye once; measured ones never do.
 
 ### Rule 4 — The audio is the clock
 
@@ -433,13 +473,18 @@ fails the shot; that is what caught this, and no amount of reading the placement
 
 Measured on this project.
 
-| | Episode 1 (learning) | Episode 2 (the pipeline working) |
-| --- | --- | --- |
-| New code | the whole thing | one rig primitive + its assertion |
-| Generated assets | 15 | 15 |
-| Authoring | scenes file | scenes file + assets file |
-| Cast consistent on attempt | 3 | **1** |
-| Cost to re-render after a note | zero | zero |
+| | Episode 1 (learning) | Episode 2 (the pipeline working) | Episode 3 (the library paying) |
+| --- | --- | --- | --- |
+| New code | the whole thing | one rig primitive + its assertion | one rig primitive + its assertions |
+| Generated assets | 15 | 15 | **6** — 1 prop, 5 plates |
+| New cast members | 2 | 2 | **0** |
+| Authoring | scenes file | scenes file + assets file | scenes file + assets file |
+| Cast consistent on attempt | 3 | **1** | n/a — reused |
+| Cost to re-render after a note | zero | zero | zero |
+
+Episode three's cast cost nothing because the monkey and the crocodile were already drawn.
+That is the whole argument for `cast/`, and it only worked because the library was built
+*before* the film that first needed it.
 
 **The asset library is the fixed cost of the entire channel.** In this catalogue there are
 **69 distinct cast members across 323 stories**. Sixty-nine characters cover every film you
