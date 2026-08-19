@@ -282,8 +282,32 @@ Nothing in the app noticed, because the app renders hook and moral as **text** a
 plays them. They were orphans. A video reaching for them is exactly the drift Rule 1 exists
 to prevent.
 
-**Check before you build:** measure median F0 across a story's clips. A 25+ Hz outlier is a
-different voice.
+**Check before you build:** `python3 pipeline/check-voice.py <story>`. It measures median F0
+per clip and gates on the fault; run it as step 1, before anything is drawn.
+
+Two refinements the original rule needed, both learned by implementing it:
+
+- **A flat 25 Hz per-clip threshold rejects good films.** Shot 7 of the shipped
+  monkey-crocodile — *"My wife wants to eat your heart"* — measures 225 Hz against a 192 Hz
+  story median. Thirty-three hertz out, one narrator, nothing wrong with it. Emphasis and a
+  change of speaker look identical to a single clip's pitch. A check that fails that shot is
+  one people learn to skip, which is worse than no check.
+- **The fault has a shape, and the shape is the test.** Hook and moral came from a *different
+  batch*, so they move **together and in the same direction**. Two clips agreeing is far
+  stronger evidence than one clip being loud. So the gate is: both ends off the scene median,
+  same side, by more than the story's own band (median ± max(25 Hz, 3×MAD)). A single odd
+  clip is reported, not failed.
+
+  That second scaling is not decoration. `jt-crocodile-rock` is full of shouted dialogue —
+  *"HEY, ROCK!"*, *"GOOD EVENING"* — which drags its scene median to 203 Hz while its quiet
+  hook and moral sit at 174 and 179. Both ends, both low, 26 Hz out: the §5.6 signature
+  exactly, and entirely innocent. Against that story's own 38 Hz band it reads as what it is.
+
+**And one story proves nothing on its own — the corpus does.** Measured across a 45-story
+sample: hook sits **+1.6 Hz** from its scenes on average, moral **+3.3 Hz**, and the two land
+on the same side **42%** of the time, which is a coin flip. There is no library-wide hook/moral
+offset any more; the generator fix held. Before believing any single story is suspect, check
+it against that baseline — `--all` re-measures it.
 
 ### 5.7 The plate rule has one exception, and it is not the characters
 
