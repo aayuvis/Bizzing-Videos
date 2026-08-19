@@ -136,6 +136,35 @@ function narrationSecs(seg) {
       }
     }
 
+    /* THE CALLOUT CONTRACT. A bubble must sit ABOVE the character speaking and must not
+       overlap them -- "the callouts are not above the character speaking and are covering
+       the characters" was the note, and it is geometry, so it is a test rather than
+       something to squint at in a render. Also asserted: the bubble stays inside the
+       frame, since anchoring it to an off-centre speaker is exactly what would push it
+       off the edge. */
+    {
+      const bad = await page.evaluate(() => {
+        const out = [];
+        for (const c of document.querySelectorAll('.callout')) {
+          const b = c.getBoundingClientRect();
+          if (b.left < 8 || b.right > 1912 || b.top < 8) out.push('off-frame');
+          for (const l of document.querySelectorAll('.layer')) {
+            const r = l.getBoundingClientRect();
+            const overlap = !(b.right < r.left || b.left > r.right ||
+                              b.bottom < r.top || b.top > r.bottom);
+            // a tail may touch the speaker's head; a body-sized overlap may not
+            if (overlap && Math.min(b.bottom, r.bottom) - Math.max(b.top, r.top) > 40)
+              out.push('covers a character');
+          }
+        }
+        return out;
+      });
+      if (bad.length) {
+        console.log('  !! ' + shot.id + ': callout ' + [...new Set(bad)].join(', '));
+        failures++;
+      }
+    }
+
     if (checkOnly) { console.log('  ok ' + shot.id); continue; }
 
     /* ---- render, cut to the narration ---- */

@@ -159,10 +159,10 @@ const CSS = `
   border:22px solid transparent;border-top-color:#3a2f1c}
 .callout i b{position:absolute;left:-16px;top:-25px;width:0;height:0;
   border:16px solid transparent;border-top-color:#fffdf7}
-@keyframes pop{0%{opacity:0;transform:translate(var(--cx),var(--cy)) scale(.6)}
-  12%{opacity:1;transform:translate(var(--cx),var(--cy)) scale(1.06)}
-  18%,86%{opacity:1;transform:translate(var(--cx),var(--cy)) scale(1)}
-  100%{opacity:0;transform:translate(var(--cx),var(--cy)) scale(.96)}}
+@keyframes pop{0%{opacity:0;scale:.6}
+  12%{opacity:1;scale:1.06}
+  18%,86%{opacity:1;scale:1}
+  100%{opacity:0;scale:.96}}
 
 html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#f3dca6}
 #stage{position:relative;width:1920px;height:1080px;overflow:hidden}
@@ -264,11 +264,24 @@ function layerHTML(L, man) {
     if (L.from) {
       const sp = L._speaker;
       if (!sp) throw new Error('callout from "' + L.from + '" but that layer is not in this shot');
-      cy = sp.y - sp.h / 2 - GAP - (L.boxH || 130) / 2;
+      const boxH = L.boxH || 150;
+      cy = sp.y - sp.h / 2 - GAP - boxH;
       cx = Math.max(-860 + W / 2, Math.min(860 - W / 2, sp.x));
+      /* A SPEAKER HIGH IN FRAME HAS NO ROOM ABOVE THEM. The monkey sits near the top of the
+         jamun tree, so "above his head" is off the top of the picture. When that happens the
+         bubble goes BESIDE him instead, at his own height, on whichever side has more room --
+         which is what a comic does, and it keeps the tail pointing at the speaker either
+         way. Falling back to a clamped position would just pin it to the ceiling on top of
+         him, which is the fault being fixed. */
+      if (cy - boxH / 2 < -540 + 24) {
+        cy = sp.y - sp.h * 0.15;
+        const room = sp.x < 0 ? 1 : -1;                     // put it on the emptier side
+        cx = Math.max(-860 + W / 2, Math.min(860 - W / 2,
+             sp.x + room * (sp.w / 2 + W / 2 + 40)));
+      }
       tail = Math.max(14, Math.min(86, 50 + (sp.x - cx) / W * 100));
     }
-    return `<div class="${cls}" style="--cx:${cx}px;--cy:${cy}px;--tail:${tail}%;` +
+    return `<div class="${cls}" style="translate:${cx}px ${cy}px;--tail:${tail}%;` +
       `max-width:${W}px;margin-left:${-W / 2}px;` +
       `animation:pop ${L.dur || 4}s ease-out forwards ${L.at || 0}s;` +
       `opacity:0">${L.say}<i><b></b></i></div>`;

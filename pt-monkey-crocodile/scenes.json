@@ -132,7 +132,9 @@
           "say": "I want his heart.",
           "at": 4.6,
           "dur": 4.2,
-          "from": "croc-wife"
+          "from": "croc-wife",
+          "boxW": 620,
+          "boxH": 210
         }
       ],
       "camera": "push-in"
@@ -160,7 +162,9 @@
           "say": "He is my friend.",
           "at": 1.2,
           "dur": 4.0,
-          "from": "croc-sad"
+          "from": "croc-sad",
+          "boxW": 620,
+          "boxH": 210
         }
       ],
       "camera": "pull-back"
@@ -258,7 +262,9 @@
           "say": "My heart is where it has<br>always been \u2014 inside me.",
           "at": 6.5,
           "dur": 5.4,
-          "from": "monkey-climb"
+          "from": "monkey-climb",
+          "boxW": 700,
+          "boxH": 230
         }
       ],
       "camera": "rise"
