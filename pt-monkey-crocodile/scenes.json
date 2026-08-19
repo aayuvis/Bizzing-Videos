@@ -77,10 +77,9 @@
         },
         {
           "say": "You look tired.<br>Try these.",
-          "x": -60,
-          "y": -330,
           "at": 2.4,
-          "dur": 5.0
+          "dur": 5.0,
+          "from": "monkey-offer"
         }
       ],
       "camera": "push-in"
@@ -131,10 +130,9 @@
         },
         {
           "say": "I want his heart.",
-          "x": 300,
-          "y": -230,
           "at": 4.6,
-          "dur": 4.2
+          "dur": 4.2,
+          "from": "croc-wife"
         }
       ],
       "camera": "push-in"
@@ -160,10 +158,9 @@
         },
         {
           "say": "He is my friend.",
-          "x": -300,
-          "y": -260,
           "at": 1.2,
-          "dur": 4.0
+          "dur": 4.0,
+          "from": "croc-sad"
         }
       ],
       "camera": "pull-back"
@@ -197,10 +194,10 @@
       "layers": [
         {
           "say": "My wife wants to<br>eat your heart.",
-          "x": 300,
-          "y": -240,
           "at": 3.6,
-          "dur": 5.2
+          "dur": 5.2,
+          "x": 0,
+          "y": -300
         }
       ],
       "camera": "push-in"
@@ -220,10 +217,10 @@
       "layers": [
         {
           "say": "I left my heart<br>in the tree!",
-          "x": 280,
-          "y": -250,
           "at": 3.0,
-          "dur": 5.6
+          "dur": 5.6,
+          "x": 0,
+          "y": -320
         }
       ],
       "camera": "hold"
@@ -259,10 +256,9 @@
         },
         {
           "say": "My heart is where it has<br>always been \u2014 inside me.",
-          "x": 120,
-          "y": -300,
           "at": 6.5,
-          "dur": 5.4
+          "dur": 5.4,
+          "from": "monkey-climb"
         }
       ],
       "camera": "rise"

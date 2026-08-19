@@ -250,9 +250,27 @@ function layerHTML(L, man) {
       `animation:${MOTION[L.anim] || 'none'}">${gooseHTML(h, { man, phase: L.phase || '0s', still: L.still })}</div>`;
   }
   if (L.say) {
+    /* A BUBBLE BELONGS TO A SPEAKER. Placed by hand it lands wherever the numbers say --
+       which last pass meant several sitting ON the characters and none above the one
+       talking. `from` names a layer; the bubble goes above that layer's head with its tail
+       pointing down at it. Same principle as every other anchor here: state the
+       relationship and let the geometry follow.
+
+       An off-centre speaker gets an off-centre TAIL rather than a shifted box, so a bubble
+       near the frame edge stays fully on screen instead of hanging off it. */
     const cls = 'callout' + (L.shout ? ' shout' : '');
-    return `<div class="${cls}" style="--cx:${L.x}px;--cy:${L.y}px;` +
-      `margin-left:-450px;animation:pop ${L.dur || 4}s ease-out forwards ${L.at || 0}s;` +
+    const W = L.boxW || 820, GAP = 46;
+    let cx = L.x || 0, cy = L.y || -300, tail = 50;
+    if (L.from) {
+      const sp = L._speaker;
+      if (!sp) throw new Error('callout from "' + L.from + '" but that layer is not in this shot');
+      cy = sp.y - sp.h / 2 - GAP - (L.boxH || 130) / 2;
+      cx = Math.max(-860 + W / 2, Math.min(860 - W / 2, sp.x));
+      tail = Math.max(14, Math.min(86, 50 + (sp.x - cx) / W * 100));
+    }
+    return `<div class="${cls}" style="--cx:${cx}px;--cy:${cy}px;--tail:${tail}%;` +
+      `max-width:${W}px;margin-left:${-W / 2}px;` +
+      `animation:pop ${L.dur || 4}s ease-out forwards ${L.at || 0}s;` +
       `opacity:0">${L.say}<i><b></b></i></div>`;
   }
   if (L.sprite === 'stick-prop') {
@@ -343,7 +361,20 @@ function shotHTML(shot, man) {
     `animation:${CAMERA[shot.camera] || 'none'}"></div>`];
   if (shot.carry) body.push(carryHTML(shot.carry, man));
   if (shot.ride) body.push(rideHTML(shot.ride, man));
-  for (const L of shot.layers || []) body.push(layerHTML(L, man));
+  /* resolve every `from` against this shot's own layers, once their geometry is known --
+     a callout cannot be placed until the character it belongs to has a position */
+  const placed = {};
+  for (const L of shot.layers || []) {
+    if (L.say || !L.sprite) continue;
+    const sp = man[L.sprite]; if (!sp) continue;
+    const h = L.h || Math.round((L.w || 200) * sp.h / sp.w);
+    const w = L.w || Math.round(h * sp.w / sp.h);
+    const q = L.perch ? perchXY(L.perch, w, h) : { x: L.x || 0, y: L.y || 0 };
+    placed[L.sprite] = { x: q.x, y: q.y, w: w, h: h };
+  }
+  for (const L of shot.layers || []) {
+    body.push(layerHTML(L.say && L.from ? Object.assign({}, L, { _speaker: placed[L.from] }) : L, man));
+  }
   if (shot.fx === 'sparkle')
     body.push('<div class="spark" style="transform:translate(-30px,-190px)"></div>' +
               '<div class="spark" style="transform:translate(24px,-232px) scale(.7);animation-delay:-.4s"></div>');
