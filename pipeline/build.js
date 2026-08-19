@@ -35,16 +35,25 @@ const WING = (scenes.rig && scenes.rig.wing) || 'goose-wing';
    from pixels, not guessed, so swapping a sprite for a better drawing moves the stick with
    it and nothing has to be re-eyeballed. */
 function measure() {
-  const sharpish = require('zlib');   // no image lib in node here — shell out to python
+  /* Sprites come from the shared cast library plus this film's own sprites/ (docs/02 §7 —
+     69 characters cover 323 stories, so a cell is drawn once for the channel, not once per
+     film). Each record carries `src`, the URL the shot page loads it by, because a cast cell
+     is no longer a sibling of the page that uses it. */
+  const dirs = S.spriteDirs(scenes);
   const py = `
 import json,os,sys
 from PIL import Image
 out={}
-d=os.path.join(${JSON.stringify(FILM)},'sprites')
-for f in sorted(os.listdir(d)):
+film=${JSON.stringify(FILM)}
+for d in ${JSON.stringify(dirs)}:
+  for f in sorted(os.listdir(d)):
     if not f.endswith('.png'): continue
-    name=f[:-4]; im=Image.open(os.path.join(d,f)).convert('RGBA'); w,h=im.size; px=im.load()
-    rec={'w':w,'h':h}
+    name=f[:-4]
+    if name in out:
+        sys.exit('two sprites are called %s (%s and %s). A cast cell and a film sprite '
+                 'cannot share a name -- rename the film one.' % (name, out[name]['src'], f))
+    im=Image.open(os.path.join(d,f)).convert('RGBA'); w,h=im.size; px=im.load()
+    rec={'w':w,'h':h,'src':os.path.relpath(os.path.join(d,f), film)}
     if name==${JSON.stringify(WING)}:
         # the shoulder is the bottom-left of the wing shape: where it pins to the body
         ys=[y for y in range(h) for x in range(w) if px[x,y][3]>200]
@@ -116,6 +125,18 @@ print(len(out),'sprites measured')
 `;
   console.log(execFileSync('python3', ['-c', py], { encoding: 'utf8' }).trim());
   return JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
+}
+
+/* WHERE A SPRITE LIVES IS THE MANIFEST'S BUSINESS, not the markup's. Six places used to
+   write `sprites/<name>.png` by hand; a cast cell sits outside the film folder, so they all
+   ask here instead and a moved library is one change rather than six. */
+let MAN = null;
+function spriteURL(name) {
+  const rec = MAN && MAN[name];
+  if (!rec) throw new Error('no sprite "' + name + '" in the cast for this film.\n' +
+    'scenes.json declares cast: ' + JSON.stringify(scenes.cast || []) +
+    ' — add the character, or the cell, or put a film-only sprite in films/' + STORY + '/sprites/');
+  return rec.src;
 }
 
 /* ------------------------------------------------------------------ motion --
@@ -227,14 +248,14 @@ function gooseHTML(h, opts) {
   const px_ = wg.pivot[0] * ww, py_ = wg.pivot[1] * wh;
   const wing = (cls, delay, extra) =>
     `<div style="position:absolute;left:${sx - px_}px;top:${sy - py_}px;width:${ww}px;` +
-    `height:${wh}px;background:url(sprites/${WING}.png) center/contain no-repeat;` +
+    `height:${wh}px;background:url(${spriteURL(WING)}) center/contain no-repeat;` +
     `transform-origin:${wg.pivot[0] * 100}% ${wg.pivot[1] * 100}%;${extra}` +
     (opts.still ? 'transform:rotate(64deg) scale(.62);opacity:.95'
                 : `animation:flap .62s ease-in-out infinite ${delay}`) + `"></div>`;
   return `<div class="bird" style="position:absolute;width:${bw}px;height:${h}px">` +
     wing('far', (opts.phase || '0s'), 'filter:brightness(.9);z-index:0;') +
     `<div style="position:absolute;inset:0;z-index:1;` +
-    `background:url(sprites/${BODY}.png) center/contain no-repeat"></div>` +
+    `background:url(${spriteURL(BODY)}) center/contain no-repeat"></div>` +
     wing('near', (opts.phase || '0s'), 'z-index:2;') +
     `</div>`;
 }
@@ -336,7 +357,7 @@ function layerHTML(L, man) {
   if (L.perch) { const q = perchXY(L.perch, w, h); L = Object.assign({}, L, { x: q.x, y: q.y }); }
   return `<div class="layer char" style="width:${w}px;height:${h}px;margin-left:${-w / 2}px;` +
     `margin-top:${-h / 2}px;--tx:${L.x}px;--ty:${L.y}px;--fl:${fl};` +
-    `background-image:url(sprites/${L.sprite}.png);` +
+    `background-image:url(${spriteURL(L.sprite)});` +
     `transform:translate(${L.x}px,${L.y}px) ${fl};` +
     `animation:${MOTION[L.anim] || 'none'}"></div>`;
 }
@@ -374,7 +395,7 @@ function carryHTML(c, man) {
     const hH = c.hangH, hW = Math.round(hH * t.w / t.h);
     html += `<div class="layer char" style="position:absolute;left:${-hW / 2}px;` +
       `top:${beakY - t.mouth[1] * hH}px;margin:0;width:${hW}px;height:${hH}px;z-index:2;` +
-      `background-image:url(sprites/${c.hang}.png);transform-origin:50% ${t.mouth[1] * 100}%;` +
+      `background-image:url(${spriteURL(c.hang)});transform-origin:50% ${t.mouth[1] * 100}%;` +
       `animation:hangsway 2.4s ease-in-out infinite"></div>`;
   }
   return html + '</div>';
@@ -396,11 +417,11 @@ function rideHTML(r, man) {
   return `<div id="ride" style="position:absolute;left:50%;top:calc(50% + ${r.y || 0}px);` +
     `width:0;height:0;animation:${CARRY[r.anim] || 'none'}">` +
     `<div class="char" style="position:absolute;left:${-mW / 2}px;top:${-mH / 2}px;width:${mW}px;` +
-    `height:${mH}px;z-index:1;background:url(sprites/${r.mount}.png) center/contain no-repeat;` +
+    `height:${mH}px;z-index:1;background:url(${spriteURL(r.mount)}) center/contain no-repeat;` +
     `${r.flip ? 'transform:scaleX(-1);' : ''}"></div>` +
     `<div class="char" style="position:absolute;left:${-mW / 2 + sx - kW / 2}px;` +
     `top:${-mH / 2 + sy - kH + sink}px;width:${kW}px;height:${kH}px;z-index:2;` +
-    `background:url(sprites/${r.rider}.png) center/contain no-repeat;` +
+    `background:url(${spriteURL(r.rider)}) center/contain no-repeat;` +
     /* A passenger faces the way the boat is pointing; the mount's head end decides it.
        Mirrored with the standalone `scale` property, not with `transform`: hangsway drives
        `transform: rotate()`, and an animated transform replaces an inline one outright --
@@ -478,7 +499,7 @@ function shotHTML(shot, man) {
 const only = process.argv.includes('--only')
   ? new Set(process.argv.slice(process.argv.indexOf('--only') + 1).filter(a => !a.startsWith('-')))
   : null;
-const man = measure();
+const man = MAN = measure();
 fs.mkdirSync(OUT, { recursive: true });
 let n = 0;
 for (const shot of scenes.shots) {

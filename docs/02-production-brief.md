@@ -445,6 +445,19 @@ Measured on this project.
 **69 distinct cast members across 323 stories**. Sixty-nine characters cover every film you
 will ever make. Do the same count for your property before you plan anything.
 
+That only pays if the library is keyed by **character**, not by film. The first two films
+each generated their own sprites, which would have made story three's monkey a *second
+drawing* of story two's monkey — the exact drift Rule 1 exists to stop, arriving through the
+back door. So cells live in `cast/<character>/` and a film declares what it needs:
+
+```json
+{ "story": "jt.crocodile-rock", "cast": ["monkey", "crocodile"], "shots": [ ... ] }
+```
+
+Story three named those two and its sprite cost was **zero**. Do this before the film that
+first needs it, not after: it is a rename while there are two films and a migration once
+there are twenty.
+
 Render time is now the slow part — roughly four minutes per shot at 1080p24, so ~45 minutes
 for a two-minute film from cold. It parallelises trivially across shots and costs nothing but
 CPU.

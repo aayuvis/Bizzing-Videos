@@ -17,10 +17,12 @@ from PIL import Image
 # WHICH FILM, and where the app it is drawn from lives. Everything below is read out of
 # films/<story>/assets.json, so the generator carries no knowledge of any particular story
 # -- which is the whole test of whether this scales past the first one.
-from sources import STORY, FILM, painting
+from sources import STORY, FILM, REPO, painting
 
 API = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image:generateContent'
 CFG = json.load(open(os.path.join(FILM, 'assets.json'), encoding='utf-8'))
+SCENES = json.load(open(os.path.join(FILM, 'scenes.json'), encoding='utf-8'))
+CAST = SCENES.get('cast', [])          # scenes.json owns the cast list; nothing else repeats it
 SHEET = os.path.join(FILM, 'charsheet.png')
 PAINT = painting(STORY)
 
@@ -119,28 +121,55 @@ def key_out(path, tol=26):
     return im.crop(box).size
 
 
+def draw(name, prompt, out, canon, only, force, ar='1:1'):
+    if only and name not in only:
+        return
+    if os.path.exists(out) and not force:
+        print('  %-16s cached' % name)
+        return
+    ok = gen(prompt + (SPRITE_TAIL if ar == '1:1' else PLATE_TAIL), out, ar, canon)
+    print('  %-16s %s  %s' % (name, 'drawn' if ok else 'FAILED', key_out(out) if ok and ar == '1:1' else ''))
+
+
 def main(argv):
     only = set(a for a in argv if not a.startswith('-'))
     force = '--force' in argv
-    for name, desc in CFG['sprites'].items():
-        if only and name not in only:
-            continue
-        out = os.path.join(FILM, 'sprites', name + '.png')
-        if os.path.exists(out) and not force:
-            print('  %-16s cached' % name); continue
-        canon = CFG.get('canon', {}).get(name.split('-')[0])
-        canon = os.path.join(FILM, 'sprites', canon + '.png') if canon and canon != name else None
-        ok = gen(desc + SPRITE_TAIL, out, '1:1', canon)
-        print('  %-16s %s  %s' % (name, 'drawn' if ok else 'FAILED',
-                                  key_out(out) if ok else ''))
+
+    # THE CAST FIRST, and only the cells that are missing. A character is drawn once for the
+    # whole channel (docs/02 §7): a film that reuses an existing character pays nothing here,
+    # which is the entire point of cast/ existing. `cached` on every line is the good outcome.
+    for char in CAST:
+        cdir = os.path.join(REPO, 'cast', char)
+        cfile = os.path.join(cdir, 'cast.json')
+        if not os.path.exists(cfile):
+            sys.exit('scenes.json names cast "%s" but %s does not exist.\n'
+                     'A new character needs cast/%s/cast.json with its cells and a canon.'
+                     % (char, cfile, char))
+        cj = json.load(open(cfile, encoding='utf-8'))
+        canon_name = cj.get('canon')
+        cells = cj['cells']
+        # CANON FIRST, ALWAYS. Every other cell is drawn with it as an overriding reference
+        # (docs/02 §5.1) -- generating them in dict order once produced a cast that drifted.
+        order = ([canon_name] if canon_name in cells else []) + \
+                [k for k in cells if k != canon_name]
+        print('cast/%s' % char)
+        for name in order:
+            canon = os.path.join(cdir, canon_name + '.png') if canon_name and name != canon_name else None
+            draw(name, cells[name], os.path.join(cdir, name + '.png'), canon, only, force)
+
+    # then anything that belongs to this film alone -- a prop, a one-off
+    if CFG.get('sprites'):
+        print('films/%s/sprites' % STORY)
+        os.makedirs(os.path.join(FILM, 'sprites'), exist_ok=True)
+        for name, desc in CFG['sprites'].items():
+            c = CFG.get('canon', {}).get(name.split('-')[0])
+            c = os.path.join(FILM, 'sprites', c + '.png') if c and c != name else None
+            draw(name, desc, os.path.join(FILM, 'sprites', name + '.png'), c, only, force)
+
+    print('films/%s/plates' % STORY)
+    os.makedirs(os.path.join(FILM, 'plates'), exist_ok=True)
     for name, desc in CFG['plates'].items():
-        if only and name not in only:
-            continue
-        out = os.path.join(FILM, 'plates', name + '.png')
-        if os.path.exists(out) and not force:
-            print('  %-16s cached' % name); continue
-        ok = gen(desc + PLATE_TAIL, out, '16:9')
-        print('  %-16s %s' % (name, 'drawn' if ok else 'FAILED'))
+        draw(name, desc, os.path.join(FILM, 'plates', name + '.png'), None, only, force, ar='16:9')
 
 
 if __name__ == '__main__':

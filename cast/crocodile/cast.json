@@ -1,0 +1,21 @@
+{
+ "_": [
+  "The crocodile. The rig measures his SADDLE and his HEAD end off this drawing. Editorial, and binding: NO VISIBLE TEETH in any cell (docs/02 §6.2) — he is the friend who gets talked into it, and drawing him as a predator makes the ending mean something it does not.",
+  "",
+  "A CAST MEMBER IS DRAWN ONCE FOR THE CHANNEL, not once per film. 69 characters cover",
+  "323 stories (docs/02 §7), so this file is a fixed cost and every film that names",
+  "this character in its scenes.json `cast` gets these cells for nothing.",
+  "",
+  "`canon` is the cell generated and checked FIRST; every other cell is then drawn with",
+  "it as an extra reference outranking all others (docs/02 §5.1). That is what stopped",
+  "the drift that ruined four rounds of generative video, and it is why cells must be",
+  "added, never silently regenerated."
+ ],
+ "canon": "croc-swim",
+ "cells": {
+  "croc-swim": "A friendly cartoon crocodile for a children's picture book, FULL BODY, seen from the SIDE facing LEFT, swimming level with his long body horizontal and his tail out behind, soft sage-green scaly back, pale cream belly, very large dark-brown eyes with a bright highlight, a small pink blush cheek, and a long snout with the mouth CLOSED in a gentle line. NO visible teeth, no fangs, never frightening -- he is a friend in this story.",
+  "croc-sad": "The same sage-green crocodile, FULL BODY, side view facing LEFT, swimming but with his head lowered and his big eyes turned down and sorrowful, brows tilted unhappily, mouth closed. Never scary -- just miserable.",
+  "croc-bank": "The same sage-green crocodile, FULL BODY, side view facing LEFT, resting on land with his legs tucked under him and his tail curved round, head up, eyes soft and tired, mouth closed in a small friendly smile.",
+  "croc-wife": "The same sage-green cartoon crocodile from the reference sheet but clearly a DIFFERENT individual: FULL BODY, side view facing RIGHT, resting on the bank with her head raised and turned as if speaking firmly, one small yellow marigold flower tucked behind the ridge above her eye, a slightly slimmer snout, mouth CLOSED in a straight determined line, big dark-brown eyes with a bright highlight and a pink blush cheek. Same soft sage-green scaly back and pale cream belly, same thick warm-brown outlines. NO visible teeth, no fangs, not frightening -- firm, not monstrous."
+ }
+}

@@ -94,7 +94,8 @@ Uploading to YouTube stays a human action, on purpose.
 docs/01-look-and-feel.md     binding: the look, the editorial rules, publishing
 docs/02-production-brief.md  binding: how films are made, and every trap already paid for
 pipeline/                    the renderer — sources.js is the seam onto the app
-films/<story>/               scenes.json, assets.json, sprites, plates, cards, charsheet
+cast/<character>/            sprite cells + their prompts, shared by every film
+films/<story>/               scenes.json, assets.json, plates, cards, charsheet
                              released.json — which cut is live, and what is wrong with it
 archive/veo-story.py         the abandoned generative path, kept as evidence
 build/                       output; not committed, rebuilt from source in minutes
@@ -102,6 +103,12 @@ build/                       output; not committed, rebuilt from source in minut
 
 A film is `films/<story>/scenes.json` plus its art. A note from a reviewer is an edit to a
 number in that file and a re-render that costs nothing.
+
+**The cast is shared and the film is not.** A film names the characters it needs —
+`"cast": ["monkey", "crocodile"]` — and gets their cells from `cast/`. There are about 69
+distinct characters across 323 stories, so a character is drawn once for the channel rather
+than once per film: story three reuses story two's monkey and crocodile and pays nothing for
+either. A sprite that belongs to one film only still lives in `films/<story>/sprites/`.
 
 ## History
 

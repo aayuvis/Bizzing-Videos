@@ -195,6 +195,36 @@ function narrationSecs(seg) {
       }
     }
 
+    /* THE ART ACTUALLY LOADED. Every assertion above measures a BOX, and a div keeps its
+       width and height whether or not its background-image resolves — so a sprite that 404s
+       passes the contact checks and renders a shot with nothing in it but a plate. That
+       became reachable the moment sprites stopped being siblings of the page, so it is
+       asserted rather than trusted. */
+    {
+      const broken = await page.evaluate(async () => {
+        const urls = new Set();
+        for (const e of document.querySelectorAll('*')) {
+          const m = getComputedStyle(e).backgroundImage.match(/url\("?([^")]+)/);
+          if (m) urls.add(m[1]);
+        }
+        const bad = [];
+        for (const u of urls) {
+          const ok = await new Promise(res => {
+            const i = new Image();
+            i.onload = () => res(i.naturalWidth > 0);
+            i.onerror = () => res(false);
+            i.src = u;
+          });
+          if (!ok) bad.push(decodeURI(u).replace(/^file:\/\//, ''));
+        }
+        return bad;
+      });
+      if (broken.length) {
+        console.log('  !! ' + shot.id + ': art did not load — ' + broken.join(', '));
+        failures++;
+      }
+    }
+
     if (checkOnly) { console.log('  ok ' + shot.id); continue; }
 
     /* ---- render, cut to the narration ---- */
@@ -211,8 +241,13 @@ function narrationSecs(seg) {
     const stamp = crypto.createHash('sha1');
     stamp.update(fs.readFileSync(page.url().replace('file://', '')));
     stamp.update(String(dur));
+    /* EVERY image the page loads, wherever it lives. This used to match `sprites/x.png` and
+       `plates/x.png` only, which stopped covering the art the moment the cast moved to the
+       shared library at ../../cast/<character>/ — and a hash that silently stops covering an
+       input is docs/02 §5.8 exactly: you redraw a cell, re-render, and nothing changes. */
     for (const rel of [...new Set((fs.readFileSync(page.url().replace('file://', ''), 'utf8')
-                                     .match(/(?:sprites|plates)\/[\w-]+\.png/g) || []))]) {
+                                     .match(/url\(([^)'"]+\.png)\)/g) || [])
+                                    .map(m => m.slice(4, -1)))]) {
       const f = path.join(FILM, rel);
       if (fs.existsSync(f)) { stamp.update(rel); stamp.update(fs.readFileSync(f)); }
     }

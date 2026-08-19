@@ -79,10 +79,36 @@ function stories() {
     .reduce((a, k) => a.concat(W[k] || []), []);
 }
 
+/* THE CAST IS SHARED, THE FILM IS NOT.
+ *
+ * Every film used to generate its own sprites, so the monkey in story two and the monkey in
+ * story three would have been two drawings of the same animal -- which is the drift Rule 1
+ * exists to stop, arriving through the back door. Across 323 stories there are about 69
+ * distinct cast members, so a character drawn once and reused is the difference between a
+ * per-film art cost and a fixed one for the whole channel.
+ *
+ * A film declares `cast: ["monkey", "crocodile"]` in its scenes.json and gets those cells.
+ * Sprites that belong to one film only -- a prop, a one-off -- still live in the film's own
+ * sprites/ directory, which is searched last, so a film can override a cast cell by name if
+ * it ever genuinely needs to.
+ */
+function spriteDirs(scenes) {
+  const dirs = ((scenes && scenes.cast) || []).map(c => path.join(REPO, 'cast', c));
+  for (const d of dirs) {
+    if (!fs.existsSync(d)) {
+      throw new Error('scenes.json names cast "' + path.basename(d) + '" but ' + d +
+        ' does not exist.\nCast members live in cast/<character>/ and are shared across films.');
+    }
+  }
+  dirs.push(path.join(FILM, 'sprites'));       // film-only sprites win, and may not exist
+  return dirs.filter(d => fs.existsSync(d));
+}
+
 /* WHICH FILM, and where its pieces live. One env var picks the story; every path hangs off
    it, so no stage carries knowledge of any particular film. */
 const STORY = process.env.STORY || 'pt-talkative-tortoise';
 const FILM = path.join(REPO, 'films', STORY);
 const OUT = path.join(REPO, 'build', STORY);
 
-module.exports = { REPO, STORY, FILM, OUT, appDir, app, url, narration, painting, stories };
+module.exports = { REPO, STORY, FILM, OUT, appDir, app, url, narration, painting, stories,
+                   spriteDirs };

@@ -1,298 +1,302 @@
 {
-  "_": [
-    "Story two, same machinery. Twelve narration segments, twelve shots.",
-    "",
-    "The structural invariant here is the RIDE group, not the carry group: the monkey sits",
-    "on the crocodile's back, at a saddle point measured off the crocodile's own drawing.",
-    "He cannot drift off it, sink into it, or end up behind the animal he is riding.",
-    "",
-    "THE WIFE IS DRAWN, AND SHE IS A CROCODILE. The first pass kept her a voice from off the",
-    "page; the note back was that the evening shots need TWO crocodiles, because a crocodile",
-    "talking to nobody reads as a crocodile talking to nobody. So she is on the bank with him",
-    "in 04 and 05. What stays elliptical is the harm itself -- she asks, he refuses to like",
-    "it, and nothing is ever shown being eaten. docs/14: never braver than the text.",
-    "",
-    "Every bubble names its speaker with `from`. The builder puts it above them and above",
-    "anything standing under it, and film.js fails the shot if it lands on a body."
-  ],
-  "story": "pt.monkey-crocodile",
-  "stage": [
-    1920,
-    1080
-  ],
-  "shots": [
+ "_": [
+  "Story two, same machinery. Twelve narration segments, twelve shots.",
+  "",
+  "The structural invariant here is the RIDE group, not the carry group: the monkey sits",
+  "on the crocodile's back, at a saddle point measured off the crocodile's own drawing.",
+  "He cannot drift off it, sink into it, or end up behind the animal he is riding.",
+  "",
+  "THE WIFE IS DRAWN, AND SHE IS A CROCODILE. The first pass kept her a voice from off the",
+  "page; the note back was that the evening shots need TWO crocodiles, because a crocodile",
+  "talking to nobody reads as a crocodile talking to nobody. So she is on the bank with him",
+  "in 04 and 05. What stays elliptical is the harm itself -- she asks, he refuses to like",
+  "it, and nothing is ever shown being eaten. docs/14: never braver than the text.",
+  "",
+  "Every bubble names its speaker with `from`. The builder puts it above them and above",
+  "anything standing under it, and film.js fails the shot if it lands on a body."
+ ],
+ "story": "pt.monkey-crocodile",
+ "cast": [
+  "monkey",
+  "crocodile"
+ ],
+ "stage": [
+  1920,
+  1080
+ ],
+ "shots": [
+  {
+   "id": "00",
+   "seg": "hook",
+   "plate": "river-tree",
+   "layers": [
     {
-      "id": "00",
-      "seg": "hook",
-      "plate": "river-tree",
-      "layers": [
-        {
-          "sprite": "monkey-sit",
-          "h": 290,
-          "anim": "idle",
-          "perch": [
-            0.255,
-            0.305
-          ]
-        }
-      ],
-      "camera": "push-in"
-    },
-    {
-      "id": "01",
-      "seg": "0",
-      "plate": "river-tree",
-      "layers": [
-        {
-          "sprite": "monkey-sit",
-          "h": 290,
-          "anim": "idle",
-          "perch": [
-            0.255,
-            0.305
-          ]
-        }
-      ],
-      "camera": "drift-right"
-    },
-    {
-      "id": "02",
-      "seg": "1",
-      "plate": "river-tree",
-      "layers": [
-        {
-          "sprite": "croc-bank",
-          "x": 250,
-          "y": 300,
-          "h": 260,
-          "flip": true,
-          "anim": "small-breathe"
-        },
-        {
-          "sprite": "monkey-offer",
-          "h": 290,
-          "anim": "chatter",
-          "perch": [
-            0.255,
-            0.305
-          ],
-          "flip": true
-        },
-        {
-          "say": "You look tired.<br>Try these.",
-          "at": 2.4,
-          "dur": 5.0,
-          "from": "monkey-offer"
-        }
-      ],
-      "camera": "push-in"
-    },
-    {
-      "id": "03",
-      "seg": "2",
-      "plate": "river-tree",
-      "layers": [
-        {
-          "sprite": "croc-bank",
-          "x": 280,
-          "y": 300,
-          "h": 280,
-          "flip": true,
-          "anim": "idle"
-        },
-        {
-          "sprite": "monkey-sit",
-          "h": 290,
-          "anim": "idle-b",
-          "perch": [
-            0.255,
-            0.305
-          ]
-        }
-      ],
-      "camera": "drift-left"
-    },
-    {
-      "id": "04",
-      "seg": "3",
-      "plate": "river-evening",
-      "layers": [
-        {
-          "sprite": "croc-bank",
-          "x": -300,
-          "y": 230,
-          "h": 300,
-          "anim": "small-breathe"
-        },
-        {
-          "sprite": "croc-wife",
-          "x": 330,
-          "y": 215,
-          "h": 320,
-          "anim": "lean"
-        },
-        {
-          "say": "I want his heart.",
-          "at": 4.6,
-          "dur": 4.2,
-          "from": "croc-wife",
-          "boxW": 620,
-          "boxH": 210
-        }
-      ],
-      "camera": "push-in"
-    },
-    {
-      "id": "05",
-      "seg": "4",
-      "plate": "river-evening",
-      "layers": [
-        {
-          "sprite": "croc-sad",
-          "x": -270,
-          "y": 200,
-          "h": 320,
-          "anim": "lean"
-        },
-        {
-          "sprite": "croc-wife",
-          "x": 340,
-          "y": 210,
-          "h": 320,
-          "anim": "lean-b"
-        },
-        {
-          "say": "He is my friend.",
-          "at": 1.2,
-          "dur": 4.0,
-          "from": "croc-sad",
-          "boxW": 620,
-          "boxH": 210
-        }
-      ],
-      "camera": "pull-back"
-    },
-    {
-      "id": "06",
-      "seg": "5",
-      "plate": "river-tree",
-      "ride": {
-        "y": 210,
-        "mount": "croc-swim",
-        "rider": "monkey-ride",
-        "mountH": 300,
-        "riderH": 285,
-        "anim": "cruise",
-        "riderFlip": true
-      },
-      "camera": "drift-left"
-    },
-    {
-      "id": "07",
-      "seg": "6",
-      "plate": "river-deep",
-      "ride": {
-        "y": 205,
-        "mount": "croc-swim",
-        "rider": "monkey-ride",
-        "mountH": 330,
-        "riderH": 310,
-        "anim": "settle",
-        "riderFlip": true
-      },
-      "layers": [
-        {
-          "say": "My wife wants to<br>eat your heart.",
-          "at": 3.6,
-          "dur": 5.2,
-          "from": "croc-swim",
-          "boxW": 700,
-          "boxH": 200
-        }
-      ],
-      "camera": "push-in"
-    },
-    {
-      "id": "08",
-      "seg": "7",
-      "plate": "river-deep",
-      "ride": {
-        "y": 205,
-        "mount": "croc-swim",
-        "rider": "monkey-laugh",
-        "mountH": 330,
-        "riderH": 320,
-        "anim": "settle",
-        "riderFlip": true
-      },
-      "layers": [
-        {
-          "say": "I left my heart<br>in the tree!",
-          "at": 3.0,
-          "dur": 5.6,
-          "from": "monkey-laugh",
-          "boxW": 700,
-          "boxH": 200
-        }
-      ],
-      "camera": "hold"
-    },
-    {
-      "id": "09",
-      "seg": "8",
-      "plate": "river-wide",
-      "ride": {
-        "y": 130,
-        "mount": "croc-swim",
-        "rider": "monkey-ride",
-        "flip": true,
-        "mountH": 300,
-        "riderH": 285,
-        "anim": "cruise"
-      },
-      "camera": "drift-right"
-    },
-    {
-      "id": "10",
-      "seg": "9",
-      "plate": "tree-top",
-      "layers": [
-        {
-          "sprite": "monkey-climb",
-          "h": 340,
-          "anim": "bounce",
-          "perch": [
-            0.42,
-            0.7
-          ]
-        },
-        {
-          "say": "My heart is where it has<br>always been — inside me.",
-          "at": 6.5,
-          "dur": 5.4,
-          "from": "monkey-climb",
-          "boxW": 700,
-          "boxH": 230
-        }
-      ],
-      "camera": "rise"
-    },
-    {
-      "id": "11",
-      "seg": "moral",
-      "plate": "river-tree",
-      "layers": [
-        {
-          "sprite": "monkey-sit",
-          "h": 290,
-          "anim": "idle",
-          "perch": [
-            0.255,
-            0.305
-          ]
-        }
-      ],
-      "camera": "push-in"
+     "sprite": "monkey-sit",
+     "h": 290,
+     "anim": "idle",
+     "perch": [
+      0.255,
+      0.305
+     ]
     }
-  ]
+   ],
+   "camera": "push-in"
+  },
+  {
+   "id": "01",
+   "seg": "0",
+   "plate": "river-tree",
+   "layers": [
+    {
+     "sprite": "monkey-sit",
+     "h": 290,
+     "anim": "idle",
+     "perch": [
+      0.255,
+      0.305
+     ]
+    }
+   ],
+   "camera": "drift-right"
+  },
+  {
+   "id": "02",
+   "seg": "1",
+   "plate": "river-tree",
+   "layers": [
+    {
+     "sprite": "croc-bank",
+     "x": 250,
+     "y": 300,
+     "h": 260,
+     "flip": true,
+     "anim": "small-breathe"
+    },
+    {
+     "sprite": "monkey-offer",
+     "h": 290,
+     "anim": "chatter",
+     "perch": [
+      0.255,
+      0.305
+     ],
+     "flip": true
+    },
+    {
+     "say": "You look tired.<br>Try these.",
+     "at": 2.4,
+     "dur": 5.0,
+     "from": "monkey-offer"
+    }
+   ],
+   "camera": "push-in"
+  },
+  {
+   "id": "03",
+   "seg": "2",
+   "plate": "river-tree",
+   "layers": [
+    {
+     "sprite": "croc-bank",
+     "x": 280,
+     "y": 300,
+     "h": 280,
+     "flip": true,
+     "anim": "idle"
+    },
+    {
+     "sprite": "monkey-sit",
+     "h": 290,
+     "anim": "idle-b",
+     "perch": [
+      0.255,
+      0.305
+     ]
+    }
+   ],
+   "camera": "drift-left"
+  },
+  {
+   "id": "04",
+   "seg": "3",
+   "plate": "river-evening",
+   "layers": [
+    {
+     "sprite": "croc-bank",
+     "x": -300,
+     "y": 230,
+     "h": 300,
+     "anim": "small-breathe"
+    },
+    {
+     "sprite": "croc-wife",
+     "x": 330,
+     "y": 215,
+     "h": 320,
+     "anim": "lean"
+    },
+    {
+     "say": "I want his heart.",
+     "at": 4.6,
+     "dur": 4.2,
+     "from": "croc-wife",
+     "boxW": 620,
+     "boxH": 210
+    }
+   ],
+   "camera": "push-in"
+  },
+  {
+   "id": "05",
+   "seg": "4",
+   "plate": "river-evening",
+   "layers": [
+    {
+     "sprite": "croc-sad",
+     "x": -270,
+     "y": 200,
+     "h": 320,
+     "anim": "lean"
+    },
+    {
+     "sprite": "croc-wife",
+     "x": 340,
+     "y": 210,
+     "h": 320,
+     "anim": "lean-b"
+    },
+    {
+     "say": "He is my friend.",
+     "at": 1.2,
+     "dur": 4.0,
+     "from": "croc-sad",
+     "boxW": 620,
+     "boxH": 210
+    }
+   ],
+   "camera": "pull-back"
+  },
+  {
+   "id": "06",
+   "seg": "5",
+   "plate": "river-tree",
+   "ride": {
+    "y": 210,
+    "mount": "croc-swim",
+    "rider": "monkey-ride",
+    "mountH": 300,
+    "riderH": 285,
+    "anim": "cruise",
+    "riderFlip": true
+   },
+   "camera": "drift-left"
+  },
+  {
+   "id": "07",
+   "seg": "6",
+   "plate": "river-deep",
+   "ride": {
+    "y": 205,
+    "mount": "croc-swim",
+    "rider": "monkey-ride",
+    "mountH": 330,
+    "riderH": 310,
+    "anim": "settle",
+    "riderFlip": true
+   },
+   "layers": [
+    {
+     "say": "My wife wants to<br>eat your heart.",
+     "at": 3.6,
+     "dur": 5.2,
+     "from": "croc-swim",
+     "boxW": 700,
+     "boxH": 200
+    }
+   ],
+   "camera": "push-in"
+  },
+  {
+   "id": "08",
+   "seg": "7",
+   "plate": "river-deep",
+   "ride": {
+    "y": 205,
+    "mount": "croc-swim",
+    "rider": "monkey-laugh",
+    "mountH": 330,
+    "riderH": 320,
+    "anim": "settle",
+    "riderFlip": true
+   },
+   "layers": [
+    {
+     "say": "I left my heart<br>in the tree!",
+     "at": 3.0,
+     "dur": 5.6,
+     "from": "monkey-laugh",
+     "boxW": 700,
+     "boxH": 200
+    }
+   ],
+   "camera": "hold"
+  },
+  {
+   "id": "09",
+   "seg": "8",
+   "plate": "river-wide",
+   "ride": {
+    "y": 130,
+    "mount": "croc-swim",
+    "rider": "monkey-ride",
+    "flip": true,
+    "mountH": 300,
+    "riderH": 285,
+    "anim": "cruise"
+   },
+   "camera": "drift-right"
+  },
+  {
+   "id": "10",
+   "seg": "9",
+   "plate": "tree-top",
+   "layers": [
+    {
+     "sprite": "monkey-climb",
+     "h": 340,
+     "anim": "bounce",
+     "perch": [
+      0.42,
+      0.7
+     ]
+    },
+    {
+     "say": "My heart is where it has<br>always been — inside me.",
+     "at": 6.5,
+     "dur": 5.4,
+     "from": "monkey-climb",
+     "boxW": 700,
+     "boxH": 230
+    }
+   ],
+   "camera": "rise"
+  },
+  {
+   "id": "11",
+   "seg": "moral",
+   "plate": "river-tree",
+   "layers": [
+    {
+     "sprite": "monkey-sit",
+     "h": 290,
+     "anim": "idle",
+     "perch": [
+      0.255,
+      0.305
+     ]
+    }
+   ],
+   "camera": "push-in"
+  }
+ ]
 }

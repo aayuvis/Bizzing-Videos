@@ -1,0 +1,23 @@
+{
+ "_": [
+  "The tortoise. Drawn for pt-talkative-tortoise; the carry rig measures his MOUTH off this drawing (docs/02 §3, Rule 3), so a redraw must keep a readable dark mouth band below the eyes.",
+  "",
+  "A CAST MEMBER IS DRAWN ONCE FOR THE CHANNEL, not once per film. 69 characters cover",
+  "323 stories (docs/02 §7), so this file is a fixed cost and every film that names",
+  "this character in its scenes.json `cast` gets these cells for nothing.",
+  "",
+  "`canon` is the cell generated and checked FIRST; every other cell is then drawn with",
+  "it as an extra reference outranking all others (docs/02 §5.1). That is what stopped",
+  "the drift that ruined four rounds of generative video, and it is why cells must be",
+  "added, never silently regenerated."
+ ],
+ "canon": "tortoise-sit",
+ "cells": {
+  "tortoise-talk": "The green tortoise from the reference sheet, FULL BODY, standing on all fours in three-quarter view, mouth OPEN mid-chatter, one front paw lifted and gesturing, eyes bright and happy.",
+  "tortoise-idea": "The green tortoise from the reference sheet, FULL BODY, up on his back legs with both front paws raised high in the air, eyes wide and delighted, mouth open in a happy grin.",
+  "tortoise-hang": "The green tortoise from the reference sheet, FULL BODY, seen from the FRONT, hanging in the air with all four legs dangling straight down and loose, head up, mouth CLOSED in a firm straight line as if gripping something, eyes calm and wide.",
+  "tortoise-cross": "The green tortoise from the reference sheet, FULL BODY, seen from the FRONT, hanging with legs dangling loose, mouth CLOSED in a firm line, but eyes NARROWED with indignation and cheeks flushed a deep hot pink.",
+  "tortoise-shout": "The green tortoise from the reference sheet, FULL BODY, seen from the FRONT, tumbling in the air with legs splayed, mouth WIDE OPEN in a shout, eyes wide with alarm. Not smiling, no teeth.",
+  "tortoise-sit": "The green tortoise from the reference sheet, FULL BODY, sitting calmly in three-quarter view, mouth closed in a small gentle smile, eyes soft."
+ }
+}
