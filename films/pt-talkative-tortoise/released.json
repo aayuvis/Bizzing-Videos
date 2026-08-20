@@ -7,8 +7,45 @@
   "film": "pt-talkative-tortoise",
   "title": "The Tortoise Who Had to Have the Last Word",
   "expected": 86.07,
-
   "cuts": [
+    {
+      "published": "2026-08-20T03:43:15Z",
+      "duration": 86.13,
+      "resolution": "1920x1080",
+      "bytes": 37766817,
+      "sha1": "faac703c91294a1a079e62c333b1389ac3b9cef0",
+      "commit": "74978512c90ed60368287051e3a47e99be68266a",
+      "youtube": null,
+      "master": null,
+      "at": "bizzing-videos gh-pages: video/talkative-tortoise-1080p.mp4 (and -faac703c.mp4)",
+      "current": true,
+      "notes": [
+        "Re-cut in this repo after the split, and the first cut of this film that is actually current:",
+        "callouts in the app's Fraunces (every earlier cut fell back to Georgia -- the old @font-face",
+        "named a path that stopped resolving AND the latin-EXT subset, which has no ASCII), the hook",
+        "and moral in the Indian narrator, and the title card matching the app's current title.",
+        "Master is in git by an explicit decision, over the publish cap."
+      ]
+    },
+    {
+      "published": "2026-08-20T03:43:15Z",
+      "duration": 86.13,
+      "resolution": "1280x720",
+      "bytes": 8326404,
+      "sha1": "17a34ffaedf48c4222456005c108bc3b887b227e",
+      "commit": "74978512c90ed60368287051e3a47e99be68266a",
+      "youtube": null,
+      "master": null,
+      "at": "bizzing-videos gh-pages: video/talkative-tortoise-720p.mp4 (and -17a34ffa.mp4)",
+      "current": true,
+      "notes": [
+        "Re-cut in this repo after the split, and the first cut of this film that is actually current:",
+        "callouts in the app's Fraunces (every earlier cut fell back to Georgia -- the old @font-face",
+        "named a path that stopped resolving AND the latin-EXT subset, which has no ASCII), the hook",
+        "and moral in the Indian narrator, and the title card matching the app's current title.",
+        "Master is in git by an explicit decision, over the publish cap."
+      ]
+    },
     {
       "published": "2026-08-18T23:25:32Z",
       "duration": 86.63,
@@ -19,7 +56,7 @@
       "youtube": null,
       "master": null,
       "at": "bizzingindia.com gh-pages: video/kambugriva-cutout-1080p.mp4",
-      "current": true,
+      "current": false,
       "notes": [
         "The composited cut -- the first one made the way films are made now.",
         "THREE REASONS IT IS ALREADY BEHIND, all of them dating from after it was published:",
@@ -29,7 +66,8 @@
         "   the channel is showing a story the app no longer has -- docs/01 §6.",
         "2. It carries the callout font fault: bubbles in Georgia, not the app's Fraunces.",
         "3. Its hook and moral are the pre-re-narration audio. 86.63s measured against 86.07s",
-        "   expected today, and those two clips are where the difference is."
+        "   expected today, and those two clips are where the difference is.",
+        "SUPERSEDED 2026-08-20 by the re-cut in this repo, and RETIRED from the web: bizzingindia.com's gh-pages was rewritten to drop every video file."
       ]
     },
     {
@@ -46,7 +84,8 @@
       "notes": [
         "The preview beside the cut above. 23.8 MB is far too heavy for a preview -- compare the",
         "monkey-crocodile 720p at 6.9 MB -- and it would now sit right on the publish cap.",
-        "Duration not measured."
+        "Duration not measured.",
+        "SUPERSEDED 2026-08-20 by the re-cut in this repo, and RETIRED from the web: bizzingindia.com's gh-pages was rewritten to drop every video file."
       ]
     },
     {
@@ -64,7 +103,8 @@
         "RETIRED -- the generative pass, kept in the record because it went out. Superseded by",
         "the composited cut the same night. Never re-publish it: docs/02 §0 and §1.",
         "71.8 MiB, which is the file that proves the point in docs/01 §6 -- GitHub refuses",
-        "anything over 100 MiB, and this was within 28 MiB of it."
+        "anything over 100 MiB, and this was within 28 MiB of it.",
+        "SUPERSEDED 2026-08-20 by the re-cut in this repo, and RETIRED from the web: bizzingindia.com's gh-pages was rewritten to drop every video file."
       ]
     }
   ]
