@@ -34,14 +34,19 @@ const anyway = process.argv.includes('--anyway');
 const shots = scenes.shots.filter(s => fs.existsSync(path.join(OUT, s.id + '.mp4')));
 const missing = scenes.shots.filter(s => !fs.existsSync(path.join(OUT, s.id + '.mp4')))
   .map(s => s.id);
-const stale = shots.filter(s => {
-  const page = path.join(FILM, 'shot-' + s.id + '.html');
-  return fs.existsSync(page) &&
-         fs.statSync(page).mtimeMs > fs.statSync(path.join(OUT, s.id + '.mp4')).mtimeMs;
-}).map(s => s.id);
+/* Staleness is film.js's answer, not a guess from file times. It writes .rendered.json when
+   it finishes with every check passing; anything it did not cover is not safe to cut. */
+let stale = [];
+const stampFile = path.join(OUT, '.rendered.json');
+if (!fs.existsSync(stampFile)) {
+  stale = scenes.shots.map(s => s.id);
+} else {
+  const done = new Set(JSON.parse(fs.readFileSync(stampFile, 'utf8')).shots || []);
+  stale = scenes.shots.filter(s => !done.has(s.id)).map(s => s.id);
+}
 if ((missing.length || stale.length) && !anyway) {
   if (missing.length) console.error('not rendered: ' + missing.join(' '));
-  if (stale.length) console.error('older than their own shot page: ' + stale.join(' '));
+  if (stale.length) console.error('not covered by the last clean film.js run: ' + stale.join(' '));
   console.error('run film.js first, or pass --anyway to cut what is here.');
   process.exit(2);
 }

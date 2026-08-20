@@ -1,0 +1,26 @@
+{
+ "_": [
+  "FILM 5 -- Who Was Here First? (jataka-more). SCAFFOLD: cast declared so the library can",
+  "be drawn; the shot list and the `scale` primitive are still to author.",
+  "",
+  "THE PRIMITIVE WILL BE `scale`. Relative size is the argument -- 'You are the biggest.",
+  "That is not the same thing at all' -- so a declared size ladder for the film, characters",
+  "scaled from it rather than per shot, and a cross-shot assertion that the ordering and",
+  "the ratios hold wherever two of them share a frame. Same class as `rock`: get it wrong",
+  "and no single shot looks wrong.",
+  "",
+  "DRAWN, NOT AUTHORED. charsheet, elephant, partridge and the three banyan plates exist;",
+  "the shot list is empty. Author it against the narration next."
+ ],
+ "story": "jt.partridge-elders",
+ "cast": [
+  "elephant",
+  "monkey",
+  "partridge"
+ ],
+ "stage": [
+  1920,
+  1080
+ ],
+ "shots": []
+}

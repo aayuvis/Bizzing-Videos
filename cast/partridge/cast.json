@@ -1,0 +1,13 @@
+{
+ "_": [
+  "The partridge. Fist-sized, and the smallest character on the channel so far -- the",
+  "story turns on how little she is, so she must never be drawn up to a convenient size.",
+  "Plain grey-brown, an ordinary bird rather than a decorative one."
+ ],
+ "canon": "partridge-perch",
+ "cells": {
+  "partridge-perch": "A small plump grey-brown partridge, FULL BODY, in flat SIDE PROFILE facing LEFT, perched with both feet together, round body, short neat tail, small round head with a bright dark eye and a short pale beak, soft speckled markings on the wing. Ordinary and unshowy -- a small brown bird, not a decorative one. Thick soft warm-brown outlines, flat cel shading. NO branch, NO perch drawn -- the bird alone.",
+  "partridge-speak": "The SAME small partridge from the reference, FULL BODY, in flat SIDE PROFILE facing LEFT, standing with her head raised and her short beak open as if speaking up, one wing lifted slightly away from the body. The bird alone, no branch.",
+  "partridge-fly": "The SAME small partridge from the reference, FULL BODY, in flat SIDE PROFILE facing LEFT, in level flight with both wings spread wide and feet tucked back. The bird alone, nothing else in the picture."
+ }
+}

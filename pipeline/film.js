@@ -234,6 +234,60 @@ function narrationSecs(seg) {
       }
     }
 
+    /* THE HOP CONTRACT. The arc is decoration; the touchdowns are the promise. Seek to each
+       one and measure where his feet actually are -- on the stone's top surface, horizontally
+       over it, and on solid ground at the far end. A jump that clips through the rock or ends
+       in open water is the exact note that produced this primitive, so it is a number now.
+
+       The times come off the element rather than being repeated here: retime the animation
+       and the checker follows it instead of quietly measuring the wrong instant. */
+    if ((shot.layers || []).some(L => L.hop)) {
+      const r = await page.evaluate(async () => {
+        const el = document.querySelector('.hop');
+        if (!el) return { err: 'no hop element' };
+        const [landMs, endMs] = el.dataset.hop.split(',').map(Number);
+        const rockEl = document.querySelector('.rock-base');
+        const rock = rockEl ? (b => ({ l: b.left, r: b.right, top: b.top }))(
+          rockEl.getBoundingClientRect()) : null;
+        const at = ms => {
+          document.getAnimations().forEach(a => { a.pause(); a.currentTime = ms; });
+          const b = el.getBoundingClientRect();
+          return { l: b.left, r: b.right, bottom: b.bottom, w: b.width };
+        };
+        return { rock, land: at(landMs), end: at(endMs), start: at(0) };
+      });
+      if (r.err) { console.log('  !! ' + shot.id + ': ' + r.err); failures++; }
+      else {
+        if (!r.rock) { console.log('  !! ' + shot.id + ': hop onto a rock, but no rock in the shot'); failures++; }
+        else {
+          const drop = r.land.bottom - r.rock.top;
+          const mid = (r.land.l + r.land.r) / 2;
+          if (Math.abs(drop) > 6) {
+            console.log('  !! ' + shot.id + ': at the landing his feet are ' + drop.toFixed(0) +
+              'px off the top of the stone — he goes through it, or hovers over it');
+            failures++;
+          }
+          if (mid < r.rock.l || mid > r.rock.r) {
+            console.log('  !! ' + shot.id + ': he lands beside the stone, not on it');
+            failures++;
+          }
+        }
+        /* and he has to get smaller as he goes away from the camera, or the far bank reads
+           as being the same distance off as the near one */
+        if (r.end.w >= r.start.w) {
+          console.log('  !! ' + shot.id + ': he is no smaller on the far side than on the near ' +
+            'bank — he has crossed a river, so perspective has to show it');
+          failures++;
+        }
+        if (r.end.l < 0 || r.end.r > 1920) {
+          console.log('  !! ' + shot.id + ': he finishes the jump outside the frame');
+          failures++;
+        }
+      }
+      /* leave the clock where the renderer expects it */
+      await page.evaluate(() => document.getAnimations().forEach(a => { a.currentTime = 0; }));
+    }
+
     /* THE CALLOUT CONTRACT. A bubble must sit ABOVE the character speaking and must not
        overlap them -- "the callouts are not above the character speaking and are covering
        the characters" was the note, and it is geometry, so it is a test rather than
@@ -456,5 +510,13 @@ function narrationSecs(seg) {
 
   await b.close();
   if (failures) { console.log('\n' + failures + ' shot(s) failed their checks'); process.exit(1); }
+  /* WHAT IS CURRENT, RECORDED ONCE, BY THE THING THAT ACTUALLY KNOWS. cut.js used to decide
+     staleness by comparing each mp4's mtime against its shot page, which is a proxy and a bad
+     one: build.js rewrites every page on every run, so thirteen shots this renderer had just
+     proved unchanged -- by content hash, the real test -- looked stale and the cut was
+     refused. Two definitions of "current" in one pipeline is one too many. This is the only
+     one: film.js finished, checks passed, and these are the shots it covered. */
+  fs.writeFileSync(path.join(OUT, '.rendered.json'),
+    JSON.stringify({ shots: scenes.shots.map(s => s.id) }, null, 1) + '\n');
   console.log('\nall shots rendered and all contact checks passed');
 })();

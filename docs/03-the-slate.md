@@ -12,13 +12,34 @@ cost. Each is also cheap, because the shared cast is now doing its job.
 | --- | --- | --- | --- | --- | --- |
 | 4 | `pt-monkey-wedge` | 15 | 1.8 | **none** | `troop` — a crowd that is *cast*, not scenery |
 | 5 | `jt-partridge-elders` | 16 | 1.9 | elephant | `scale` — three sizes, and size is the plot |
-| 6 | `fk-santhal-first-birds` | 18 | 2.1 | **none** | `world` — the plate's own state changes across the film |
-| 7 | `jt-golden-goose` | 17 | 2.0 | bull | `count` — a set that visibly changes |
-| 8 | `fk-ridley-night` | 18 | 2.8 | **none** | `many` — one sprite at a hundred instances |
+| 6 | `jt-monkey-gardener` | 17 | 2.0 | **none** | `world` — a garden visibly undone across the film |
+| 7 | `jt-golden-goose` | 17 | 2.0 | **a human family** | `count` — a set that visibly changes |
+| 8 | `fk-ridley-night` | 18 | 2.8 | **people** | `many` — one sprite at a hundred instances |
 
-**Three of the five need no new character at all.** That is the cast library paying out: five
-films for two new drawings, against fifteen generated assets for each of the first two films.
-All five pass the narration gate (`check-voice.py`) as of 2026-08-20.
+**Film 5 is drawn and ready to author.** Its model sheet, elephant and partridge are in `cast/`,
+and its three banyan plates are in the film. All five pass the narration gate
+(`check-voice.py`) as of 2026-08-20.
+
+> **REVISED 2026-08-20, after reading the texts end to end — which is step 3 below and exists
+> for exactly this.** Two of the original five did not survive it.
+>
+> **`fk-santhal-first-birds` is out.** It is a Santhal creation story and it names **Thakur
+> Jiu**. Deities are not on the channel's list, and that holds for every tradition. My first
+> sacred-name screen was Hindu-only and sailed straight past it — a poor screen on a channel
+> whose whole point is that internal diversity is the point. `plan.js` now carries a wider
+> list *and* a second, looser net that flags anything reading as religious for a person to
+> judge, because a closed list of names can never be complete. Replaced with
+> `jt-monkey-gardener`, which reaches the same `world` primitive through a garden being
+> visibly undone.
+>
+> **The cast numbers were wrong, in both directions.** `jt-golden-goose` does not need a bull —
+> the planner matched `ox\b` inside the word **"box"**, because `/\bbulls?|oxen|ox\b/` groups
+> as three alternatives and only the first carries a leading boundary. Fixed, along with four
+> other patterns with the same fault (`hares?\b` was matching "shares").
+>
+> **And what it actually needs is people.** So do `fk-ridley-night` and `pt-monkey-wedge`. The
+> channel has drawn no human characters at all, and three of these five want them. That is a
+> decision, not a detail — see below.
 
 ---
 
@@ -57,24 +78,29 @@ than the partridge in every frame they share, the argument is not about anything
 than per shot. Assert that the ordering holds in every frame where two of them appear, and
 that the ratios stay within a tolerance across the whole film — cross-shot, like `rock`.
 
-**Cost:** one elephant. Worth drawing early on reuse grounds alone; it is one of the most
-frequently named animals in the catalogue.
+**Cost:** an elephant and a partridge — **both now drawn**, along with the film's model sheet
+and its three banyan plates. The sheet puts all three on one ground line at true relative scale,
+which is the film's own argument settled in a picture before a shot exists. Ready to author.
 
-## 6. The Two Birds and the First Morning — `world`
+## 6. The Monkeys Who Watered the Garden — `world`
 
-*desh-more · 🪔 Katha · "The world got built by whoever could actually do the job."*
+*jataka-more · 🪔 Katha · "Willing hands with no idea what they are doing can undo a month of
+work in an evening — so explain the why, not just the what."*
 
-A Santhal creation story: nothing but water, two exhausted birds, and a worm and a tortoise who
-between them make the first land. **The plate itself changes state across the film** — open
-water becomes an island. `rock` promised the world *stayed the same*; this one promises it
-changes in exactly one declared way and never drifts otherwise.
+The gardener goes to a festival and leaves the monkeys in charge. They water diligently — and
+pull every plant up first, to see how big its roots are, so they know how much each one needs.
 
-This is the plate-canon mechanism from film three pointed at a sequence: each stage names the
-previous as its canonical composition, so the land grows and nothing else moves. That machinery
-already exists and has not been stretched yet.
+**The plate itself changes state across the film**: a kept garden becomes a wrecked one, in one
+declared direction, and nothing else moves. `rock` promised the world *stayed the same*; this
+promises it changes exactly once and never drifts otherwise. The plate-canon mechanism from
+film three does this already — each stage names the previous as its canonical composition — and
+it has not been stretched across a sequence yet.
 
-**Cost:** none — tortoise and crocodile are drawn. The two birds are the open question; read
-the text before assuming they need new cells rather than the goose.
+**Cost:** none. The monkey is drawn, and the troop rig from film 4 carries straight over, which
+is an argument for making these two in order.
+
+**Editorial:** the monkeys are not stupid and the film must not play them as stupid — the moral
+is about the gardener not explaining. Willing, busy, and wrong.
 
 ## 7. The Goose Who Gave Gold — `count`
 
@@ -88,7 +114,8 @@ cast has to solve properly one day.
 **What would be embarrassing:** the pile of feathers not matching the number of visits, or the
 goose after the grab reading as a *second* goose rather than the same bird plainly.
 
-**Cost:** one bull, and check whether it is more than a passing mention before drawing it.
+**Cost:** not a bull — that was a regex matching "box". What it needs is a **mother and three
+daughters**, and the channel has no human cast at all. Blocked on the decision below.
 
 ## 8. The Night the Sea Comes Ashore — `many`
 
@@ -106,6 +133,21 @@ katha does not. The moral is about switching lights off for the turtles. Do not 
 beyond the app's text, and keep the crowd ordinary: no hero turtle.
 
 ---
+
+## The open decision: a human cast
+
+Three of these five need people — a mother and three daughters, carpenters, a beach at night.
+The library holds six animals and no humans.
+
+Drawing a small reusable human cast is the same argument that made `cast/` worth building: an
+expensive afternoon once, then free for the two hundred stories with people in them. But it is
+a much heavier editorial decision than an elephant. docs/01 is explicit that crowds are
+ordinary and various, nobody a caricature and nobody a type, and a *reusable* human on an
+Indian children's channel has to carry that on its own. It needs a person's judgement about
+who these people look like before a single prompt is written.
+
+Until that is settled, the cheap films are the ones with no people in them: film 5 is drawn
+and ready, and `jt-monkey-gardener` is the next after it.
 
 ## Excluded, and why it matters
 

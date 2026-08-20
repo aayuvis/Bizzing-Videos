@@ -422,6 +422,71 @@ function rockHTML(rock, man) {
     `</div>`;
 }
 
+/* THE HOP — a jump whose LANDINGS are arithmetic.
+ *
+ * "Make the monkey jump, and make sure he lands on the rock" is a motion note, but the part
+ * that would be embarrassing on screen is not the arc: it is a monkey passing THROUGH the
+ * stone, or touching down in open water, or landing at the same size he left at when he has
+ * crossed half a river. So the arc is decoration and the landings are rig.
+ *
+ * A hop names where the feet are at each touchdown. The middle one is not typed at all -- it
+ * is `onto: "rock"`, and the rig reads the stone's own top surface out of the same film-level
+ * constants the rock group uses. Move the rock and the jump follows it; there is no second
+ * number to keep in sync, which is the whole point.
+ *
+ *     "hop": { "from": [0.17,0.93], "onto": "rock", "to": [0.55,0.455],
+ *              "fromH": 230, "ontoH": 150, "toH": 96 }
+ *
+ * The three heights are perspective: he is smaller on the stone than on the near bank, and
+ * smaller again on the far side. transform-origin sits at his FEET, so scaling never lifts
+ * him off what he is standing on.
+ *
+ * film.js seeks to each touchdown and measures. The times are on the element rather than
+ * duplicated in the checker, so a change to the timing cannot leave the assertion behind. */
+const HOP_MS = 6000, HOP_LAND = 0.45, HOP_LEAVE = 0.56;
+
+function hopHTML(L, man) {
+  const rig = scenes.rig || {};
+  const sp = man[L.sprite];
+  if (!sp) throw new Error('hop needs sprite "' + L.sprite + '"');
+  const h = L.hop.fromH || L.h || 230, w = Math.round(h * sp.w / sp.h);
+  const pt = p => ({ x: Math.round((p[0] - 0.5) * 1920 * 1.12),
+                     y: Math.round((p[1] - 0.5) * 1080 * 1.12) });
+
+  const a = pt(L.hop.from);
+  const c = pt(L.hop.to);
+  let b;
+  if (L.hop.onto === 'rock') {
+    if (typeof rig.water !== 'number') throw new Error('hop onto the rock needs rig.water');
+    b = { x: rig.rockX, y: Math.round((rig.water - 0.5) * 1080 * 1.12) - rig.rockH };
+  } else {
+    b = pt(L.hop.onto);
+  }
+  const sA = 1, sB = (L.hop.ontoH || h) / h, sC = (L.hop.toH || h) / h;
+
+  /* the two apexes: high enough to read as a jump, above whichever end is higher */
+  const lift = (p, q) => Math.min(p.y, q.y) - Math.round(h * 0.42);
+  const k = `hop-${L.sprite}-${Math.abs(a.x + b.x + c.x)}`;
+  const F = (x, y, sc) => `translate(${x}px,${y}px) scale(${sc.toFixed(3)})`;
+  const css =
+    `@keyframes ${k}{` +
+    `0%{transform:${F(a.x, a.y, sA)}}` +
+    `22%{transform:${F(Math.round((a.x + b.x) / 2), lift(a, b), (sA + sB) / 2)}}` +
+    `${HOP_LAND * 100}%{transform:${F(b.x, b.y, sB)}}` +
+    `${HOP_LEAVE * 100}%{transform:${F(b.x, b.y, sB)}}` +
+    `78%{transform:${F(Math.round((b.x + c.x) / 2), lift(b, c), (sB + sC) / 2)}}` +
+    `100%{transform:${F(c.x, c.y, sC)}}}`;
+
+  /* margin-top:-h, not -h/2: the anchor is the FEET, so a perch and a scale mean the same
+     thing here that they mean everywhere else. */
+  return `<style>${css}</style>` +
+    `<div class="layer char hop" data-hop="${Math.round(HOP_MS * HOP_LAND)},${HOP_MS}" ` +
+    `style="width:${w}px;height:${h}px;margin-left:${-w / 2}px;margin-top:${-h}px;` +
+    `transform-origin:50% 100%;background-image:url(${spriteURL(L.sprite)});` +
+    `transform:${F(a.x, a.y, sA)};` +
+    `animation:${k} ${HOP_MS}ms cubic-bezier(.4,0,.5,1) forwards"></div>`;
+}
+
 /* THE CARRY GROUP. Geometry, not choreography. */
 function carryHTML(c, man) {
   const b = man[BODY], t = c.hangH ? man[c.hang] : null;
@@ -556,7 +621,7 @@ function shotHTML(shot, man) {
     boxes.push(placed.carry);
   }
   for (const L of shot.layers || []) {
-    if (L.say || !L.sprite) continue;
+    if (L.say || !L.sprite || L.hop) continue;      // a hop moves; it is not a box to clear
     const sp = man[L.sprite]; if (!sp) continue;
     const h = L.h || Math.round((L.w || 200) * sp.h / sp.w);
     const w = L.w || Math.round(h * sp.w / sp.h);
@@ -565,6 +630,7 @@ function shotHTML(shot, man) {
     boxes.push(placed[L.sprite]);
   }
   for (const L of shot.layers || []) {
+    if (L.hop) { body.push(hopHTML(L, man)); continue; }
     body.push(layerHTML(L.say && L.from
       ? Object.assign({}, L, { _speaker: placed[L.from], _boxes: boxes }) : L, man));
   }

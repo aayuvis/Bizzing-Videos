@@ -1,0 +1,24 @@
+{
+ "_": [
+  "Plates for film 5. The banyan tree is the whole world of this story, so one tree from",
+  "several distances, drawn as a matched set the way story three's river was: the two",
+  "closer views name the wide one as their canonical composition.",
+  "",
+  "THE MODEL SHEET IS DRAWN FIRST and every cell is matched to it (docs/02 §4 step 2). It",
+  "carries the monkey we already own, so the two new characters are drawn in the same hand",
+  "-- skipping it produced an airbrushed elephant beside a flat cel monkey, and one cell",
+  "of him came back gold. It also fixes true relative scale, which this story argues about."
+ ],
+ "charsheet": "A CHARACTER MODEL SHEET on a plain flat cream background: an Indian elephant, a monkey and a small grey-brown partridge, standing side by side ON ONE GROUND LINE, all facing LEFT in flat side profile, AT TRUE RELATIVE SIZE -- the elephant enormous, the monkey about knee-high to him, the partridge the size of the monkey's fist. The monkey must be EXACTLY the monkey in the reference image. The elephant is plain warm grey and COMPLETELY UNDECORATED: no paint, no bells, no cloth, no ornament. Nothing else in the picture -- no scenery, no ground texture, no text.",
+ "plates": {
+  "banyan-wide": "One enormous old banyan tree alone in warm afternoon light, seen from a little way off, its many trunks and hanging aerial roots reaching down to dry golden grass, deep cool shade pooled under the canopy, a low dusty plain and a pale sky behind. Flat cel shading, thick soft warm-brown outlines. NO animals anywhere.",
+  "banyan-shade": {
+   "like": "banyan-wide",
+   "prompt": "The SAME banyan tree as banyan-wide, same trunks in the same places, but closer in on the deep shade beneath the canopy: hanging roots, patches of sun on dry golden grass, the plain visible in gaps beyond. Only the distance changes. NO animals anywhere."
+  },
+  "banyan-dusk": {
+   "like": "banyan-wide",
+   "prompt": "The SAME banyan tree as banyan-wide, the same composition and the same horizon, at dusk: warm marigold and rose sky, long light across the plain, the tree gone to a soft dark silhouette. Only the light changes. NO animals anywhere."
+  }
+ }
+}

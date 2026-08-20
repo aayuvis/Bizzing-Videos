@@ -49,15 +49,21 @@ function library() {
 /* Characters a story actually names. Deliberately a short, common list: an animal that turns
    up in one story turns up in fifty, and those are the ones worth drawing first. */
 const COMMON = {
-  monkey: /\bmonkeys?\b/i, crocodile: /\bcrocodiles?\b/i, tortoise: /\btortoises?|turtles?\b/i,
-  goose: /\bgeese|goose\b/i, lion: /\blions?\b/i, tiger: /\btigers?\b/i, jackal: /\bjackals?\b/i,
-  rabbit: /\brabbits?|hares?\b/i, elephant: /\belephants?\b/i, crow: /\bcrows?\b/i,
-  deer: /\bdeer\b/i, snake: /\bsnakes?|cobras?\b/i, mouse: /\bmouse|mice\b/i,
-  parrot: /\bparrots?\b/i, heron: /\bherons?|cranes?\b/i, bull: /\bbulls?|oxen|ox\b/i,
-  dog: /\bdogs?\b/i, cat: /\bcats?\b/i, mongoose: /\bmongoose\b/i, camel: /\bcamels?\b/i,
-  bear: /\bbears?\b/i, fish: /\bfish\b/i, frog: /\bfrogs?\b/i, peacock: /\bpeacocks?\b/i,
+  /* EVERY ALTERNATION IS GROUPED, and that is not style. `/\bbulls?|oxen|ox\b/` parses as
+     `(\bbulls?)|(oxen)|(ox\b)`, so the last branch carries no leading boundary and matches
+     inside "box" -- which is how the planner reported that The Goose Who Gave Gold needs a
+     bull. It needs a box. `hares?\b` matches "shares" the same way. */
+  monkey: /\b(monkeys?)\b/i, crocodile: /\b(crocodiles?)\b/i,
+  tortoise: /\b(tortoises?|turtles?)\b/i, goose: /\b(geese|goose)\b/i,
+  lion: /\b(lions?)\b/i, tiger: /\b(tigers?)\b/i, jackal: /\b(jackals?)\b/i,
+  rabbit: /\b(rabbits?|hares?)\b/i, elephant: /\b(elephants?)\b/i, crow: /\b(crows?)\b/i,
+  deer: /\b(deer)\b/i, snake: /\b(snakes?|cobras?)\b/i, mouse: /\b(mouse|mice)\b/i,
+  parrot: /\b(parrots?)\b/i, heron: /\b(herons?|cranes?)\b/i, bull: /\b(bulls?|oxen|ox)\b/i,
+  dog: /\b(dogs?)\b/i, cat: /\b(cats?)\b/i, mongoose: /\b(mongooses?)\b/i,
+  camel: /\b(camels?)\b/i, bear: /\b(bears?)\b/i, fish: /\b(fish)\b/i,
+  frog: /\b(frogs?)\b/i, peacock: /\b(peacocks?)\b/i,
+  people: /\b(mother|father|daughters?|sons?|wife|husband|girls?|boys?|villagers?|carpenters?)\b/i,
 };
-
 function secsOf(file) {
   if (!fs.existsSync(file)) return null;
   let err = '';
@@ -68,11 +74,18 @@ function secsOf(file) {
 }
 
 /* DEITIES ARE NOT ON THE CHANNEL'S LIST (docs/01 §3), and cheapness will not tell you so.
-   ep-squirrel-bridge is the second-cheapest film in the whole catalogue by cast cost -- one
-   squirrel and a monkey army we already half own -- and it is a Ramayana story that names
-   Rama, so it is exactly the film not to make. A planner that ranks only by cost recommends
-   it first. Flagged here, never silently dropped: the call belongs to a person. */
-const SACRED = /\b(rama|sita|vishnu|shiva|krishna|hanuman|lakshmi|durga|ganesha|brahma|indra|parvati|kali|kurma|varaha|narasimha)\b/i;
+   ep-squirrel-bridge is the second-cheapest film in the whole catalogue by cast cost and it
+   is a Ramayana story that names Rama, so it is exactly the film not to make. A planner that
+   ranks only by cost recommends it first.
+ 
+   THE FIRST VERSION OF THIS LIST WAS HINDU-ONLY, which is a poor screen on a channel whose
+   whole point is that internal diversity is the point. It sailed straight past
+   fk-santhal-first-birds, a Santhal creation story that names Thakur Jiu -- as sacred to the
+   people who tell it as any name below. A closed list of names cannot be complete, so there
+   is a second, wider net: anything that reads as religious gets flagged for a human rather
+   than judged here. Neither list drops a story silently; the call belongs to a person. */
+const SACRED = /\b(rama|sita|vishnu|shiva|krishna|hanuman|lakshmi|durga|ganesha|brahma|indra|parvati|kali|kurma|varaha|narasimha|thakur jiu|marang buru|allah|nanak|mahavira|jesus|bodhisatta)\b/i;
+const RELIGIOUS = /\b(god|goddess|gods|deity|deities|the great one|creator|prayed|prayer|temple|shrine|worship|sacred|holy)\b/i;
 
 function plan(story, have) {
   const id = slug(story.id);
@@ -89,13 +102,14 @@ function plan(story, have) {
   const named = Object.keys(COMMON).filter(k => COMMON[k].test(text));
   const sacred = [...new Set((text.match(new RegExp(SACRED.source, 'gi')) || [])
     .map(x => x.toLowerCase()))];
+  const religious = !sacred.length && RELIGIOUS.test(text);
   return {
     id, title: story.title, collection: story.collection, badge: story.badge,
     segs: segs.length, missing, shots,
     secs: total + 3.5,                                   // + the end card
     have: named.filter(n => have.includes(n)),
     fresh: named.filter(n => !have.includes(n)),
-    sacred,
+    sacred, religious,
   };
 }
 
@@ -131,7 +145,8 @@ for (const r of show) {
   console.log(r.id.padEnd(24) + String(r.shots).padStart(4) + '  ' + mins.padStart(4) + '  ' +
     (r.fresh.length ? (r.fresh.length + ': ' + r.fresh.join(',')) : 'none').padEnd(28) +
     (r.have.join(',') || '-') + (r.missing ? '   !! ' + r.missing + ' clips missing' : '') +
-    (r.sacred.length ? '   !! names ' + r.sacred.join(',') + ' — not for the channel' : ''));
+    (r.sacred.length ? '   !! names ' + r.sacred.join(',') + ' — not for the channel' : '') +
+    (r.religious ? '   ?  religious content — a person decides' : ''));
 }
 console.log('\n' + show.length + ' of ' + rows.length + ' shown. Run check-voice.py on any ' +
   'story before authoring it (docs/02 §5.6).');

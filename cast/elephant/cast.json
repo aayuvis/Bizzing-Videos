@@ -1,0 +1,19 @@
+{
+ "_": [
+  "The elephant. Drawn for jt-partridge-elders, where being the biggest is the whole",
+  "argument, so he has to read as genuinely huge beside a monkey and a fist-sized bird.",
+  "",
+  "EDITORIAL: an ORDINARY elephant. No painted forehead, no bells, no caparison, no",
+  "temple dress -- a decorated elephant reads as a religious image, and deities and",
+  "sacred imagery are not on this channel (docs/01 §3). Kind-faced, never a caricature.",
+  "",
+  "A CAST MEMBER IS DRAWN ONCE FOR THE CHANNEL. `canon` is generated and checked first;",
+  "every other cell is drawn with it as an overriding reference (docs/02 §5.1)."
+ ],
+ "canon": "elephant-stand",
+ "cells": {
+  "elephant-stand": "A friendly Indian elephant, FULL BODY, in flat SIDE PROFILE facing LEFT, standing calmly on all four feet. Warm grey with soft dusty-pink shading in the ear and along the trunk, small kind dark eye with a heavy lid, modest tusks or none, ears held relaxed against the head, trunk hanging down with a gentle curl at the tip. Completely UNDECORATED -- no paint, no bells, no cloth, no ornament of any kind. Thick soft warm-brown outlines, flat cel shading.",
+  "elephant-settle": "The SAME elephant from the reference, FULL BODY, in flat SIDE PROFILE facing LEFT, lowering himself to settle down in the shade, front legs folding, head a little raised, eye half closed and comfortable, trunk curled loosely in front of him. Completely undecorated.",
+  "elephant-listen": "The SAME elephant from the reference, FULL BODY, in three-quarter view facing LEFT, standing still with his head turned slightly toward the viewer, both ears lifted and forward as if listening carefully, trunk relaxed, eye wide and attentive, mouth closed. Completely undecorated."
+ }
+}

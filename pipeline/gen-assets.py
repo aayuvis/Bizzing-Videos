@@ -147,6 +147,45 @@ def key_out(path, tol=26):
     return im.crop(box).size
 
 
+def gen_sheet(prompt, out, refs):
+    """The model sheet: the story painting for world and palette, plus every canon cell we
+    already own so the new cast is drawn in the SAME hand as the old. No keying -- a sheet is
+    a reference image, not a sprite."""
+    key = os.environ.get('GEMKEY') or sys.exit('GEMKEY is not set')
+    def inline(p):
+        m = 'image/png' if p.endswith('.png') else 'image/jpeg'
+        return {'inline_data': {'mime_type': m,
+                                'data': base64.b64encode(open(p, 'rb').read()).decode()}}
+    parts = [inline(p) for p in ([PAINT] if os.path.exists(PAINT) else []) + refs]
+    lead = ("The reference images after the first are CHARACTERS THIS CHANNEL HAS ALREADY "
+            "DRAWN. Match their hand exactly: the same flat cel shading, the same thick soft "
+            "warm-brown outlines, the same warm palette, the same eye and face treatment. "
+            "The new characters must look as though the same artist drew them on the same "
+            "afternoon.\n\n") if refs else ""
+    body = {'contents': [{'role': 'user', 'parts': parts + [{'text': lead + prompt + ' ' + STYLE}]}],
+            'generationConfig': {'responseModalities': ['TEXT', 'IMAGE'],
+                                 'imageConfig': {'aspectRatio': '16:9'}}}
+    req = urllib.request.Request(API, data=json.dumps(body).encode(),
+                                 headers={'Content-Type': 'application/json',
+                                          'x-goog-api-key': key})
+    import time
+    for attempt in range(5):
+        try:
+            d = json.load(urllib.request.urlopen(req, timeout=240)); break
+        except Exception as e:
+            if attempt == 4:
+                print('      %s' % str(e)[:120]); return False
+            time.sleep(3 * (attempt + 1))
+    else:
+        return False
+    for c in d.get('candidates', []):
+        for pt in c.get('content', {}).get('parts', []):
+            if 'inlineData' in pt:
+                open(out, 'wb').write(base64.b64decode(pt['inlineData']['data']))
+                return True
+    return False
+
+
 def draw(name, prompt, out, canon, only, force, ar='1:1', canon_kind='character'):
     if only and name not in only:
         return
@@ -160,6 +199,29 @@ def draw(name, prompt, out, canon, only, force, ar='1:1', canon_kind='character'
 def main(argv):
     only = set(a for a in argv if not a.startswith('-'))
     force = '--force' in argv
+
+    # THE MODEL SHEET FIRST, ALWAYS -- docs/02 §4 step 2, and the step I skipped on film five.
+    # A film that introduces a NEW character has nothing anchoring its look but the story
+    # painting, and a painting is not a style guide: the first elephant came back softly
+    # airbrushed with thin outlines beside a flat cel-shaded monkey, and one of his three
+    # cells came back GOLD. The sheet fixes both, because it puts the new cast beside the
+    # cast we already own, in one picture, at true relative scale -- which is also exactly
+    # what a film about who is biggest needs measured.
+    sheet_prompt = CFG.get('charsheet')
+    if sheet_prompt and (not os.path.exists(SHEET) or force):
+        refs = []
+        for char in CAST:
+            cj_path = os.path.join(REPO, 'cast', char, 'cast.json')
+            if os.path.exists(cj_path):
+                cj = json.load(open(cj_path, encoding='utf-8'))
+                cell = os.path.join(REPO, 'cast', char, (cj.get('canon') or '') + '.png')
+                if os.path.exists(cell):
+                    refs.append(cell)
+        print('model sheet  (anchored on %d cell(s) we already own)' % len(refs))
+        ok = gen_sheet(sheet_prompt, SHEET, refs)
+        print('  %-16s %s' % ('charsheet', 'drawn' if ok else 'FAILED'))
+        if not ok:
+            sys.exit('without a model sheet a new character has nothing to match. Stopping.')
 
     # THE CAST FIRST, and only the cells that are missing. A character is drawn once for the
     # whole channel (docs/02 §7): a film that reuses an existing character pays nothing here,
