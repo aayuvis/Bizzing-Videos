@@ -74,7 +74,19 @@ const vlist = path.join(cut, 'v.txt'), alist = [];
 fs.writeFileSync(vlist, shots.map((s, i) =>
   "file '" + (i === 0 ? firstOut : path.join(OUT, s.id + '.mp4')) + "'").join('\n') +
   (fs.existsSync(endV) ? "\nfile '" + endV + "'" : '') + '\n');
-shots.forEach(s => alist.push(S.narration(SLUG, s.seg)));
+/* ONE CLIP PER SEGMENT, not one per shot. A segment is one recorded sentence; when two
+   shots serve it they are two pictures over that one sentence. Pushing per shot concatenated
+   the same mp3 twice and the film said six of its lines twice over -- inaudible in the first
+   two films only because neither had a segment with two shots. */
+let lastSeg = null;
+for (const s of shots) {
+  if (s.seg === lastSeg) continue;
+  if (alist.includes(S.narration(SLUG, s.seg)))
+    throw new Error('segment ' + s.seg + ' is served by shots that are not adjacent.\n' +
+      'Its audio plays once, so its shots have to run together.');
+  alist.push(S.narration(SLUG, s.seg));
+  lastSeg = s.seg;
+}
 if (fs.existsSync(endA)) alist.push(endA);
 
 const vid = path.join(cut, 'video.mp4'), aud = path.join(cut, 'audio.m4a');
@@ -86,6 +98,26 @@ run([...inputs, '-filter_complex',
      filt.join(';') + ';' + alist.map((_, i) => `[a${i}]`).join('') +
      `concat=n=${alist.length}:v=0:a=1[o]`,
      '-map', '[o]', '-c:a', 'aac', '-b:a', '160k', aud]);
+
+/* THE AUDIO IS THE CLOCK, SO CHECK THE CLOCK. Video and narration are assembled by two
+   different code paths off the same scenes.json, and when those two disagree the result is
+   not a crash -- it is a film that plays, and drifts, and in the worst case repeats a line.
+   That shipped once at 3:41 against a 2:14 narration. It is two ffprobe calls to know. */
+const secsOf = f => {
+  let err = '';
+  try { execFileSync(FF, ['-i', f], { stdio: ['ignore', 'pipe', 'pipe'] }); }
+  catch (e) { err = String(e.stderr); }
+  const m = err.match(/Duration: (\d+):(\d+):([\d.]+)/);
+  return m ? (+m[1] * 3600 + +m[2] * 60 + parseFloat(m[3])) : NaN;
+};
+const vSecs = secsOf(vid), aSecs = secsOf(aud);
+if (Math.abs(vSecs - aSecs) > 0.5) {
+  console.error('video is ' + vSecs.toFixed(2) + 's and the narration is ' + aSecs.toFixed(2) +
+    's — ' + (vSecs - aSecs).toFixed(2) + 's apart.\nThe audio is the clock; a film whose ' +
+    'picture and sound are different lengths is wrong however good each half looks.');
+  process.exit(3);
+}
+console.log('video and narration agree: ' + vSecs.toFixed(2) + 's');
 
 const master = path.join(OUT, STORY + '.mp4');
 run(['-i', vid, '-i', aud, '-map', '0:v:0', '-map', '1:a:0',

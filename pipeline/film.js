@@ -87,6 +87,16 @@ function narrationSecs(seg) {
   const b = await chromium.launch(fs.existsSync(pre) ? { executablePath: pre } : {});
   const page = await b.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
 
+  /* TWO SHOTS FOR ONE LONG LINE SPLIT THAT LINE, they do not each get all of it. A segment
+     is one recorded sentence; if it is served by two shots they are two pictures over the
+     same sentence, so each runs half of it. Giving both the full length makes the video run
+     longer than the audio, and story three -- the first film where any segment has two shots
+     -- came out 3:41 against a 2:14 narration. Documented in story one's scenes.json from the
+     beginning; never implemented, because neither of the first two films had a segment with
+     two shots to expose it. docs/02 §5.8 is exactly this. */
+  const perSeg = {};
+  for (const sh of scenes.shots) perSeg[sh.seg] = (perSeg[sh.seg] || 0) + 1;
+
   let failures = 0;
   const rocks = [];        // cross-shot: the rock has to be the same rock every time
   const todo = [];          // shots that need rendering, drained in parallel below
@@ -288,7 +298,7 @@ function narrationSecs(seg) {
     /* ---- render, cut to the narration ---- */
     const secs = narrationSecs(shot.seg);
     if (secs == null) { console.log('  !! ' + shot.id + ': no narration for seg ' + shot.seg); failures++; continue; }
-    const dur = secs + 0.35, total = Math.round(dur * FPS);
+    const dur = (secs + 0.35) / perSeg[shot.seg], total = Math.round(dur * FPS);
     const mp4 = path.join(OUT, shot.id + '.mp4');
 
     /* ONE CHANGED SHOT SHOULD NOT COST TWELVE RENDERS. Nothing about a shot's output
