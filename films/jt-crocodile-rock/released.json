@@ -1,0 +1,69 @@
+{
+ "_": [
+  "WHAT SHIPPED. See films/pt-monkey-crocodile/released.json for why this file exists; the",
+  "short version is that a film rebuilds from this repo but the answer to 'which cut is live'",
+  "does not, so it is recorded here. docs/01 §6.",
+  "",
+  "NOTHING HAS SHIPPED YET. The film is cut and correct; publishing is a human action and no",
+  "one has taken it. The entry below is a built cut, not a live one."
+ ],
+ "film": "jt-crocodile-rock",
+ "title": "The Rock That Answered Back",
+ "expected": 133.69,
+ "publishing": {
+  "_": "docs/01 §6. Every string here is the app's own; nothing is written for the channel.",
+  "title": "The Rock That Answered Back — a Jataka Tales story for kids | Bizzing India",
+  "badge": "🪔 Katha — a story as it is told.",
+  "madeForKids": true,
+  "commentsOff": true,
+  "description": [
+   "A crocodile lay perfectly still on the stepping stone, pretending to be a stone. He had",
+   "not thought about being asked a question.",
+   "",
+   "A Jataka story, told for children 4–8.",
+   "",
+   "🪔 Katha — a story as it is told.",
+   "Source: Vanarinda Jataka — the monkey and the crocodile on the stepping stone, from the",
+   "Pali Jataka collection. A different tale from the Panchatantra story of the monkey's",
+   "heart, though the two are often mixed up.",
+   "",
+   "\"When something you know well is behaving oddly, ask it a question. A trap will usually",
+   "answer.\"",
+   "",
+   "More stories, the living map of India, and Hindi from the beginning:",
+   "https://bizzingindia.com",
+   "",
+   "—",
+   "How this was made: the words and the narration are taken unchanged from the Bizzing",
+   "India app. The characters and backgrounds were drawn with an AI image model from the",
+   "app's own character artwork and story painting, and animated by hand. No ads, no",
+   "tracking, nothing collected from children."
+  ]
+ },
+ "cuts": [
+  {
+   "published": null,
+   "duration": 133.79,
+   "resolution": "1920x1080",
+   "bytes": 18772096,
+   "sha1": "429287ca4606b65b73254b4ede53e6b23d248e17",
+   "commit": "d04e660d4407fc5eb61c197fb9ee5282d5cab516",
+   "youtube": null,
+   "master": null,
+   "at": "built only — build/jt-crocodile-rock/, not committed and not published",
+   "current": false,
+   "notes": [
+    "133.79s measured against 133.69s expected; cut.js checked picture against narration and",
+    "they agree. −15.0 LUFS integrated. Preview 5.0 MB against an 18.8 MB master.",
+    "Six of its narration segments are served by two shots each -- the first film where that",
+    "is true, and it exposed that neither film.js nor cut.js implemented the split. The first",
+    "cut ran 3:41 and said six sentences twice; fixed in 1127dc0.",
+    "EDITORIAL NOTE, not a defect: shots 04b, 05b and 06a are the same composition -- the rock",
+    "with the crocodile on it, camera held, no callout -- and run about twenty seconds",
+    "together. The narration is carrying that stretch and the stillness is the point (the rock",
+    "is not answering), but it is the one place a viewer might feel the film stop. Worth a",
+    "look before anyone publishes."
+   ]
+  }
+ ]
+}
