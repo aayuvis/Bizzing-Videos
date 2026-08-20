@@ -171,14 +171,18 @@ indistinguishable from the note being ignored. This cost a whole evening once.
 
 ## Where to pick up
 
-1. **Story three.** Two films and two primitives is not yet a pipeline. Pick a story that
-   needs a primitive neither has — a crowd, a character entering frame, or a scale change
-   inside a shot — and find out.
-2. **Cast reuse.** Every film so far generated its own sprites. The monkey in story two and
-   any future monkey should be the same drawing. A shared cast library keyed by *character*
-   rather than by film is the structural move that makes 323 stories affordable.
-3. **Bizzing Bee.** Same machinery, different property. The seam is already
-   `sources.js`, so pointing it at a Bee checkout should be configuration, not a fork.
+**[docs/03 — the next five films](docs/03-the-slate.md).** Chosen with `pipeline/plan.js` from
+the app's 323 stories and gated on narration; three of the five need no new character at all.
+Each is picked for the rig primitive it forces: `troop` (a crowd that is cast, not scenery),
+`scale` (three sizes where size is the plot), `world` (the plate's own state changing across
+the film), `count`, and `many`.
+
+Two tools do the picking, and both exist because doing it by hand does not reach 323:
+
+- `node pipeline/plan.js --reuse` — what a story would cost as a film: shots, minutes, which
+  characters we already own, and a flag for sacred names, because the second-cheapest film in
+  the catalogue is a Ramayana story that must not be made.
+- `python3 pipeline/check-voice.py <story>` — the docs/02 §5.6 gate. Run it first, always.
 
 ## Branch
 
