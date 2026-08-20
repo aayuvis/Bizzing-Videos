@@ -16,8 +16,45 @@
   "film": "pt-monkey-crocodile",
   "title": "The Monkey Who Kept His Heart in a Tree",
   "expected": 119.74,
-
   "cuts": [
+    {
+      "published": "2026-08-20T03:43:15Z",
+      "duration": 119.83,
+      "resolution": "1920x1080",
+      "bytes": 34335173,
+      "sha1": "c810bc719b9042c4a5da11c64fe97afccd52dff9",
+      "commit": "74978512c90ed60368287051e3a47e99be68266a",
+      "youtube": null,
+      "master": null,
+      "at": "bizzing-videos gh-pages: video/monkey-crocodile-1080p.mp4 (and -c810bc71.mp4)",
+      "current": true,
+      "notes": [
+        "Re-cut in this repo after the split, and the first cut of this film that is actually current:",
+        "callouts in the app's Fraunces (every earlier cut fell back to Georgia -- the old @font-face",
+        "named a path that stopped resolving AND the latin-EXT subset, which has no ASCII), the hook",
+        "and moral in the Indian narrator, and the title card matching the app's current title.",
+        "Master is in git by an explicit decision, over the publish cap."
+      ]
+    },
+    {
+      "published": "2026-08-20T03:43:15Z",
+      "duration": 119.83,
+      "resolution": "1280x720",
+      "bytes": 7211741,
+      "sha1": "9a2b6e754e7f3d3a6a9f044f82463ea6645db4e5",
+      "commit": "74978512c90ed60368287051e3a47e99be68266a",
+      "youtube": null,
+      "master": null,
+      "at": "bizzing-videos gh-pages: video/monkey-crocodile-720p.mp4 (and -9a2b6e75.mp4)",
+      "current": true,
+      "notes": [
+        "Re-cut in this repo after the split, and the first cut of this film that is actually current:",
+        "callouts in the app's Fraunces (every earlier cut fell back to Georgia -- the old @font-face",
+        "named a path that stopped resolving AND the latin-EXT subset, which has no ASCII), the hook",
+        "and moral in the Indian narrator, and the title card matching the app's current title.",
+        "Master is in git by an explicit decision, over the publish cap."
+      ]
+    },
     {
       "published": "2026-08-19T05:31:38Z",
       "duration": 119.83,
@@ -28,14 +65,15 @@
       "youtube": null,
       "master": null,
       "at": "bizzingindia.com gh-pages: video/monkey-crocodile-1080p.mp4 (and -bb1cc3c2.mp4)",
-      "current": true,
+      "current": false,
       "notes": [
         "Matches the current scenes.json and narration: 119.83s measured against 119.74s expected.",
         "CARRIES THE CALLOUT FONT FAULT. Every speech bubble is set in Georgia, the silent",
         "fallback, not the app's Fraunces -- this cut was made before that was fixed. Needs a",
         "re-render to carry the fix; nothing else about it is wrong.",
         "commit unrecorded: published before this file existed.",
-        "master is on gh-pages only because it predates docs/01 §6. It does not belong there."
+        "master is on gh-pages only because it predates docs/01 §6. It does not belong there.",
+        "SUPERSEDED 2026-08-20 by the re-cut in this repo, and RETIRED from the web: bizzingindia.com's gh-pages was rewritten to drop every video file."
       ]
     },
     {
@@ -52,7 +90,8 @@
       "notes": [
         "STALE. Two cuts behind the master above and 5.93s shorter. The 1080p was republished",
         "twice after it; the 720p never was, and it sits at a stable path with no content hash,",
-        "so anyone handed that link watched an old edit and had no way to tell."
+        "so anyone handed that link watched an old edit and had no way to tell.",
+        "SUPERSEDED 2026-08-20 by the re-cut in this repo, and RETIRED from the web: bizzingindia.com's gh-pages was rewritten to drop every video file."
       ]
     }
   ]

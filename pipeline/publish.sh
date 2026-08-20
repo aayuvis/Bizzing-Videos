@@ -52,7 +52,14 @@ VDEST="${DEST%.*}-$SHORT.${DEST##*.}"
 
 # The first film published from a fresh repo has no gh-pages to build on. That is a normal
 # state, not an error, so start the branch rather than dying on a missing ref.
-if git fetch origin gh-pages --quiet 2>/dev/null && BASE=$(git rev-parse origin/gh-pages 2>/dev/null); then
+# Read the tip from FETCH_HEAD, not from origin/gh-pages. `git fetch origin gh-pages` with
+# no refspec writes FETCH_HEAD and does NOT create a remote-tracking ref -- so in a clone
+# that has never tracked the branch, rev-parse origin/gh-pages fails, this reads as "no
+# gh-pages yet", and the publish silently becomes an ORPHAN commit holding one file whose
+# push is then rejected as a non-fast-forward. Publishing four films that way landed the
+# first and lost three, each after five retries, which is a loud failure only if you are
+# reading stderr.
+if git fetch origin gh-pages --quiet 2>/dev/null && BASE=$(git rev-parse FETCH_HEAD 2>/dev/null); then
   PARENT=(-p "$BASE")
 else
   echo "no gh-pages branch yet -- starting one"
