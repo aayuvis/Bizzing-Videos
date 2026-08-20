@@ -441,6 +441,12 @@ function rockHTML(rock, man) {
  * smaller again on the far side. transform-origin sits at his FEET, so scaling never lifts
  * him off what he is standing on.
  *
+ * AND HE HAS TO CHANGE POSE WHEN HE LANDS. One cell through the whole arc means the leaping
+ * cell -- arms up, legs tucked -- is what holds on the far bank for two seconds, and that
+ * does not read as "landed", it reads as "fell short". So a hop names an `air` cell and a
+ * `land` cell, drawn as two layers on the same keyframed transform with complementary
+ * opacity: airborne through the arcs, standing on the stone and on the far side.
+ *
  * film.js seeks to each touchdown and measures. The times are on the element rather than
  * duplicated in the checker, so a change to the timing cannot leave the assertion behind. */
 const HOP_MS = 6000, HOP_LAND = 0.45, HOP_LEAVE = 0.56;
@@ -477,14 +483,44 @@ function hopHTML(L, man) {
     `78%{transform:${F(Math.round((b.x + c.x) / 2), lift(b, c), (sB + sC) / 2)}}` +
     `100%{transform:${F(c.x, c.y, sC)}}}`;
 
+  /* opacity swaps at the touchdowns, so the landed cell is what holds on the stone and on
+     the far bank. Complementary, and stepped rather than eased -- a monkey does not fade. */
+  const fk = k + '-f';
+  const L1 = HOP_LAND * 100, L2 = HOP_LEAVE * 100;
+  const fade = (name, on) =>
+    `@keyframes ${name}{` +
+    `0%,${(L1 - 0.5).toFixed(1)}%{opacity:${on ? 1 : 0}}` +
+    `${L1}%,${L2}%{opacity:${on ? 0 : 1}}` +
+    `${(L2 + 0.5).toFixed(1)}%,97.5%{opacity:${on ? 1 : 0}}` +
+    `98%,100%{opacity:${on ? 0 : 1}}}`;
+
+  const airCell = L.hop.air || L.sprite;
+  const landCell = L.hop.land || L.sprite;
+  if (!man[airCell] || !man[landCell])
+    throw new Error('hop needs cells "' + airCell + '" and "' + landCell + '"');
+  /* TWO CELLS, OR THE SWAP DOES NOTHING. film.js can check that the landed layer is the
+     visible one at each touchdown; it cannot know which drawing looks like a landing. Naming
+     the same cell for both satisfies every runtime check and still holds the leaping pose for
+     two seconds on the far bank, which is the note this whole primitive came from. So it is
+     refused here, where the mistake is actually visible. */
+  if (airCell === landCell)
+    throw new Error('shot ' + (L._id || '') + ': hop.air and hop.land are both "' + airCell +
+      '".\nThe point of the swap is that he stops looking airborne when he lands — two ' +
+      'different cells, or drop the hop and use a plain layer.');
+
   /* margin-top:-h, not -h/2: the anchor is the FEET, so a perch and a scale mean the same
      thing here that they mean everywhere else. */
-  return `<style>${css}</style>` +
-    `<div class="layer char hop" data-hop="${Math.round(HOP_MS * HOP_LAND)},${HOP_MS}" ` +
+  const layer = (cell, cls, fadeName) =>
+    `<div class="layer char ${cls}" data-hop="${Math.round(HOP_MS * HOP_LAND)},${HOP_MS}" ` +
     `style="width:${w}px;height:${h}px;margin-left:${-w / 2}px;margin-top:${-h}px;` +
-    `transform-origin:50% 100%;background-image:url(${spriteURL(L.sprite)});` +
+    `transform-origin:50% 100%;background-image:url(${spriteURL(cell)});` +
     `transform:${F(a.x, a.y, sA)};` +
-    `animation:${k} ${HOP_MS}ms cubic-bezier(.4,0,.5,1) forwards"></div>`;
+    `animation:${k} ${HOP_MS}ms cubic-bezier(.4,0,.5,1) forwards,` +
+    ` ${fadeName} ${HOP_MS}ms step-end forwards"></div>`;
+
+  return `<style>${css}${fade(fk + 'a', true)}${fade(fk + 'b', false)}</style>` +
+    layer(airCell, 'hop hop-air', fk + 'a') +
+    layer(landCell, 'hop-land', fk + 'b');
 }
 
 /* THE CARRY GROUP. Geometry, not choreography. */

@@ -60,8 +60,9 @@
       "rock": {},
       "layers": [
         { "sprite": "monkey-climb", "h": 230,
-          "hop": { "from": [0.17, 0.93], "onto": "rock", "to": [0.52, 0.425],
-                   "fromH": 230, "ontoH": 150, "toH": 92 } }
+          "hop": { "from": [0.17, 0.93], "onto": "rock", "to": [0.56, 0.405],
+                   "fromH": 230, "ontoH": 150, "toH": 88,
+                   "air": "monkey-climb", "land": "monkey-sit" } }
       ] },
 
     { "id": "02", "seg": "1", "plate": "river-wide", "camera": "hold",
@@ -86,7 +87,7 @@
 
     { "id": "05a", "seg": "4", "plate": "bank-trees", "camera": "hold",
       "layers": [
-        { "sprite": "monkey-call", "x": -430, "y": 230, "h": 340, "anim": "chatter" },
+        { "sprite": "monkey-call", "x": -430, "y": 230, "h": 340, "flip": true, "anim": "chatter" },
         { "say": "HEY, ROCK!", "shout": true, "at": 1.1, "dur": 3.4, "from": "monkey-call" }
       ] },
     { "id": "05b", "seg": "4", "plate": "river-dusk", "camera": "hold",
@@ -120,8 +121,9 @@
       "rock": {},
       "layers": [
         { "sprite": "monkey-climb", "h": 225,
-          "hop": { "from": [0.13, 0.93], "onto": "rock", "to": [0.50, 0.425],
-                   "fromH": 225, "ontoH": 148, "toH": 90 } }
+          "hop": { "from": [0.13, 0.93], "onto": "rock", "to": [0.54, 0.405],
+                   "fromH": 225, "ontoH": 148, "toH": 86,
+                   "air": "monkey-climb", "land": "monkey-sit" } }
       ] },
 
     { "id": "10", "seg": "moral", "plate": "river-night", "camera": "hold",

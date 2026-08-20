@@ -243,8 +243,9 @@ function narrationSecs(seg) {
        and the checker follows it instead of quietly measuring the wrong instant. */
     if ((shot.layers || []).some(L => L.hop)) {
       const r = await page.evaluate(async () => {
-        const el = document.querySelector('.hop');
-        if (!el) return { err: 'no hop element' };
+        const el = document.querySelector('.hop-land');
+        const air = document.querySelector('.hop-air');
+        if (!el || !air) return { err: 'no hop element' };
         const [landMs, endMs] = el.dataset.hop.split(',').map(Number);
         const rockEl = document.querySelector('.rock-base');
         const rock = rockEl ? (b => ({ l: b.left, r: b.right, top: b.top }))(
@@ -252,7 +253,9 @@ function narrationSecs(seg) {
         const at = ms => {
           document.getAnimations().forEach(a => { a.pause(); a.currentTime = ms; });
           const b = el.getBoundingClientRect();
-          return { l: b.left, r: b.right, bottom: b.bottom, w: b.width };
+          return { l: b.left, r: b.right, bottom: b.bottom, w: b.width,
+                   landed: Number(getComputedStyle(el).opacity),
+                   flying: Number(getComputedStyle(air).opacity) };
         };
         return { rock, land: at(landMs), end: at(endMs), start: at(0) };
       });
@@ -269,6 +272,16 @@ function narrationSecs(seg) {
           }
           if (mid < r.rock.l || mid > r.rock.r) {
             console.log('  !! ' + shot.id + ': he lands beside the stone, not on it');
+            failures++;
+          }
+        }
+        /* A LANDING LOOKS LIKE ONE. Holding the leaping cell -- arms up, legs tucked -- for
+           two seconds on the far bank reads as "he fell short", which is exactly the note
+           this came from. The landed cell has to be the visible one once he is down. */
+        for (const [when, m] of [['on the stone', r.land], ['on the far bank', r.end]]) {
+          if (m.landed < 0.9 || m.flying > 0.1) {
+            console.log('  !! ' + shot.id + ': ' + when + ' he is still showing the leaping ' +
+              'cell — that reads as mid-air, not landed');
             failures++;
           }
         }
