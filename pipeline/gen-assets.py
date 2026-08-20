@@ -49,19 +49,45 @@ PLATE_TAIL = (" A BACKGROUND PLATE for a cartoon: NO ANIMALS and NO BIRDS anywhe
               "and none of the story's characters. "
               "No text, no border, no frame. " + STYLE)
 
-def gen(prompt, out, ar, canon=None):
+CANON_RULE = {
+    # §5.1: a model matching one specific drawing is far steadier than one matching a
+    # description. That is true of a LOCATION as well as a character, and it took three
+    # mismatched river plates to notice -- "EXACTLY the same view, only the light changes"
+    # in prose produced three different compositions, which would have floated the rock in
+    # one shot and sunk it in the next.
+    'character': (
+        "The LAST reference image is the CANONICAL DRAWING of this character in this film: "
+        "match its exact colours, shapes and proportions -- the same shell colour, the same "
+        "body colour, the same eyes, the same beak and legs. It outranks every other "
+        "reference."),
+    'place': (
+        "The LAST reference image is the CANONICAL COMPOSITION of this location. Reproduce "
+        "its LAYOUT EXACTLY: the same camera position, the same horizon height, the same "
+        "shape and position of every bank and island, the same water area, the same trees in "
+        "the same places. Change ONLY the light and the time of day. Do not re-frame, do not "
+        "zoom, do not add or move anything. It outranks every other reference."),
+}
+
+
+def gen(prompt, out, ar, canon=None, canon_kind='character'):
     key = os.environ.get('GEMKEY') or sys.exit('GEMKEY is not set')
     def inline(p):
         m = 'image/png' if p.endswith('.png') else 'image/jpeg'
         return {'inline_data': {'mime_type': m,
                                 'data': base64.b64encode(open(p, 'rb').read()).decode()}}
-    refs = [inline(SHEET), inline(PAINT)]
+    # REFERENCES ARE WHATEVER THIS FILM ACTUALLY HAS. A film that borrows its whole cast has
+    # no model sheet of its own and does not need one -- the canonical cell below outranks
+    # every other reference anyway (docs/02 §5.1), and that is a stronger anchor than a sheet.
+    # Requiring charsheet.png unconditionally meant the first cast-reuse film crashed on its
+    # very first asset call, which is a poor way to find out.
+    refs = [inline(p) for p in (SHEET, PAINT) if os.path.exists(p)]
+    if not refs and not canon:
+        sys.exit('nothing to draw against: no films/%s/charsheet.png, no story painting, and '
+                 'no canonical cell.\nA NEW character needs a model sheet; a borrowed one needs '
+                 'its canon drawn first.' % STORY)
     if canon and os.path.exists(canon):
         refs.append(inline(canon))
-        prompt = ("The LAST reference image is the CANONICAL DRAWING of this character in "
-                  "this film: match its exact colours, shapes and proportions -- the same "
-                  "shell colour, the same body colour, the same eyes, the same beak and legs. "
-                  "It outranks every other reference.\n\n") + prompt
+        prompt = (CANON_RULE[canon_kind] + "\n\n") + prompt
     body = {'contents': [{'role': 'user', 'parts': refs + [{'text': prompt}]}],
             'generationConfig': {'responseModalities': ['TEXT', 'IMAGE'],
                                  'imageConfig': {'aspectRatio': ar}}}
@@ -121,13 +147,13 @@ def key_out(path, tol=26):
     return im.crop(box).size
 
 
-def draw(name, prompt, out, canon, only, force, ar='1:1'):
+def draw(name, prompt, out, canon, only, force, ar='1:1', canon_kind='character'):
     if only and name not in only:
         return
     if os.path.exists(out) and not force:
         print('  %-16s cached' % name)
         return
-    ok = gen(prompt + (SPRITE_TAIL if ar == '1:1' else PLATE_TAIL), out, ar, canon)
+    ok = gen(prompt + (SPRITE_TAIL if ar == '1:1' else PLATE_TAIL), out, ar, canon, canon_kind)
     print('  %-16s %s  %s' % (name, 'drawn' if ok else 'FAILED', key_out(out) if ok and ar == '1:1' else ''))
 
 
@@ -166,10 +192,21 @@ def main(argv):
             c = os.path.join(FILM, 'sprites', c + '.png') if c and c != name else None
             draw(name, desc, os.path.join(FILM, 'sprites', name + '.png'), c, only, force)
 
+    # PLATES THAT MUST MATCH EACH OTHER GET A CANONICAL ONE, same as characters do. A plate
+    # may be a plain prompt, or {"like": "<other plate>", "prompt": "..."} -- and the one it
+    # is like is drawn first, so it exists to be referenced.
     print('films/%s/plates' % STORY)
     os.makedirs(os.path.join(FILM, 'plates'), exist_ok=True)
-    for name, desc in CFG['plates'].items():
-        draw(name, desc, os.path.join(FILM, 'plates', name + '.png'), None, only, force, ar='16:9')
+    pl = CFG['plates']
+    order = [n for n, v in pl.items() if not isinstance(v, dict)] + \
+            [n for n, v in pl.items() if isinstance(v, dict)]
+    for name in order:
+        v = pl[name]
+        desc = v['prompt'] if isinstance(v, dict) else v
+        like = v.get('like') if isinstance(v, dict) else None
+        canon = os.path.join(FILM, 'plates', like + '.png') if like else None
+        draw(name, desc, os.path.join(FILM, 'plates', name + '.png'), canon, only, force,
+             ar='16:9', canon_kind='place')
 
 
 if __name__ == '__main__':

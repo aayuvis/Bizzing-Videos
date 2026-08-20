@@ -79,6 +79,19 @@ function stories() {
     .reduce((a, k) => a.concat(W[k] || []), []);
 }
 
+/* The app's own name for a collection. A title card that says "JATAKA-MORE" is showing a
+   child a database key; the app calls it "More Jataka Tales" and Rule 1 says the words on the
+   channel are the app's words. Same evaluation trick as stories(). */
+function collections() {
+  const vm = require('vm');
+  const W = { window: {} }; W.window = W; vm.createContext(W);
+  fs.readdirSync(appDir()).filter(f => /^data-stories.*\.js$/.test(f)).sort()
+    .forEach(f => vm.runInContext(fs.readFileSync(app(f), 'utf8'), W, { filename: f }));
+  return ['', '_REGIONAL', '_MORE', '_SOUTH', '_NORTH', '_EAST', '_WEST', '_NE_A', '_NE_B',
+    '_MODERN', '_VIGYAN', '_DASHAVATARA', '_DEVASURA']
+    .reduce((a, k) => a.concat(W['IND_COLLECTIONS' + k] || []), []);
+}
+
 /* THE CAST IS SHARED, THE FILM IS NOT.
  *
  * Every film used to generate its own sprites, so the monkey in story two and the monkey in
@@ -110,5 +123,5 @@ const STORY = process.env.STORY || 'pt-talkative-tortoise';
 const FILM = path.join(REPO, 'films', STORY);
 const OUT = path.join(REPO, 'build', STORY);
 
-module.exports = { REPO, STORY, FILM, OUT, appDir, app, url, narration, painting, stories,
+module.exports = { REPO, STORY, FILM, OUT, appDir, app, url, narration, painting, stories, collections,
                    spriteDirs };

@@ -42,9 +42,9 @@
 
   "rig": {
     "rockSprite": "rock-mid",
-    "water": 0.72,
+    "water": 0.66,
     "rockX": 90,
-    "rockH": 104,
+    "rockH": 130,
     "rise": 62
   },
 
@@ -54,23 +54,23 @@
 
     { "id": "01a", "seg": "0", "plate": "river-wide", "camera": "drift-right",
       "layers": [
-        { "sprite": "monkey-sit", "x": -560, "y": 300, "h": 250, "anim": "idle" }
+        { "sprite": "monkey-sit", "perch": [0.14, 0.93], "h": 250, "anim": "idle" }
       ] },
     { "id": "01b", "seg": "0", "plate": "river-wide", "camera": "hold",
       "rock": {},
       "layers": [
-        { "sprite": "monkey-climb", "x": -620, "y": 250, "h": 230, "anim": "bounce" }
+        { "sprite": "monkey-climb", "perch": [0.17, 0.93], "h": 230, "anim": "bounce" }
       ] },
 
     { "id": "02", "seg": "1", "plate": "river-wide", "camera": "hold",
       "rock": {},
       "layers": [
-        { "sprite": "croc-swim", "x": -430, "y": 330, "h": 150, "anim": "small-breathe" }
+        { "sprite": "croc-swim", "perch": [0.24, 0.80], "h": 150, "anim": "small-breathe" }
       ] },
 
     { "id": "03a", "seg": "2", "plate": "river-dusk", "camera": "drift-left",
       "layers": [
-        { "sprite": "croc-swim", "x": -180, "y": 300, "h": 165, "anim": "small-breathe" }
+        { "sprite": "croc-swim", "perch": [0.42, 0.75], "h": 165, "anim": "small-breathe" }
       ] },
     { "id": "03b", "seg": "2", "plate": "river-dusk", "camera": "hold",
       "rock": { "on": "croc-lie" } },
@@ -107,7 +107,7 @@
     { "id": "08a", "seg": "7", "plate": "river-dusk", "camera": "hold",
       "rock": {},
       "layers": [
-        { "sprite": "croc-swim", "x": 340, "y": 330, "h": 155, "anim": "small-breathe" }
+        { "sprite": "croc-swim", "perch": [0.70, 0.80], "h": 155, "anim": "small-breathe" }
       ] },
     { "id": "08b", "seg": "7", "plate": "river-down", "camera": "drift-left",
       "layers": [
@@ -117,7 +117,7 @@
     { "id": "09", "seg": "8", "plate": "river-night", "camera": "hold",
       "rock": {},
       "layers": [
-        { "sprite": "monkey-climb", "x": -600, "y": 250, "h": 225, "anim": "bounce" }
+        { "sprite": "monkey-climb", "perch": [0.13, 0.93], "h": 225, "anim": "bounce" }
       ] },
 
     { "id": "10", "seg": "moral", "plate": "river-night", "camera": "hold",

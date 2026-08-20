@@ -21,6 +21,8 @@ const { STORY, FILM } = S;
 
 /* the story, read from the app rather than retyped */
 const all = S.stories();
+const COLS = S.collections();
+const collName = id => (COLS.find(c => c.id === id) || {}).name || id || 'Story';
 const slug = s => String(s).replace(/[^a-z0-9]+/gi, '-').toLowerCase().replace(/^-|-$/g, '').slice(0, 60);
 const story = all.find(s => slug(s.id) === STORY);
 if (!story) { console.error('no story with slug ' + STORY); process.exit(2); }
@@ -78,7 +80,11 @@ const cards = {
     vars: { ALIGN: 'flex-start', BG: 'transparent', PAD: '92px 160px 0',
             FG: '#fffaf0', SUB: '#f6e6c8', KICK: '#f7c667', SIZE: '104' },
     body: `<div class="scrim"></div>` +
-      `<div class="kicker">${esc(story.collection || 'Story')} &middot; ${BADGE[story.badge] || ''}</div>` +
+      /* THE APP'S NAME FOR THE COLLECTION, not its id. `story.collection` is a key -- fine
+         for panchatantra, which happens to read as a word, and squarely wrong for
+         jataka-more, which put "JATAKA-MORE" on a title card. Rule 1: the words on the
+         channel are the app's words. */
+      `<div class="kicker">${esc(collName(story.collection))} &middot; ${BADGE[story.badge] || ''}</div>` +
       `<h1>${balance(esc(story.title))}</h1>` +
       `<p>${esc(story.hook)}</p>`,
   },
