@@ -580,6 +580,17 @@ Composition is **where the edges are**. Downscale, take the edge map, normalise 
 correlate. Canon-declared pairs here land between 0.62 and 0.97; different places between 0.10
 and 0.17. That is a wall with a canyon on either side of it.
 
+**It narrows the field. It does not replace looking.** Film seven's house was drawn twice —
+once poor, once repaired — and the repaired one came back with a *pitched thatched roof* where
+the original has a flat one with a parapet. It scored 0.70: over the wall, because the walls
+and the tree and the camera and the doorstep all still matched, and only the roof had become a
+different building. A still caught it, in the frame right after the title card. Redrawn with
+"IT IS THE SAME BUILDING AND IT KEEPS ITS SHAPE — the roof stays FLAT", it scores 0.89.
+
+Which is the general shape of every check in this pipeline: an assertion catches what you
+thought to assert, and 0.70 was a number that should have been read as a warning rather than a
+pass. **Look at a still before you render a film** (§4).
+
 ## 6. Editorial (carries to any Bizzing property)
 
 1. **Harm and death stay as elliptical as the app's own text.** The Panchatantra's tortoise

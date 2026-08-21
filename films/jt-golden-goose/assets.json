@@ -11,6 +11,12 @@
   "recolour of one drawing cannot.",
   "",
   "THE HOUSE IS DRAWN TWICE AND IT IS THE SAME HOUSE: house-front is the year they were",
+  "AND A PLATE CAN CHANGE SHAPE WHILE STILL SCORING AS THE SAME PLACE. house-mended came",
+  "back with a pitched thatched roof where house-front has a flat one, and the edge-map",
+  "check scored it 0.70 -- above the wall, because the walls and the tree and the camera",
+  "all still matched. A still caught it. The check narrows the field; it does not replace",
+  "looking, which is why docs/02 says to look at a still before rendering a film.",
+  "",
   "hungry, house-mended is after the roof got fixed, and it names the first as its canonical",
   "composition. film.js measures that claim now.",
   "",
@@ -31,7 +37,7 @@
   "house-front": "The front of a small poor mud-brick house on a quiet lane at the edge of an Indian town, in warm early-morning light, seen straight on from a little back. One low doorway with a worn STONE DOORSTEP in front of it, a small shuttered window, a flat roof with a low parapet, patchy whitewash and a broken corner of thatch over one end of the roof. Bare packed earth in front, a low wall and a neem tree to one side. Flat cel shading, thick soft warm-brown outlines. NO animals, NO birds, NO people. NO idol, NO shrine, NO religious imagery.",
   "house-mended": {
    "like": "house-front",
-   "prompt": "EXACTLY the same small house on the same lane as the reference -- the IDENTICAL camera position, the identical framing and horizon, the same doorway and the same worn stone doorstep in the same place, the same window, the same low wall and the same tree. Do NOT re-frame and do NOT zoom. The one thing that changes: the house has been repaired -- the broken thatch is mended and neatly laid, the whitewash is fresh and even, the shutter is new. Still a small poor house, just a cared-for one. NO animals, NO birds, NO people."
+   "prompt": "EXACTLY the same small house on the same lane as the reference -- the IDENTICAL camera position, the identical framing and horizon, the same doorway and the same worn stone doorstep in the same place, the same shuttered window in the same place, the same low mud wall and the same tree. Do NOT re-frame and do NOT zoom. IT IS THE SAME BUILDING AND IT KEEPS ITS SHAPE. The roof stays FLAT with the same low parapet along its edge, at the same height, seen from the same angle -- it does NOT become a pitched roof, it does NOT gain a sloping thatched roof, and the walls do not change shape or size. The one thing that changes: the house has been REPAIRED. The broken corner of thatch over one end of the flat roof is neatly re-laid, the patchy whitewash is fresh and even instead of peeling, and the shutter is new. Still a small poor house, just a cared-for one. NO animals, NO birds, NO people."
   },
   "house-room": "The inside of a small poor one-room Indian house in the low warm light of an oil lamp, seen straight on. A swept earth floor, one rolled sleeping mat against the wall, a few brass pots on a shelf, a folded stack of cloth, and a doorway open onto the dark lane at the right. Bare, clean and very plain. Flat cel shading, thick soft warm-brown outlines. NO animals, NO people. NO idol, NO shrine, NO religious imagery.",
   "house-roof": "THE FLAT ROOF OF A SMALL MUD-BRICK HOUSE, seen from ON THE ROOF ITSELF in warm afternoon light: the camera stands on the roof, so the swept mud-plaster roof surface fills the whole lower half of the picture and runs away to a LOW PARAPET WALL about knee high across the middle of the frame. Beyond and BELOW that parapet, far away and small, are the tiled roofs of other houses, the top of a neem tree and open sky. This is HIGH UP -- there is NO ground, NO street, NO courtyard and NO earth floor anywhere in the picture, and the wall across the middle is a low parapet at the roof's edge, not a boundary wall standing on the ground. Flat cel shading, thick soft warm-brown outlines. NO animals, NO birds, NO people.",
