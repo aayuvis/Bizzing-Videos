@@ -1,0 +1,55 @@
+{
+ "_": [
+  "WHAT SHIPPED. A film rebuilds from this repo, but the answer to 'which cut is live' does",
+  "not, so it is recorded here. docs/01 §6.",
+  "",
+  "FILM SIX, and the film that introduced `world` -- the counterpart to film three's `rock`.",
+  "`rock` promised the world stayed the same across a film; this promises it CHANGES, in one",
+  "declared direction, and never drifts back. The four garden stages are film-level and",
+  "ordered, and a shot names a stage instead of a plate.",
+  "",
+  "IT IS ALSO THE FIRST FILM WITH A HUMAN CHARACTER IN IT. Read cast/gardener/cast.json",
+  "before this one is published: docs/03 flagged a reusable human as a decision that needs a",
+  "person's judgement, and that judgement has not been given yet.",
+  "",
+  "Picture and sound agree at 118.29s.",
+  "",
+  "NOTHING IS PUBLISHED TO YOUTUBE for this film. Publishing is a human action and nothing",
+  "in this repo uploads."
+ ],
+ "film": "jt-monkey-gardener",
+ "title": "The Monkeys Who Watered the Garden",
+ "expected": 118.29,
+ "cuts": [
+  {
+   "published": null,
+   "duration": 118.29,
+   "resolution": "1920x1080",
+   "bytes": 18027955,
+   "sha1": "f3a9b28eec3de606d71e2491928c076f67156aa3",
+   "commit": null,
+   "youtube": null,
+   "master": null,
+   "at": null,
+   "current": true,
+   "notes": [
+    "Film six. Master out of git; the 720p preview is what gets published."
+   ]
+  },
+  {
+   "published": null,
+   "duration": 118.29,
+   "resolution": "1280x720",
+   "bytes": 4844976,
+   "sha1": "fb7233047fa06a93c92c6295cba6758f2c914bc6",
+   "commit": null,
+   "youtube": null,
+   "master": null,
+   "at": null,
+   "current": true,
+   "notes": [
+    "The review preview."
+   ]
+  }
+ ]
+}

@@ -85,6 +85,20 @@ for d in ${JSON.stringify(dirs)}:
         for x in range(w):
             col=[y for y in range(h) if px[x,y][3]>200]
             if col: rec['head']=[x/w, min(col)/h]; break
+    if name.startswith('log-'):
+        # THE LOG'S BACK, MEASURED. The bounding box's top edge is not the log -- it is the
+        # WEDGE's head, a narrow spike standing well clear of the trunk. Anchoring the monkey
+        # on it stood him on top of the wedge like a circus act, in a shot whose whole point
+        # is that he is sitting on the LOG.
+        # So: the median of the per-column top edges. The wedge is a spike over a few percent
+        # of the columns and a median ignores it by construction -- which is what "anchor on
+        # a feature, never an index" means for a silhouette with a spike in it.
+        tops=[]
+        for x in range(w):
+            col=[y for y in range(h) if px[x,y][3]>200]
+            if col: tops.append(min(col))
+        if tops:
+            tops.sort(); rec['back']=tops[len(tops)//2]/h
     if name.startswith('tortoise'):
         # THE GRIP ANCHOR, MEASURED. Guessed twice and wrong twice -- 0.30 put the stick
         # across his brow, 0.42 across his chest -- so it is derived from the drawing now.
@@ -351,13 +365,21 @@ function layerHTML(L, man) {
   }
   const s = man[L.sprite];
   if (!s) throw new Error('no sprite "' + L.sprite + '" — run the asset generator');
-  const h = L.h || Math.round((L.w || 200) * s.h / s.w);
-  const w = L.w || Math.round(h * s.w / s.h);
+  if (L.who && L.h)
+    throw new Error('a layer names who: "' + L.who + '" AND a height. Pick one — the ladder ' +
+      'exists so a shot cannot resize a character.');
+  const { h, w } = layerSize(L, man);
   const fl = L.flip ? 'scaleX(-1)' : '';
   if (L.perch) { const q = perchXY(L.perch, w, h); L = Object.assign({}, L, { x: q.x, y: q.y }); }
-  return `<div class="layer char" style="width:${w}px;height:${h}px;margin-left:${-w / 2}px;` +
+  /* `gild` is a RECOLOUR OF THE SAME DRAWING, never a second drawing. docs/03's worry about
+     this film was that the goose after the grab would read as a second goose; a filter over
+     one file makes that impossible to get wrong, and film.js asserts the filter is actually
+     doing something so the flag can never quietly become decorative. */
+  return `<div class="layer char"${L.who ? ` data-who="${L.who}"` : ''}` +
+    `${L.gild ? ' data-gild="1"' : ''} ` +
+    `style="width:${w}px;height:${h}px;margin-left:${-w / 2}px;` +
     `margin-top:${-h / 2}px;--tx:${L.x}px;--ty:${L.y}px;--fl:${fl};` +
-    `background-image:url(${spriteURL(L.sprite)});` +
+    `background-image:url(${spriteURL(L.gild ? goldCell(L.sprite, man) : L.sprite)});` +
     `transform:translate(${L.x}px,${L.y}px) ${fl};` +
     `animation:${MOTION[L.anim] || 'none'}"></div>`;
 }
@@ -420,6 +442,443 @@ function rockHTML(rock, man) {
     `background:url(${spriteURL(rig.rockSprite || 'rock-mid')}) center/contain no-repeat"></div>` +
     on +
     `</div>`;
+}
+
+/* THE LOG — the same log, in the same place, in two states.
+ *
+ * This is not film four's primitive; `troop` is, and a film gets one (docs/02 §3). It is the
+ * `rock` lesson applied at half the size, and it is here because the shot list got it wrong
+ * twice in one pass while it was still prose:
+ *
+ *   - the moral shot asked for a log HELD OPEN BY ITS WEDGE and a loose wedge lying beside
+ *     it, which is two wedges. The whole story is about ONE wedge and where it is.
+ *   - the two cells came back at different proportions (2.5:1 open, 3.1:1 shut). Placed by
+ *     HEIGHT, as everything else in this pipeline is, the log would have grown 24% longer at
+ *     the exact cut where it is supposed to snap shut.
+ *
+ * So the log is film-level. rig.log gives its x, the ground line it lies on and its LENGTH,
+ * and a shot may write only:
+ *
+ *     "log": {}                                       as the carpenters left it, wedged open
+ *     "log": { "shut": true }                          after he heaves it out
+ *     "log": { "astride": { "who": "monkey", "cell": "monkey-sit" } }
+ *     "log": { "shut": true, "wedge": true }           the wedge now on the ground
+ *
+ * There is no field for the cell, for where it is, or for how long it is. It is fitted by
+ * WIDTH with its underside on the ground line, so its length and its footing are identical in
+ * every shot and closing the cut reads as the log getting slimmer -- which is what closing a
+ * cut does. `astride` puts the rider's bottom edge ON the log's top edge at the log's middle,
+ * so there is no monkey hovering over the gap and none sunk into it. And a shot that asks for
+ * a loose wedge while the log is still open is refused here, because that is two wedges. */
+function logHTML(log, man) {
+  const rig = scenes.rig || {}, cfg = rig.log;
+  if (!cfg) throw new Error('a shot has a "log" but scenes.json has no rig.log.\n' +
+    'The log is the same log in every shot, so its x, its ground line and its length are ' +
+    'film-level — see rig in scenes.json.');
+  for (const k of ['x', 'ground', 'w']) {
+    if (typeof cfg[k] !== 'number')
+      throw new Error('rig.log.' + k + ' is not set. The log cannot be placed per shot.');
+  }
+  const shut = !!log.shut;
+  const cell = shut ? 'log-shut' : 'log-wedged';
+  const sp = man[cell];
+  if (!sp) throw new Error('the log needs "' + cell + '" and it is not drawn yet — ' +
+    'run npm run assets');
+  /* ONE WEDGE. It is in the log or it is on the ground; it is never in both places, and a
+     shot cannot say otherwise. */
+  if (log.wedge && !shut)
+    throw new Error('a shot asks for a loose wedge while the log is still wedged open.\n' +
+      'That is two wedges, and the story has one. A loose wedge means "log": {"shut": true}.');
+  const W = cfg.w, H = Math.round(W * sp.h / sp.w);
+  const groundY = Math.round((cfg.ground - 0.5) * 1080 * 1.12);   // a point on the PLATE
+  /* THE BACK OF THE LOG, off the drawing -- not the top of its box, which is the wedge's
+     head. Measured in build.js's manifest pass; see the note there. */
+  const backY = -H + Math.round((typeof sp.back === 'number' ? sp.back : 0) * H);
+
+  const out = [`<div class="log-body" data-log="${shut ? 'shut' : 'wedged'}" ` +
+    `style="position:absolute;left:${-W / 2}px;top:${-H}px;width:${W}px;height:${H}px;` +
+    `z-index:1;background:url(${spriteURL(cell)}) center/contain no-repeat"></div>`,
+    /* a zero-height marker AT the back line, so the assertions measure the same thing the
+       renderer used -- the rock's waterline trick, one size down */
+    `<div class="log-back" style="position:absolute;left:${-W / 2}px;top:${backY}px;` +
+    `width:${W}px;height:0"></div>`];
+
+  if (log.astride) {
+    const a = log.astride, ac = man[a.cell];
+    if (!ac) throw new Error('log.astride names cell "' + a.cell + '" and it is not drawn yet');
+    const h = ladderH(a.who, log.depth), w = Math.round(h * ac.w / ac.h);
+    const dx = cfg.astrideDx || 0;
+    if (Math.abs(dx) + w / 2 > W / 2)
+      throw new Error('rig.log.astrideDx puts him off the end of the log.');
+    /* His bottom edge IS the log's back -- the same number, not two close ones. */
+    out.push(`<div class="char log-astride" style="position:absolute;left:${dx - w / 2}px;` +
+      `top:${backY - h}px;width:${w}px;height:${h}px;z-index:2;` +
+      `background:url(${spriteURL(a.cell)}) center/contain no-repeat;` +
+      `${a.flip ? 'transform:scaleX(-1);' : ''}` +
+      `animation:${MOTION[a.anim] || 'none'}"></div>`);
+  }
+
+  if (log.wedge) {
+    const wc = man['wedge-loose'];
+    if (!wc) throw new Error('a shot has a loose wedge and wedge-loose is not drawn yet');
+    const wh = cfg.wedgeH || 70, ww = Math.round(wh * wc.w / wc.h);
+    const dx = typeof cfg.wedgeDx === 'number' ? cfg.wedgeDx : Math.round(W * 0.62);
+    /* IT IS OUT OF THE LOG, so it lies CLEAR of the log. Put it inside the log's own width
+       and it renders on top of the timber, which reads as a wedge still in the cut -- the
+       exact thing the shot exists to say is no longer true. */
+    if (Math.abs(dx) - ww / 2 < W / 2)
+      throw new Error('rig.log.wedgeDx (' + dx + ') lays the loose wedge on top of the log.\n' +
+        'It has just come OUT; it has to be clear of the timber — at least ' +
+        Math.ceil(W / 2 + ww / 2) + 'px from the middle.');
+    /* on the same ground line as the log, so it is lying in the yard and not floating */
+    out.push(`<div class="log-wedge" style="position:absolute;left:${dx - ww / 2}px;` +
+      `top:${-wh}px;width:${ww}px;height:${wh}px;z-index:3;` +
+      `background:url(${spriteURL('wedge-loose')}) center/contain no-repeat"></div>`);
+  }
+
+  return `<div id="log" style="position:absolute;left:calc(50% + ${cfg.x}px);` +
+    `top:calc(50% + ${groundY}px);width:0;height:0">${out.join('')}</div>`;
+}
+
+/* THE TROOP — film four's primitive, and the one docs/02 §5.7 does not cover.
+ *
+ * The brief says crowds belong in the PLATE, and gives the reason: they never recur, so they
+ * are scenery. That is right for a village that runs out to look up. It is wrong for a troop
+ * of monkeys who come down off the wall, try the saw, sit in the bucket and pull the wedge --
+ * they act, they are on screen for most of the film, and they are made of a cell we own.
+ *
+ * A crowd of CAST has one failure mode and it is total: six identical monkeys in a row, at
+ * the same size, facing the same way, breathing in step. That is not a troop, it is a sprite
+ * sheet, and a child sees it instantly.
+ *
+ * So the rig places them and the rig varies them. A troop names a cell, a count and a line
+ * across the plate; each instance gets a scale, a facing and an animation phase from a SEEDED
+ * generator -- seeded, because a render has to stay byte-identical between runs (docs/02 §2).
+ * film.js then asserts what a viewer would complain about: that no two neighbours share both
+ * scale and facing, and that they do not pile up on each other.
+ *
+ * `n` is the whole crowd. There is no per-instance field, so nobody can hand-place the third
+ * monkey and quietly undo the variation. */
+function rng(seed) {                       // deterministic; same film, same frames, forever
+  let x = seed * 2654435761 % 4294967296;
+  return () => { x = (x * 1664525 + 1013904223) % 4294967296; return x / 4294967296; };
+}
+
+function troopHTML(t, man) {
+  const sp = man[t.cell];
+  if (!sp) throw new Error('troop needs cell "' + t.cell + '"');
+  const n = t.n;
+  if (!(n >= 2)) throw new Error('a troop of ' + n + ' is not a troop');
+  const base = t.who ? ladderH(t.who, t.depth) : t.h;
+  if (!base) throw new Error('troop needs a height, via who: or h:');
+  const r = rng(t.seed || 1);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const f = n === 1 ? 0 : i / (n - 1);
+    /* along the line, with the far end smaller: a crowd standing on a ground plane recedes */
+    const px = t.from[0] + (t.to[0] - t.from[0]) * f;
+    const py = t.from[1] + (t.to[1] - t.from[1]) * f;
+    const jitter = (r() - 0.5) * (t.spread || 0.02);
+    const scale = 0.82 + r() * 0.36;                       // 0.82–1.18 of the troop height
+    const flip = r() < 0.5;
+    const delay = -(r() * 3).toFixed(2);
+    const h = Math.round(base * scale), w = Math.round(h * sp.w / sp.h);
+    const q = perchXY([px + jitter, py], w, h);
+    out.push(`<div class="layer char troop-one" data-troop="${scale.toFixed(3)},${flip ? 1 : 0}" ` +
+      `style="width:${w}px;height:${h}px;margin-left:${-w / 2}px;margin-top:${-h / 2}px;` +
+      `--tx:${q.x}px;--ty:${q.y}px;--fl:${flip ? 'scaleX(-1)' : ''};` +
+      `background-image:url(${spriteURL(t.cell)});` +
+      `transform:translate(${q.x}px,${q.y}px) ${flip ? 'scaleX(-1)' : ''};` +
+      `animation:${MOTION[t.anim] || 'none'};animation-delay:${delay}s"></div>`);
+  }
+  return out.join('');
+}
+
+/* THE COUNT — film seven's primitive: a set that a child can count, and that changes.
+ *
+ * "One golden feather every visit, for as long as you need it" only lands if the feathers on
+ * the step are a NUMBER. And the moment the story turns on is arithmetic: she pulls out a
+ * handful and every single one of them turns into an ordinary white feather. If the film shows
+ * six gold and then four white, a child who counts has caught the film out.
+ *
+ * THE GOLD ONE AND THE WHITE ONE ARE THE SAME DRAWING. That is the whole trick, and it is the
+ * `carry` lesson again: the strongest way to promise two things are the same object is for
+ * them to BE the same file. One feather sprite; the gold ones carry a gild filter and the
+ * plain ones do not, so "it turned into an ordinary white feather" is literally true of the
+ * pixels and cannot drift. The same filter makes the goose golden, for the same reason --
+ * docs/03 worried the goose after the grab would read as a SECOND goose, and a recolour of one
+ * drawing cannot.
+ *
+ * The row is film-level: rig.count owns where the feathers sit, how far apart and how big.
+ * A shot may write only how many of each:
+ *
+ *     "count": { "gold": 1 }                one on the step
+ *     "count": { "plain": 6 }               the six she is left with
+ *
+ * so there is no field for moving a feather, and a pile cannot drift between shots. film.js
+ * then checks the arithmetic across the film: the total never goes down (a feather does not
+ * un-happen), gold never comes back once anything has turned plain, and the film shows both. */
+/* GOLD IS A RAMP, NOT A HUE, and this used to be a `filter:` chain because that keeps the
+ * promise cheaply: the golden goose and the plain goose are one drawing, so he cannot come
+ * back as a different bird. Five rounds of tuning proved the filter cannot do it on a WHITE
+ * subject -- sepia() preserves luminance, so the bird stays pale until the chroma is pushed
+ * far enough to make a lemon rubber duck, and hue-rotating the lemon away gives a traffic
+ * cone. See pipeline/gild.py, which does it properly by mapping luminance through a gold
+ * ramp and keeping the alpha channel exactly. The promise survives -- it is still one
+ * drawing -- and it is now checkable, because two PNGs can be compared and a filter could
+ * not be.
+ *
+ *     "gild": true   on a layer, or a gold count, uses <cell>-gold.png
+ */
+function goldCell(name, man) {
+  const g = name + '-gold';
+  if (!man[g]) throw new Error('"' + name + '" is asked for in gold and ' + g + '.png does ' +
+    'not exist.\nRun: python3 pipeline/gild.py <path to ' + name + '.png>');
+  return g;
+}
+
+function countHTML(c, man) {
+  const rig = (scenes.rig || {}).count;
+  if (!rig) throw new Error('a shot has a "count" but scenes.json has no rig.count.\n' +
+    'Where the row sits, how far apart and how big are film-level — see rig in scenes.json.');
+  const sp = man[rig.sprite];
+  if (!sp) throw new Error('rig.count names sprite "' + rig.sprite + '" and it is not drawn yet');
+  const gold = c.gold || 0, plain = c.plain || 0;
+  if (gold + plain < 1) throw new Error('a "count" of nothing is not a count');
+  const h = rig.h, w = Math.round(h * sp.w / sp.h);
+  /* WHERE THE ROW SITS IS FILM-LEVEL, but the feathers are on the step in one shot and on the
+     roof in another, so the film DECLARES its spots and a shot picks one by name. It still
+     cannot invent a position -- same discipline as the world's stages. */
+  const spot = c.at || Object.keys(rig.spots)[0];
+  if (!rig.spots[spot]) throw new Error('a shot puts the count "' + spot + '", and rig.count ' +
+    'declares only: ' + Object.keys(rig.spots).join(', '));
+  const [ax, ay] = rig.spots[spot], [sx, sy] = rig.step;
+  const out = [];
+  for (let i = 0; i < gold + plain; i++) {
+    const isGold = i < gold;
+    const q = perchXY([ax, ay], w, h);
+    /* `.layer` for the positioning: it is what puts an element's origin at the middle of the
+       stage, which is the coordinate system perchXY() answers in. Positioning these from the
+       stage's top-left instead put every feather in the top-left corner, half of them off the
+       edge -- caught by the in-frame assertion, which is what it is for. */
+    out.push(`<div class="layer count-one" data-gold="${isGold ? 1 : 0}" ` +
+      `style="width:${w}px;height:${h}px;` +
+      `margin-left:${-w / 2}px;margin-top:${-h / 2}px;` +
+      `transform:translate(${q.x + i * sx}px,${q.y + i * sy}px);` +
+      `background:url(${spriteURL(isGold ? goldCell(rig.sprite, man) : rig.sprite)}) ` +
+      `center/contain no-repeat"></div>`);
+  }
+  return out.join('');
+}
+
+/* THE MANY — film eight's primitive, and `troop` at a scale where placing them by hand is
+ * not a thing a person does. A hundred thousand olive ridleys come ashore on one Odisha beach
+ * in a night; the film needs a beach "cobbled with turtles as far as a torch could shine",
+ * and a hundred instances of one drawing is the only honest way to get there.
+ *
+ * `troop` puts n along a LINE. This fills an AREA with depth, and the failure modes are
+ * different and worse:
+ *   - a visible grid. Six monkeys in a row read as a row; a hundred turtles in a lattice read
+ *     as wallpaper, and a child sees wallpaper instantly.
+ *   - flat scale. On a beach receding to the surf, a turtle at the back has to be smaller
+ *     than one at the front, or the beach has no depth and the crowd has no size.
+ *   - pile-ups. At a hundred instances, uniform random placement WILL overlap; the eye reads
+ *     overlapping turtles as one broken shape.
+ *
+ * So placement is jittered-grid (a lattice with a large random offset inside each cell), which
+ * is what gives blue-noise-ish spacing without a rejection loop: dense, uneven, never regular.
+ * Depth comes from the row, so scale and y move together and cannot disagree. Seeded, so the
+ * render is byte-identical between runs (docs/02 §2).
+ *
+ *     "many": { "cell": "ridley-crawl", "n": 90, "top": 0.56, "bottom": 0.96,
+ *               "far": 46, "near": 130, "seed": 5 }
+ *
+ * There is no per-instance anything. film.js then asserts what a viewer would complain about:
+ * the count, that depth holds (higher up the frame IS smaller), that nearest-neighbour spacing
+ * has real variance rather than a lattice's near-zero, and that nobody is a pile-up. */
+const PLATE = 1.12;   // perchXY's plate-over-stage scale; see the CSS for #plate
+
+function manyHTML(m, man) {
+  const sp = man[m.cell];
+  if (!sp) throw new Error('many needs cell "' + m.cell + '"');
+  const n = m.n;
+  if (!(n >= 20)) throw new Error('a "many" of ' + n + ' is a troop. Use troop.');
+  const r = rng(m.seed || 1);
+  const aspect = sp.w / sp.h;
+
+  /* ROWS OF DIFFERENT POPULATION, which is the whole difference between this and `troop`.
+     A square lattice puts the same number of instances in the near row as the far one, and
+     the near ones are three times the size -- so they cannot fit and they draw through each
+     other. On a receding plane the BACK holds more, in proportion to how small things are
+     there, so instances are dealt to rows by 1/width. Then every row has the same
+     instances-per-turtle-width, and the crowd is dense everywhere without piling up anywhere.
+     Half a cell of brick offset breaks the horizontal banding a plain grid leaves behind. */
+  const rows = m.rows || Math.max(3, Math.round(Math.sqrt(n / 2.6)));
+  const span = m.right - m.left;
+  const rowY = [], rowW = [];
+  for (let i = 0; i < rows; i++) {
+    const fy = (i + 0.5) / rows;
+    rowY.push(fy);
+    rowW.push((m.far + (m.near - m.far) * fy) * aspect);
+  }
+  const wsum = rowW.reduce((s, w) => s + 1 / w, 0);
+  const per = rowW.map(w => Math.max(1, Math.round(n * (1 / w) / wsum)));
+
+  /* WHAT EACH ROW CAN ACTUALLY HOLD, in the plate coordinates a perch is written in -- and
+     measured on the WIDEST instance the row's band can produce, because y jitters inside the
+     band and its front edge is what has to fit. */
+  const CAP = 0.92;   // the minimum centre-to-centre gap, in sprite widths; the relax below
+                      // uses the same number, and film.js refuses anything closer
+  const cap = [], rowMaxW = [];
+  for (let i = 0; i < rows; i++) {
+    const wMax = (m.far + (m.near - m.far) * ((i + 0.85) / rows)) * aspect;
+    rowMaxW.push(wMax);
+    /* against the span the row can ACTUALLY use, which is the declared band narrowed by the
+       half-sprite the edge clamp keeps inside the frame. Measuring capacity against the wider
+       declared band left the last pair in the widest row pinned against the edge with nowhere
+       to be pushed, and one pair overlapping through every relax pass. */
+    const edge = (960 - wMax / 2) / (1920 * PLATE);
+    const usable = Math.min(m.right, 0.5 + edge) - Math.max(m.left, 0.5 - edge);
+    cap.push(Math.max(1, Math.floor(usable * 1920 * PLATE / (wMax * CAP * 1.06))));
+  }
+  /* water-fill n into the rows: take from any row over its cap, give to any row under it */
+  for (let i = 0; i < rows; i++) per[i] = Math.min(per[i], cap[i]);
+  let left = n - per.reduce((s, v) => s + v, 0);
+  for (let pass = 0; left > 0 && pass < 200; pass++) {
+    let placed = 0;
+    for (let i = 0; i < rows && left > 0; i++)
+      if (per[i] < cap[i]) { per[i]++; left--; placed++; }
+    if (!placed) break;
+  }
+  while (left < 0) { const i = per.indexOf(Math.max(...per)); per[i]--; left++; }
+  if (left > 0) {
+    /* NO SILENT CAP. A crowd that does not fit is an authoring decision, not something for
+       the renderer to quietly shave -- the alternative is turtles drawn through each other,
+       which is what this whole layout exists to prevent. */
+    throw new Error('a "many" of ' + m.n + ' ' + m.cell + ' does not fit the band it is given.\n' +
+      'It holds ' + cap.reduce((s, v) => s + v, 0) + ' at this size. Lower n, lower "near", ' +
+      'or widen left/right/top/bottom.');
+  }
+
+  const out = [];
+  for (let row = 0; row < rows; row++) {
+    const k = per[row];
+    /* a bricked row is INSET by the half cell it is offset by, so the offset cannot walk the
+       last instance in the row off the side of the frame */
+    const brick = (row % 2) ? 0.5 : 0;
+    const inset = brick * (span / k) * 0.5;
+    const cell = (span - inset * 2) / k;
+    /* KEEP HALF A SPRITE INSIDE THE FRAME, in PLATE coordinates. A perch is a fraction of the
+       plate and the plate is 1.12x the stage, so 0.04 is not 4% in from the left edge -- it is
+       29px OFF it, which is how seven turtles ended up half in the sea. */
+    const wMax = rowMaxW[row];
+    const edge = (960 - wMax / 2) / (1920 * PLATE);
+    const lo = Math.max(m.left + inset, 0.5 - edge), hi = Math.min(m.right - inset, 0.5 + edge);
+    const inst = [];
+    for (let i = 0; i < k; i++) {
+      const fy = (row + 0.15 + r() * 0.7) / rows;
+      const h = Math.round(m.far + (m.near - m.far) * fy);
+      inst.push({ x: lo + cell * (i + 0.19 + r() * 0.62), fy, h,
+                  w: Math.round(h * aspect), flip: r() < 0.5, delay: -(r() * 4).toFixed(2) });
+    }
+    /* JITTER, THEN PUSH APART. Jitter is what stops the crowd reading as a tile, and it is
+       also what makes two of them land on the same patch of sand -- turn it up until the
+       spacing looks natural and you get pile-ups, turn it down until the pile-ups stop and
+       you get wallpaper. Both were measured happening. So: jitter freely, then relax the row
+       until nobody is inside anybody, which keeps the uneven spacing AND separates them.
+       Neighbours may still touch -- an arribada beach is shoulder to shoulder and should
+       look it -- they just may not be drawn through each other. */
+    const minGap = CAP / 1920;
+    for (let pass = 0; pass < 40; pass++) {
+      let moved = false;
+      /* re-sort every pass: a push can carry one instance past its neighbour, and then the
+         two that are actually side by side are no longer adjacent in the list -- which is how
+         one pair kept overlapping through a relax that reported itself settled */
+      inst.sort((a, b) => a.x - b.x);
+      for (let i = 1; i < inst.length; i++) {
+        const a = inst[i - 1], b = inst[i];
+        const need = minGap * Math.max(a.w, b.w);
+        const d = b.x - a.x;
+        if (d < need) { const push = (need - d) / 2; a.x -= push; b.x += push; moved = true; }
+      }
+      for (const e of inst) e.x = Math.min(hi, Math.max(lo, e.x));
+      if (!moved) break;
+    }
+    for (const e of inst) {
+      const py = m.top + (m.bottom - m.top) * e.fy;
+      const q = perchXY([e.x, py], e.w, e.h);
+      out.push(`<div class="layer char many-one" data-many="${e.fy.toFixed(4)}" ` +
+        `data-band="${row}" data-h="${e.h}" ` +
+        `style="width:${e.w}px;height:${e.h}px;margin-left:${-e.w / 2}px;` +
+        `margin-top:${-e.h / 2}px;z-index:${row + 1};--tx:${q.x}px;--ty:${q.y}px;` +
+        `--fl:${e.flip ? 'scaleX(-1)' : ''};background-image:url(${spriteURL(m.cell)});` +
+        `transform:translate(${q.x}px,${q.y}px) ${e.flip ? 'scaleX(-1)' : ''};` +
+        `animation:${MOTION[m.anim] || 'none'};animation-delay:${e.delay}s"></div>`);
+    }
+  }
+  return out.join('');
+}
+
+/* THE SIZE LADDER — film five's primitive, and the first about a RELATIONSHIP BETWEEN
+ * CHARACTERS that has to hold everywhere at once.
+ *
+ * "Who Was Here First?" is an argument about size. "You are the biggest. That is not the same
+ * thing at all" only means something if the elephant is overwhelmingly bigger than the bird in
+ * every frame they share. Author heights per shot and they drift: the partridge creeps up to a
+ * convenient size the moment she has a line, and the joke quietly dies.
+ *
+ * So heights are not a shot's business. `rig.ladder` declares one height per character for the
+ * whole film, and a layer names WHO it is rather than how tall:
+ *
+ *     "layers": [ { "who": "elephant", "cell": "elephant-settle" },
+ *                 { "who": "partridge", "cell": "partridge-speak", "perch": [0.4,0.7] } ]
+ *
+ * A shot may set `depth` to push the whole group further away, which scales everything by the
+ * same factor and so cannot disturb the ratios. There is no per-character height field, which
+ * is the point: the drift is not discouraged, it is unsayable.
+ *
+ * film.js then checks the ladder holds -- ordering and ratios, in every shot and across the
+ * whole film. */
+/* ONE PLACE THAT KNOWS HOW BIG A LAYER IS. The renderer and the callout placer each worked
+   it out separately, and when the ladder arrived only the renderer learned about it -- so a
+   434px elephant was placed as if he were 200px wide, and his bubble landed 82px inside his
+   own back with 626px of clear sky above him. Two computations of one fact is one too many. */
+function layerSize(L, man) {
+  const sp = man[L.sprite];
+  if (!sp) return null;
+  const h = L.who ? ladderH(L.who, L._depth) : (L.h || Math.round((L.w || 200) * sp.h / sp.w));
+  return { h, w: L.w || Math.round(h * sp.w / sp.h) };
+}
+
+function ladderH(who, depth) {
+  const rig = scenes.rig || {};
+  const L = rig.ladder || {};
+  if (typeof L[who] !== 'number')
+    throw new Error('layer names who: "' + who + '" but rig.ladder has no height for it.\n' +
+      'Heights are film-level so relative size cannot drift between shots — add it to the ladder.');
+  return Math.round(L[who] * (depth || 1));
+}
+
+/* THE TOWER. The story ends with them going about the forest in a stack -- partridge on the
+ * monkey, monkey on the elephant -- and that is carved on gateways all over India, which is
+ * why the film has to get it exactly right. Each one stands ON the one below: its bottom edge
+ * IS the other's top edge, computed, not placed. Same promise as the stick in two beaks. */
+function towerHTML(t, man) {
+  const depth = t.depth || 1;
+  let bottom = Math.round((t.ground - 0.5) * 1080 * 1.12);   // feet of the lowest, on the plate
+  const out = [];
+  for (const step of t.of) {
+    const sp = man[step.cell];
+    if (!sp) throw new Error('tower needs cell "' + step.cell + '"');
+    const h = ladderH(step.who, depth), w = Math.round(h * sp.w / sp.h);
+    out.push(`<div class="char tower-step" data-who="${step.who}" ` +
+      `style="position:absolute;left:${-w / 2}px;top:${bottom - h}px;width:${w}px;height:${h}px;` +
+      `background:url(${spriteURL(step.cell)}) center/contain no-repeat;` +
+      `${step.flip ? 'transform:scaleX(-1);' : ''}"></div>`);
+    bottom -= h;                                  // the next one stands on this one's top
+  }
+  return `<div id="tower" style="position:absolute;left:calc(50% + ${t.x || 0}px);top:50%;` +
+    `width:0;height:0;animation:${CARRY[t.anim] || 'none'}">${out.join('')}</div>`;
 }
 
 /* THE HOP — a jump whose LANDINGS are arithmetic.
@@ -592,9 +1051,67 @@ function rideHTML(r, man) {
     `</div>`;
 }
 
+/* THE WORLD — film six's primitive, and the second one about the place rather than the
+ * people in it. `rock` promised the world STAYED THE SAME; this promises it changes, in one
+ * declared direction, and never drifts back.
+ *
+ * The king's garden is kept, then half dug up, then wholly dug up, then wilted, and that
+ * progression IS the story: monkeys who water a garden by pulling every sapling up first.
+ * Get it wrong and no single shot is wrong -- a wilted garden in shot 6 and a kept one in
+ * shot 12 both look fine on their own, and only the film is broken.
+ *
+ * So the stages are film-level and ORDERED:
+ *
+ *     "rig": { "world": { "plate": "garden", "of": ["kept","pulling","uprooted","wilted"] } }
+ *
+ * and a garden shot writes `"world": "uprooted"` INSTEAD of a plate. A shot cannot name both,
+ * so it cannot show a stage that is not one of these; film.js then checks the sequence never
+ * runs backwards and that the first and last stage both appear -- "a garden of wilted sticks"
+ * needs the kept garden on screen earlier or there is nothing to have lost.
+ *
+ * Shots that are not in the garden name a plate as usual. The mango tree is not a stage. */
+function worldPlate(shot) {
+  const w = (scenes.rig || {}).world;
+  if (!w) throw new Error('shot ' + shot.id + ' names a world stage but scenes.json has no ' +
+    'rig.world. The stages are film-level and ordered — see rig in scenes.json.');
+  if (shot.plate) throw new Error('shot ' + shot.id + ' names both a plate and a world stage.\n' +
+    'A garden shot is a stage; a shot somewhere else names a plate. Never both.');
+  const i = w.of.indexOf(shot.world);
+  if (i < 0) throw new Error('shot ' + shot.id + ' is at world stage "' + shot.world +
+    '", which is not one of: ' + w.of.join(', '));
+  return { plate: w.plate + '-' + shot.world, i };
+}
+
 function shotHTML(shot, man) {
+  if (shot.world) shot.plate = worldPlate(shot).plate;
+  /* `who` names a character and `cell` the drawing; the sprite name the rest of the builder
+     expects is the cell, and the height comes from the ladder. */
+  if (shot.layers) shot.layers = shot.layers.map(L => L.who
+    ? Object.assign({}, L, { sprite: L.cell || L.sprite, _depth: shot.depth }) : L);
   const body = [`<div id="plate" style="background-image:url(plates/${shot.plate}.png);` +
     `animation:${CAMERA[shot.camera] || 'none'}"></div>`];
+  /* NIGHT GRADES THE CAST, NOT THE PLATE. A night plate is painted dark; a sprite is drawn on
+     white for daylight, so dropped onto a moonlit beach unchanged it GLOWS -- a hundred olive
+     ridleys came out looking like a hundred pale eggs under a floodlight, in a film whose
+     moral is about switching lights off. Darkening is the one thing a CSS filter is genuinely
+     good at (unlike recolouring: see gild.py), so it is one. film.js measures the result
+     against the plate beside it, because "is it dark enough" is a comparison, not a constant. */
+  const nightOpen = shot.night ? '<div id="night" style="position:absolute;inset:0;' +
+    'filter:brightness(0.46) saturate(0.55) contrast(1.08)">' : '';
+  if (shot.troop) body.push(troopHTML(shot.troop, man));
+  if (shot.many) body.push(manyHTML(shot.many, man));
+  if (shot.count) body.push(countHTML(shot.count, man));
+  if (shot.tower) body.push(towerHTML(shot.tower, man));
+  if (shot.log) {
+    /* Same reason a rock shot holds: the ground line is painted on the PLATE, so a camera
+       move slides the yard out from under the log. */
+    if (shot.camera && shot.camera !== 'hold') {
+      throw new Error('shot ' + shot.id + ' has a log and camera "' + shot.camera + '".\n' +
+        'The ground is painted on the plate, so moving the plate moves the ground and not ' +
+        'the log. Log shots hold.');
+    }
+    body.push(logHTML(shot.log, man));
+  }
   if (shot.rock) {
     /* A CAMERA MOVE SLIDES THE WATERLINE OUT FROM UNDER THE ROCK. The plate is what has water
        painted on it and the plate is what the camera moves; the rock is positioned in stage
@@ -650,6 +1167,26 @@ function shotHTML(shot, man) {
       boxes.push(placed[shot.rock.on]);
     }
   }
+  if (shot.log) {
+    /* Same registration the rock gets, and for the same reason: a bubble belongs to whoever
+       is speaking, and it has to clear the timber he is sitting on. layerSize() cannot see
+       either of them -- neither is a layer. */
+    const cfg = scenes.rig.log, shut = !!shot.log.shut;
+    const sp = man[shut ? 'log-shut' : 'log-wedged'];
+    if (sp) {
+      const W = cfg.w, H = Math.round(W * sp.h / sp.w);
+      const groundY = Math.round((cfg.ground - 0.5) * 1080 * 1.12);
+      boxes.push({ x: cfg.x, y: groundY - H / 2, w: W, h: H });
+      const a = shot.log.astride;
+      if (a && man[a.cell]) {
+        const ac = man[a.cell], h = ladderH(a.who, shot.log.depth);
+        const w = Math.round(h * ac.w / ac.h);
+        const back = groundY - H + Math.round((typeof sp.back === 'number' ? sp.back : 0) * H);
+        placed[a.cell] = { x: cfg.x + (cfg.astrideDx || 0), y: back - h / 2, w, h };
+        boxes.push(placed[a.cell]);
+      }
+    }
+  }
   if (shot.carry) {
     const c = shot.carry;
     placed.carry = { x: 0, y: c.y || 0, w: c.span + c.gooseH,
@@ -658,9 +1195,8 @@ function shotHTML(shot, man) {
   }
   for (const L of shot.layers || []) {
     if (L.say || !L.sprite || L.hop) continue;      // a hop moves; it is not a box to clear
-    const sp = man[L.sprite]; if (!sp) continue;
-    const h = L.h || Math.round((L.w || 200) * sp.h / sp.w);
-    const w = L.w || Math.round(h * sp.w / sp.h);
+    const sz = layerSize(L, man); if (!sz) continue;
+    const { h, w } = sz;
     const q = L.perch ? perchXY(L.perch, w, h) : { x: L.x || 0, y: L.y || 0 };
     placed[L.sprite] = { x: q.x, y: q.y, w: w, h: h };
     boxes.push(placed[L.sprite]);
@@ -679,10 +1215,14 @@ function shotHTML(shot, man) {
      ASCII. Both fail the same silent way -- the browser drops to Georgia and renders a
      perfectly reasonable-looking callout in the wrong face. Linking the app's stylesheet
      fixes both and cannot drift from what the reader sets. */
+  /* the plate is already night; everything after it is cast, so the wrapper opens after it */
+  const html = nightOpen
+    ? body[0] + nightOpen + body.slice(1).join('') + '</div>'
+    : body.join('');
   return `<!doctype html><meta charset="utf-8">` +
          `<link rel="stylesheet" href="${S.url('fonts.css')}">` +
          `<style>${CSS}</style>` +
-         `<div id="stage">${body.join('')}</div>`;
+         `<div id="stage">${html}</div>`;
 }
 
 const only = process.argv.includes('--only')

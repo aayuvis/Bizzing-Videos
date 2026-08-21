@@ -1,0 +1,24 @@
+{
+ "_": [
+  "The olive ridley. Drawn for fk-ridley-night, which is the channel's first 🧭 Aaj film.",
+  "",
+  "THIS ONE IS A REAL ANIMAL AND THE BADGE SAYS SO. Aaj means 'how it lives today', so the",
+  "film carries a factual claim in a way a katha does not, and the drawing has to be an olive",
+  "ridley and not a generic cartoon turtle: a rounded heart-shaped shell, olive-grey above,",
+  "paler below, FLIPPERS and not feet, a small head. It is NOT cast/tortoise -- that is a",
+  "Panchatantra character with legs and a domed shell, and using him here would be inventing",
+  "a fact.",
+  "",
+  "NO HERO TURTLE (docs/01 §3, crowds). ridley-crawl is the cell that gets used a hundred",
+  "times at once, so it is drawn from ABOVE AND BEHIND, small-headed and anonymous -- a",
+  "turtle in a crowd is a shape on a beach, not a character with a face. Nothing about it is",
+  "cute-ified: no big eyes, no smile, no expression at all."
+ ],
+ "canon": "ridley-crawl",
+ "cells": {
+  "ridley-crawl": "An olive ridley sea turtle seen from ABOVE AND SLIGHTLY BEHIND, as if from a person standing over her, hauling herself forward -- a rounded, almost heart-shaped olive-grey shell with faint scute divisions, two front flippers spread wide and angled forward, two small back flippers, and only the top of a small head showing beyond the front of the shell. NOT a domed tortoise, NOT feet -- FLIPPERS. No face visible, no expression, no big eyes, nothing cute-ified: this is one animal in an enormous crowd. Thick soft warm-brown outlines, flat cel shading, children's picture-book cartoon. Draw the animal ALONE with no sand, no water, no shadow.",
+  "ridley-side": "The SAME olive ridley from the reference -- the same shell shape, the same olive-grey colour -- seen in flat SIDE PROFILE facing LEFT, low to the ground, one front flipper reaching forward and her head held level. Rounded heart-shaped shell, flippers not feet, small head, calm and unexpressive. No sand, no water, no shadow.",
+  "ridley-nest": "The SAME olive ridley from the reference, seen from ABOVE AND BEHIND, settled low with her back flippers curled in under the rear of her shell as if digging beneath herself, front flippers braced out to the sides. The same shell, the same colour. No sand, no water, no shadow, no hole -- just the animal.",
+  "ridley-hatchling": "A newly hatched olive ridley, seen from ABOVE AND SLIGHTLY BEHIND -- the same shape as the adult in the reference and the same olive-grey, but a tiny one, with proportionally larger front flippers held out wide and a rounder shell. Small enough to sit in a palm. No face visible, nothing cute-ified. No sand, no water, no shadow."
+ }
+}

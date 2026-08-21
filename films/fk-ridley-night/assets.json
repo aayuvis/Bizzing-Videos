@@ -1,0 +1,46 @@
+{
+ "_": [
+  "FILM 8 -- The Night the Sea Comes Ashore (desh-east). 🧭 AAJ.",
+  "",
+  "THE FIRST NON-FABLE AND THE FIRST AAJ FILM, and the badge changes what the pictures owe.",
+  "Katha can invent a composition; Aaj is a claim about a real coast, so the plates are of",
+  "Gahirmatha and the Rushikulya mouth as they actually are -- a long flat sand beach, casuarina",
+  "behind it, fishing boats, the Bay of Bengal. No cliffs, no palms leaning over turquoise",
+  "water, no postcard. Do not embellish beyond the app's own text.",
+  "",
+  "THE PEOPLE ARE SCENERY AND STAY THAT WAY (docs/02 §5.7). Wardens, scientists and fishing",
+  "families are in the film because the story is partly about them, but none of them acts,",
+  "speaks or recurs, so they are painted into two plates and never animated. That is the case",
+  "§5.7 was written for -- unlike film four's monkeys, which is why that one needed a rig.",
+  "",
+  "THE LIGHT IS THE POINT. The moral is that keeping these appointments sometimes just means",
+  "switching off a light, so the night plates are genuinely DARK -- moon and starlight, no",
+  "floodlights, no white torch beams -- and the one lit plate uses the red-shaded torches that",
+  "the wardens actually use. A film that lights its own beach up would be arguing against its",
+  "own moral.",
+  "",
+  "NO CALLOUTS IN THIS FILM, deliberately. docs/01 says bubbles go on the plot lines and that",
+  "three to five is typical; nobody in this film speaks, and a bubble over a wild animal would",
+  "turn a factual film into a cartoon. The narration carries it."
+ ],
+ "charsheet": "A CHARACTER MODEL SHEET on a plain flat cream background: an adult olive ridley sea turtle and a newly hatched one, both seen from ABOVE AND SLIGHTLY BEHIND, side by side at TRUE RELATIVE SIZE -- the adult about the size of a bicycle wheel, the hatchling small enough to sit in a palm. Rounded, almost heart-shaped olive-grey shells with faint scute divisions, FLIPPERS and not feet, small heads with no visible face. Nothing cute-ified: no big eyes, no smiles, no expressions. THE HAND MATTERS: the same thick soft warm-brown outlines and FLAT CEL SHADING as the reference images, children's picture-book cartoon, NOT a stock vector illustration. Nothing else in the picture -- no sand, no water, no text.",
+ "sprites": {},
+ "plates": {
+  "beach-night": "A very long, very flat sand beach on the Odisha coast at NIGHT, seen from a high vantage looking along and down the beach in moonlight, so the sand runs away from the bottom of the frame to a pale surf line and the dark Bay of Bengal near the top. Deep blue-grey night, a low band of casuarina trees along the landward edge, a dusting of stars. GENUINELY DARK: no floodlights, no torch beams, no bright moon glare. Nothing on the sand at all -- completely EMPTY. Flat cel shading, thick soft warm-brown outlines. NO animals, NO turtles, NO birds, NO people, NO boats.",
+  "beach-day": {
+   "like": "beach-night",
+   "prompt": "EXACTLY the same beach as the reference from the IDENTICAL high vantage -- the same sand running away to the same surf line, the same casuarina trees along the same landward edge, the same horizon. Do NOT re-frame and do NOT zoom. The one thing that changes: it is a bright windy DAYTIME, pale gold sand under a hazy blue sky, with two small wooden fishing boats pulled up on the sand in the middle distance. NO animals, NO turtles, NO birds, NO people."
+  },
+  "beach-surf": "The surf line of a flat sand beach at NIGHT, seen close and low from the sand looking out to sea, moonlight catching the edges of small breaking waves, wet sand shining in the foreground, the dark ocean beyond and a faint horizon. Deep blue-grey night, genuinely dark, no floodlights and no torch beams. Flat cel shading, thick soft warm-brown outlines. NO animals, NO turtles, NO birds, NO people, NO boats.",
+  "beach-nest": "Dry soft sand on a beach at NIGHT, seen close and from above at a steep angle, filling the whole frame -- a shallow scooped hollow in the sand a little left of centre, loose sand banked around it, faint flipper drag-marks across the surface. THE LIGHT IS MOONLIGHT AND NOTHING ELSE: the entire picture is cool DEEP BLUE-GREY, the sand is blue-grey and not golden, the shadows are near-black blue. There is NO sunlight, NO warm light, NO golden hour, NO orange or yellow anywhere in the picture. Flat cel shading, thick soft warm-brown outlines. NO animals, NO turtles, NO eggs, NO people.",
+  "beach-hatch": {
+   "like": "beach-night",
+   "prompt": "EXACTLY the same beach as the reference from the IDENTICAL high vantage, at the SAME time of night -- the same sand running to the same surf line, the same casuarina trees, the same horizon. Do NOT re-frame and do NOT zoom. The one thing that changes: the sand is dimpled with dozens of small collapsed hollows where nests have hatched, and it is a shade paler toward dawn. Still genuinely dark. NO animals, NO turtles, NO birds, NO people."
+  },
+  "beach-people": {
+   "like": "beach-night",
+   "prompt": "EXACTLY the same beach as the reference from the IDENTICAL high vantage -- the same sand running away to the same surf line, the same low band of CASUARINA trees along the same landward edge, the same horizon, the same deep blue-grey night. Do NOT re-frame and do NOT zoom. There are NO palm trees, NO leaning coconut palms, NO tropical foliage and NO sunset -- this is the same dark night as the reference. The one thing that changes: about eight people stand and crouch quietly on the sand in the middle distance, small in the frame -- forest department staff, scientists and villagers of mixed ages in ordinary everyday clothes, two of them holding small torches shaded RED so each throws only a small soft red pool at their own feet. Everything else stays as dark as the reference. Keep the people small enough that faces are not readable, nobody a caricature, nobody a type. NO white torch beams, NO floodlights, NO campfire. NO animals, NO turtles, NO birds."
+  },
+  "sea-dark": "The open Bay of Bengal at NIGHT seen from just above the water, long low swells running away to a faint horizon under a deep blue-grey starlit sky, moonlight broken on the surface. Nothing but sea and sky. Genuinely dark. Flat cel shading, thick soft warm-brown outlines. NO animals, NO turtles, NO birds, NO people, NO boats."
+ }
+}

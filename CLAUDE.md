@@ -136,53 +136,88 @@ Two failure modes in the app's narration that will reach a film:
 
 ## Where things stand
 
-Three films. Each introduced one rig primitive, which is the unit of progress here:
+**Eight films.** Each introduced one rig primitive, which is the unit of progress here:
 
 | film | primitive | what it makes impossible to get wrong |
 |---|---|---|
 | `pt-talkative-tortoise` | `carry` | the stick's endpoints **are** the two geese's beak tips |
 | `pt-monkey-crocodile` | `ride` | the rider is pinned to a saddle measured off the mount |
 | `jt-crocodile-rock` | `rock` | the stone is the same stone, on the same waterline, all film |
+| `pt-monkey-wedge` | `troop` | a crowd of *cast* is various by arithmetic, not by asking |
+| `jt-partridge-elders` | `scale` | relative size is film-level, so it cannot drift between shots |
+| `jt-monkey-gardener` | `world` | the place changes in one declared direction and never drifts back |
+| `jt-golden-goose` | `count` | a set a child can count, whose arithmetic holds across the film |
+| `fk-ridley-night` | `many` | a hundred instances that are a crowd and not a repeating tile |
 
-The third one is a different **kind** of promise, and worth knowing about before you write the
-fourth: it is about the world rather than about two characters touching, and it spans the
-whole film rather than one frame. Get it wrong and *no single shot is wrong* — so `film.js`
-now accumulates measurements across shots and checks the set after the loop. It also refuses
-a film that never shows both versions of the rock, because "higher than it has ever sat"
-means nothing to a viewer who was never shown how it usually sits.
+Three of them are a different **kind** of promise from the first two, and that is the shape of
+the work now. `carry` and `ride` are about one frame. `rock`, `scale`, `world` and `count` are
+about the whole film — get one wrong and *no single shot is wrong*, so `film.js` accumulates
+measurements across shots and checks the set after the loop.
 
-Put an invariant in the **scene format** before you put it in an assertion. A shot may write
-only `"rock": {}` or `"rock": {"on": "croc-lie"}` — there is no field for moving or resizing
-it, so that is not a mistake anyone can make. Cheaper than any test.
+**Put an invariant in the scene format before you put it in an assertion.** A shot may write
+only `"rock": {}` or `"rock": {"on": "croc-lie"}`; only `"world": "uprooted"` and never a plate
+beside it; only how many feathers are gold and how many are plain. There is no field for
+moving, resizing or re-placing any of them, so those are not mistakes anyone can make. Cheaper
+than any test. Film four's shot list got the log wrong *twice while it was still prose* — a
+wedge lying loose beside a log still held open by its wedge is two wedges — and the fix was a
+build-time refusal, not a note.
+
+**Some things a prompt cannot promise, and it is worth knowing which.** A camera angle is a
+structural fact: "a log lying on its side, seen from the side" came back end-on, standing up,
+split like firewood. State the axis. And **gold is a ramp, not a hue** — five rounds of CSS
+filter tuning could not make a white goose gold, because the information that reads as metal is
+in the tone curve. `pipeline/gild.py` maps luminance through a gold ramp and keeps the alpha
+channel exactly, which is both a better picture and a *checkable* promise that the golden goose
+and the plain one are one drawing.
+
+**A plate that claims a canonical composition is measured now.** Prose asking for "exactly the
+same view" has failed silently twice — three river plates with three compositions on film
+three, a yard that grew trees and moved the camera on film four — and both times a person had
+to notice. `film.js` correlates the edge maps: canon-declared pairs in this repo score
+0.62–0.97 and different places 0.10–0.17.
+
+**An assertion that fires on a correct film is a bug in the assertion.** The size-ladder span
+check fired on film six, where 2.8× between a man and a monkey is exactly right. The fix was
+not to loosen it: a film that means it now declares `rig.ladderSpan`, and the check checks the
+promise instead of assuming one.
+
+**Prove an assertion by breaking it.** Every check added for these five was watched to fail
+first — the monkey anchored on the top of his box (which is the wedge's head, not the log), a
+gold cell that was a different drawing, a crowd on a perfect lattice, a plate claiming a canon
+it does not match. Two earlier checks were worthless until that was done to them.
 
 The app has **323 stories** and a cast of roughly 69. **The cast is shared**: cells live in
-`cast/<character>/` and a film names what it needs in its `scenes.json` `cast` list. Story
-three reused story two's monkey and crocodile and its cast cost was zero — six generated
-assets for the whole film against fifteen for each of the first two. Per film after that is
-authoring a `scenes.json` and waiting for a render.
+`cast/<character>/` and a film names what it needs in its `scenes.json` `cast` list. It now
+holds monkey, crocodile, tortoise, goose, elephant, partridge, ridley — and **three humans**.
+
+**The human cast is the one open editorial question.** `cast/gardener/`, `cast/mother/` and
+`cast/daughter/` exist because three of the five films needed people and the planner had missed
+it. Each `cast.json` says what is deliberately absent and why — no caste or religious marker, no
+turban-and-moustache shorthand, no bindi or sindoor on a widow, no exaggerated feature, nobody a
+type. **docs/03 flagged a reusable human as needing a person's judgement before publishing, and
+that judgement has not been given.** Look at `films/jt-monkey-gardener/charsheet.png` and
+`films/jt-golden-goose/charsheet.png` before any film with a person in it goes out.
 
 Renders stream frames straight into ffmpeg and run `JOBS` shots at once (default: cores).
-A 98-frame shot went from ~4 minutes to 101 seconds on four cores. Combined with the per-shot
-cache, one changed shot costs one render rather than twelve.
+Combined with the per-shot cache, one changed shot costs one render rather than seventeen.
 
-**Never show a cut you have not just rendered.** Check the timestamps. If a note arrived
-after the render started, the render does not contain the fix — and from the outside that is
+**Never show a cut you have not just rendered.** Check the timestamps. If a note arrived after
+the render started, the render does not contain the fix — and from the outside that is
 indistinguishable from the note being ignored. This cost a whole evening once.
 
 ## Where to pick up
 
-**[docs/03 — the next five films](docs/03-the-slate.md).** Chosen with `pipeline/plan.js` from
-the app's 323 stories and gated on narration; three of the five need no new character at all.
-Each is picked for the rig primitive it forces: `troop` (a crowd that is cast, not scenery),
-`scale` (three sizes where size is the plot), `world` (the plate's own state changing across
-the film), `count`, and `many`.
+The slate in [docs/03](docs/03-the-slate.md) is **made**. What is not done:
 
-Two tools do the picking, and both exist because doing it by hand does not reach 323:
-
-- `node pipeline/plan.js --reuse` — what a story would cost as a film: shots, minutes, which
-  characters we already own, and a flag for sacred names, because the second-cheapest film in
-  the catalogue is a Ramayana story that must not be made.
-- `python3 pipeline/check-voice.py <story>` — the docs/02 §5.6 gate. Run it first, always.
+1. **A person looks at the human cast** (above). Everything else is blocked behind it for any
+   film with people in it, which is most of the catalogue.
+2. **Pick the next slate** with `node pipeline/plan.js --reuse`, and gate every candidate on
+   `python3 pipeline/check-voice.py <story>` first, always. The planner's `people` pattern is
+   still a name search — it missed "gardener" — so read the story before believing the cast
+   cost.
+3. **The primitives that are still missing** are the ones the next stories will name. Nothing
+   in the catalogue yet needs a character to *hand something to* another character, or a
+   vehicle, or weather. When one does, that film gets one primitive and only one.
 
 ## Branch
 

@@ -1,0 +1,51 @@
+{
+ "_": [
+  "WHAT SHIPPED. A film rebuilds from this repo, but the answer to 'which cut is live' does",
+  "not, so it is recorded here. docs/01 §6.",
+  "",
+  "FILM FOUR, and the film that introduced `troop` -- a crowd that is CAST rather than",
+  "scenery, which docs/02 §5.7 did not cover. It also put the LOG in the rig, which is not a",
+  "second primitive but the `rock` lesson at a quarter of the size: one log, one place, one",
+  "length, two states, and a shot that cannot say otherwise.",
+  "",
+  "Picture and sound agree at 108.83s against a 108.67s narration.",
+  "",
+  "NOTHING IS PUBLISHED TO YOUTUBE for this film. Publishing is a human action and nothing",
+  "in this repo uploads."
+ ],
+ "film": "pt-monkey-wedge",
+ "title": "The Monkey and the Wedge",
+ "expected": 108.83,
+ "cuts": [
+  {
+   "published": null,
+   "duration": 108.83,
+   "resolution": "1920x1080",
+   "bytes": 13926807,
+   "sha1": "b6bb7689d90e165fd8747e261c95f5f11973fb64",
+   "commit": null,
+   "youtube": null,
+   "master": null,
+   "at": null,
+   "current": true,
+   "notes": [
+    "Film four. The master stays out of git (docs/01 §6); the 720p preview is what publish.sh puts on gh-pages."
+   ]
+  },
+  {
+   "published": null,
+   "duration": 108.83,
+   "resolution": "1280x720",
+   "bytes": 4196395,
+   "sha1": "534114b2b9318c5a0f79300d8a82cd4538dee54a",
+   "commit": null,
+   "youtube": null,
+   "master": null,
+   "at": null,
+   "current": true,
+   "notes": [
+    "The review preview."
+   ]
+  }
+ ]
+}

@@ -1,0 +1,94 @@
+{
+ "_": [
+  "FILM 8 -- The Night the Sea Comes Ashore (desh-east). 🧭 AAJ.",
+  "",
+  "THE PRIMITIVE IS `many`, and it is `troop` at a scale where hand-placing is not a thing a",
+  "person does. A hundred thousand olive ridleys come ashore in a night and the film needs a",
+  "beach 'cobbled with turtles as far as a torch could shine', so a hundred instances of one",
+  "drawing have to read as a crowd rather than as wallpaper.",
+  "",
+  "`troop` puts n along a LINE. `many` fills an AREA with depth, and its failure modes are",
+  "different and worse: a visible lattice, flat scale so the beach has no depth, and pile-ups",
+  "that read as one broken shape. So placement is a jittered grid -- a lattice with a large",
+  "random offset inside each cell -- which gives dense uneven spacing with no rejection loop;",
+  "SIZE IS A FUNCTION OF THE ROW, so a turtle cannot be at the back and the size of one at the",
+  "front; and it is seeded, so the render is byte-identical between runs.",
+  "",
+  "film.js then measures the count, that depth never inverts, that nearest-neighbour spacing",
+  "has real variance (a lattice's is near zero), and that nobody is drawn through anybody.",
+  "",
+  "THE BADGE IS AAJ AND THAT CHANGES THINGS. This is a claim about a real coast, so nothing",
+  "here is invented past the app's own text, the turtles are olive ridleys and not the",
+  "Panchatantra tortoise, and there is no hero turtle in any shot. NO CALLOUTS: nobody in this",
+  "film speaks, and a bubble over a wild animal would make a factual film into a cartoon.",
+  "",
+  "CAST COST: one new character, drawn from above so a crowd of it stays anonymous."
+ ],
+ "story": "fk.ridley-night",
+ "cast": ["ridley"],
+ "stage": [1920, 1080],
+
+ "rig": {
+  "ladder": { "ridley": 130 }
+ },
+
+ "shots": [
+  { "id": "00", "seg": "hook", "plate": "beach-night", "camera": "hold", "night": true,
+    "many": { "cell": "ridley-crawl", "n": 90, "left": 0.06, "right": 0.94,
+              "top": 0.56, "bottom": 0.95, "far": 42, "near": 132,
+              "seed": 5, "anim": "small-breathe" } },
+
+  { "id": "01a", "seg": "0", "plate": "beach-day", "camera": "drift-right" },
+  { "id": "01b", "seg": "0", "plate": "beach-surf", "camera": "hold" },
+
+  { "id": "02a", "seg": "1", "plate": "beach-surf", "camera": "hold", "night": true,
+    "many": { "cell": "ridley-crawl", "n": 30, "rows": 2, "left": 0.12, "right": 0.90,
+              "top": 0.62, "bottom": 0.90, "far": 48, "near": 120,
+              "seed": 17, "anim": "small-breathe" } },
+  { "id": "02b", "seg": "1", "plate": "beach-night", "camera": "hold", "night": true,
+    "many": { "cell": "ridley-crawl", "n": 116, "left": 0.04, "right": 0.96,
+              "top": 0.54, "bottom": 0.96, "far": 40, "near": 138,
+              "seed": 31, "anim": "small-breathe" } },
+
+  { "id": "03a", "seg": "2", "plate": "beach-night", "camera": "hold", "night": true,
+    "many": { "cell": "ridley-crawl", "n": 116, "left": 0.04, "right": 0.96,
+              "top": 0.54, "bottom": 0.96, "far": 40, "near": 138,
+              "seed": 43, "anim": "small-breathe" } },
+  { "id": "03b", "seg": "2", "plate": "beach-night", "camera": "drift-left", "night": true,
+    "many": { "cell": "ridley-crawl", "n": 110, "left": 0.05, "right": 0.95,
+              "top": 0.56, "bottom": 0.95, "far": 42, "near": 134,
+              "seed": 59, "anim": "small-breathe" } },
+
+  { "id": "04a", "seg": "3", "plate": "beach-nest", "camera": "hold", "night": true, "depth": 4.6,
+    "layers": [
+      { "who": "ridley", "cell": "ridley-nest", "perch": [0.42, 0.74] }
+    ] },
+  { "id": "04b", "seg": "3", "plate": "beach-nest", "camera": "hold", "night": true, "depth": 4.2,
+    "layers": [
+      { "who": "ridley", "cell": "ridley-side", "perch": [0.66, 0.80], "flip": true }
+    ] },
+
+  { "id": "05a", "seg": "4", "plate": "beach-hatch", "camera": "hold", "night": true,
+    "many": { "cell": "ridley-hatchling", "n": 140, "left": 0.08, "right": 0.92,
+              "top": 0.60, "bottom": 0.96, "far": 16, "near": 46,
+              "seed": 71, "anim": "bounce" } },
+  { "id": "05b", "seg": "4", "plate": "beach-hatch", "camera": "drift-right", "night": true,
+    "many": { "cell": "ridley-hatchling", "n": 120, "left": 0.06, "right": 0.94,
+              "top": 0.62, "bottom": 0.96, "far": 15, "near": 44,
+              "seed": 83, "anim": "bounce" } },
+
+  { "id": "06a", "seg": "5", "plate": "beach-people", "camera": "hold" },
+  { "id": "06b", "seg": "5", "plate": "beach-people", "camera": "drift-left" },
+
+  { "id": "07a", "seg": "6", "plate": "sea-dark", "camera": "drift-right" },
+  { "id": "07b", "seg": "6", "plate": "beach-night", "camera": "hold", "night": true,
+    "many": { "cell": "ridley-crawl", "n": 96, "left": 0.06, "right": 0.94,
+              "top": 0.56, "bottom": 0.95, "far": 42, "near": 132,
+              "seed": 97, "anim": "small-breathe" } },
+
+  { "id": "08a", "seg": "7", "plate": "sea-dark", "camera": "hold" },
+  { "id": "08b", "seg": "7", "plate": "beach-night", "camera": "push-in" },
+
+  { "id": "09", "seg": "moral", "plate": "beach-night", "camera": "hold" }
+ ]
+}

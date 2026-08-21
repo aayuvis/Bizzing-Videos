@@ -1,0 +1,40 @@
+{
+ "_": [
+  "FILM 6 -- The Monkeys Who Watered the Garden (jataka-more).",
+  "",
+  "THE PLATES ARE THE PRIMITIVE. Four of them are one garden at four moments, and the",
+  "difference between them IS the story, so each names the one before it as its canonical",
+  "composition and film.js now MEASURES that claim rather than trusting it (the edge",
+  "correlation check -- prose asking for 'exactly the same view' has failed silently twice).",
+  "The camera never moves between stages. Only the garden changes.",
+  "",
+  "THE GARDENER IS THE CHANNEL'S FIRST HUMAN. See cast/gardener/cast.json for what is",
+  "deliberately absent from him and why; the short version is that one ordinary man has to",
+  "carry docs/01's rule about nobody being a type without a crowd to be various in.",
+  "",
+  "EDITORIAL: the monkeys are not stupid and must never be drawn as stupid. They are busy,",
+  "willing and thorough, and the moral is about the gardener not explaining -- so no dunce",
+  "faces, no shrugging, no mugging at the camera. And the ending is a quiet one: he stands",
+  "and looks. Do not make it bigger than the text."
+ ],
+ "charsheet": "A CHARACTER MODEL SHEET on a plain flat cream background: an ordinary middle-aged Indian man in a plain undyed short-sleeved knee-length cotton kurta over a dhoti, barefoot, holding a round clay water pot, standing beside a small golden-brown monkey, both FULL BODY, side by side ON ONE GROUND LINE, facing LEFT, at true relative size -- the monkey about knee-high to the man. THE HAND MATTERS MORE THAN ANYTHING ELSE HERE. The monkey must be EXACTLY the monkey in the reference image, and the man must be drawn in THE SAME HAND: the same thick soft warm-brown outline weight, FLAT CEL SHADING ONLY -- no gradients, no airbrushing, no gloss or shine on the skin, no rendered muscle -- the same simplified picture-book proportions, a slightly large head, simple hands, soft rounded shapes. A children's picture-book cartoon, NOT a stock vector illustration. This is the first human character this channel has drawn: he is ONE SPECIFIC ORDINARY PERSON and not a type -- warm brown skin, short black hair greying at the temples, a short greying beard, kind tired eyes, unexaggerated features, plain clothes. NO turban, NO jewellery, NO caste or religious mark, NO curled moustache, NO bare chest, NO comic exaggeration of any feature. Nothing else in the picture -- no scenery, no ground texture, no text.",
+ "sprites": {},
+ "plates": {
+  "garden-kept": "A king's pleasure garden inside a walled park in warm early-evening light, seen straight on from a little above head height. Bare raked earth, and running across the middle distance FOUR NEAT ROWS of young saplings each about as tall as a child, evenly spaced, each with a small ring of banked soil round its foot and a few bright green leaves. A low ornamental stone wall behind, a big mango tree at the RIGHT edge of the frame, open sky beyond. Flat cel shading, thick soft warm-brown outlines. NO animals, NO people. NO idol, NO shrine, NO religious imagery.",
+  "garden-pulling": {
+   "like": "garden-kept",
+   "prompt": "EXACTLY the same garden as the reference at the same moment of the evening -- the IDENTICAL camera position, the identical framing and horizon, the same four rows in the same places, the same wall, the same mango tree at the right edge. Do NOT re-frame and do NOT zoom. The one thing that changes: ABOUT HALF the saplings have been lifted out of the ground and are lying on the earth beside their own holes with their root balls showing, small dark empty holes where they stood; the rest are still planted. A few clay water pots and leather buckets stand about between the rows. NO animals, NO people.",
+   "note": "half-undone"
+  },
+  "garden-uprooted": {
+   "like": "garden-kept",
+   "prompt": "EXACTLY the same garden as the reference, the IDENTICAL camera position, framing and horizon, the same four rows of holes in the same places, the same wall, the same mango tree at the right edge -- now at dusk, in low blue evening light. Do NOT re-frame and do NOT zoom. EVERY sapling is out of the ground, lying on the earth beside its own hole with its root ball exposed, and every hole is dark and empty. Clay pots and buckets stand about between the rows. NO animals, NO people."
+  },
+  "garden-wilted": {
+   "like": "garden-kept",
+   "prompt": "EXACTLY the same garden as the reference, the IDENTICAL camera position, framing and horizon, the same four rows in the same places, the same wall, the same mango tree at the right edge -- the next morning, in flat pale early light. Do NOT re-frame and do NOT zoom. Every sapling has been pushed back into its hole but they are all DEAD: bare drooping brown sticks, leaves shrivelled and hanging, the banked soil round each one loose and disturbed. NO animals, NO people."
+  },
+  "mango-tree": "A big spreading mango tree at the edge of a walled garden in warm late-afternoon light, seen close and straight on from below, its lower branches thick and horizontal and wide enough to sit along, dark green leaves, a stretch of low ornamental stone wall at its foot and the garden soft and out of focus beyond. Flat cel shading, thick soft warm-brown outlines. NO animals, NO people.",
+  "garden-gate": "A plain stone gateway in the outer wall of a walled garden, seen straight on in warm late-afternoon light, standing open onto a dusty earth road that leads away out of the frame. THE GROUND IS BARE PACKED EARTH throughout, inside and out -- dry, dusty, with a few stones and tufts of grass. This is OUTDOORS: there is NO wooden floor, NO floorboards, NO paving, NO tiles and NO interior of any kind anywhere in the picture. Flat cel shading, thick soft warm-brown outlines. NO animals, NO people. NO idol, NO shrine, NO religious imagery."
+ }
+}

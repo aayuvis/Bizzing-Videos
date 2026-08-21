@@ -98,7 +98,159 @@ function narrationSecs(seg) {
   for (const sh of scenes.shots) perSeg[sh.seg] = (perSeg[sh.seg] || 0) + 1;
 
   let failures = 0;
+
+  /* THE PLATE CANON, MEASURED. docs/02 §5.1 says a plate that must match another names it as
+     its canonical composition, and the generator passes that reference through -- but a
+     reference is a request, not a guarantee, and it has silently failed twice. Film three got
+     three river plates with three compositions, which would have floated the rock in one shot
+     and sunk it in the next. Film four got a yard that grew trees at both edges and moved the
+     camera in, so "the carpenters have gone to lunch" read as a different yard. Both were
+     caught by a person looking at a picture.
+
+     So it is measured. Not by pixel difference -- that is dominated by the LIGHT, and film
+     three's own day-vs-night pair of one composition scores further apart (71) than two
+     genuinely different places do (56). Composition is WHERE THE EDGES ARE, so: downscale,
+     take the edge map, z-score it and correlate. On the plates already in this repo every
+     canon-declared pair lands between 0.64 and 0.96 and every different place between 0.10
+     and 0.17, so 0.55 is a wall with a canyon on either side of it. */
+  {
+    const ap = path.join(FILM, 'assets.json');
+    const cfg = fs.existsSync(ap) ? JSON.parse(fs.readFileSync(ap, 'utf8')) : {};
+    const pairs = Object.entries(cfg.plates || {})
+      .filter(([, v]) => v && typeof v === 'object' && v.like)
+      .map(([n, v]) => [v.like, n]);
+    if (pairs.length) {
+      const files = [...new Set(pairs.flat())]
+        .map(n => path.join(FILM, 'plates', n + '.png'));
+      if (files.every(f => fs.existsSync(f))) {
+        const script = `
+import sys, math
+from PIL import Image, ImageFilter
+def ez(f):
+    im = Image.open(f).convert('L').resize((192, 108)).filter(ImageFilter.FIND_EDGES)
+    v = list(im.getdata()); m = sum(v) / len(v)
+    sd = math.sqrt(sum((x - m) ** 2 for x in v) / len(v)) or 1.0
+    return [(x - m) / sd for x in v]
+E = {}
+for f in sys.argv[1:]:
+    E[f] = ez(f)
+print(' '.join('%.3f' % (sum(x * y for x, y in zip(E[a], E[b])) / len(E[a]))
+               for a, b in zip(sys.argv[1:][0::2], sys.argv[1:][1::2])))
+`;
+        const args = pairs.flatMap(([a, b]) =>
+          [path.join(FILM, 'plates', a + '.png'), path.join(FILM, 'plates', b + '.png')]);
+        const r = execFileSync('python3', ['-c', script, ...args], { encoding: 'utf8' })
+          .trim().split(' ').map(Number);
+        pairs.forEach(([a, b], i) => {
+          if (r[i] < 0.55) {
+            console.log('  !! plate "' + b + '" says it is "' + a + '" at another moment, and ' +
+              'it is a different composition (' + r[i].toFixed(2) + ').\n     Same place means ' +
+              'the same camera — redraw it against its canon, or stop claiming it is the ' +
+              'same place.');
+            failures++;
+          } else if (r[i] > 0.9995) {
+            console.log('  !! plate "' + b + '" is pixel-for-pixel "' + a + '". A second ' +
+              'plate that changes nothing is not a second moment.');
+            failures++;
+          }
+        });
+        console.log('  plate canon: ' + pairs.map(([a, b], i) =>
+          b + '←' + a + ' ' + r[i].toFixed(2)).join(', '));
+      }
+    }
+  }
+
+  /* where a cell actually lives: the shared cast library, or this film's own sprites/ */
+  const spritePath = n => {
+    for (const d of S.spriteDirs(scenes)) {
+      const f = path.join(d, n + '.png');
+      if (fs.existsSync(f)) return f;
+    }
+    return path.join(FILM, 'sprites', n + '.png');
+  };
+
+  /* GOLD IS THE SAME DRAWING. docs/03's worry about this film was that the goose after the
+     grab would read as a SECOND goose, and the answer is that he is not drawn twice: the gold
+     cell is generated from the plain one by pipeline/gild.py, which maps luminance through a
+     gold ramp and leaves the alpha channel alone. So it is checkable, and this checks it --
+     identical alpha, pixel for pixel, means identical silhouette, identical line, identical
+     drawing. And it must actually be gold: a gold cell that came back as pale as the white
+     one is a film whose central object never turns. */
+  {
+    const gilded = new Set();
+    for (const sh of scenes.shots) {
+      for (const L of sh.layers || []) if (L.gild) gilded.add(L.cell || L.sprite);
+      if (sh.count && sh.count.gold) gilded.add((scenes.rig.count || {}).sprite);
+    }
+    for (const name of gilded) {
+      if (!name) continue;
+      const out = execFileSync('python3', ['-c', `
+import sys
+from PIL import Image
+plain, gold = sys.argv[1], sys.argv[2]
+a = Image.open(plain).convert('RGBA'); b = Image.open(gold).convert('RGBA')
+if a.size != b.size:
+    print('SIZE %s vs %s' % (a.size, b.size)); raise SystemExit
+if list(a.getchannel('A').getdata()) != list(b.getchannel('A').getdata()):
+    print('ALPHA'); raise SystemExit
+def warmth(im):
+    px = [p for p in im.convert('RGBA').getdata() if p[3] > 200]
+    return sum(p[0] - p[2] for p in px) / max(1, len(px))
+print('OK %.1f %.1f' % (warmth(a), warmth(b)))
+`, spritePath(name), spritePath(name + '-gold')], { encoding: 'utf8' }).trim();
+      if (out.startsWith('SIZE') || out.startsWith('ALPHA')) {
+        console.log('  !! "' + name + '-gold" is not the same drawing as "' + name + '" (' +
+          out + '). It has to be a recolour of that file — run pipeline/gild.py.');
+        failures++;
+      } else {
+        const [, wp, wg] = out.split(' ').map(Number);
+        if (wg - wp < 40) {
+          console.log('  !! "' + name + '-gold" is only ' + (wg - wp).toFixed(0) +
+            ' warmer than "' + name + '". It does not read as gold.');
+          failures++;
+        } else {
+          console.log('  gold: ' + name + ' +' + (wg - wp).toFixed(0) + ' warmth, same alpha');
+        }
+      }
+    }
+  }
+
+  /* THE WORLD -- film six's primitive, checked from the shot list before a frame is drawn.
+     `rock` promised the world STAYED THE SAME; this promises it CHANGES, in one declared
+     direction, and never drifts back. Stage indices in shot order never decrease, and the
+     first and last stage both appear: "a garden of wilted sticks" is only a loss to a viewer
+     who was shown the kept garden earlier, which is the same argument that makes film three
+     refuse a film never showing the rock as it usually sits. */
+  {
+    const w = (scenes.rig || {}).world;
+    if (w) {
+      const seen = [];
+      let last = -1;
+      for (const sh of scenes.shots) {
+        if (!sh.world) continue;
+        const i = w.of.indexOf(sh.world);
+        if (i < last) {
+          console.log('  !! shot ' + sh.id + ' puts the world back to "' + sh.world +
+            '" after "' + w.of[last] + '". It changes in one direction.');
+          failures++;
+        }
+        last = Math.max(last, i); seen.push(i);
+      }
+      if (!seen.includes(0) || !seen.includes(w.of.length - 1)) {
+        console.log('  !! the film never shows the world ' +
+          (seen.includes(0) ? 'as it ends up' : 'as it started') +
+          '. Both ends, or there is nothing to have lost.');
+        failures++;
+      } else {
+        console.log('  world: ' + w.of.join(' → ') + ', in ' + seen.length + ' shots');
+      }
+    }
+  }
+
+  const ladder = [];      // cross-shot: relative size is the argument, so it must hold
   const rocks = [];        // cross-shot: the rock has to be the same rock every time
+  const logs = [];         // cross-shot: one log, one place, one length, two states
+  const counts = [];       // cross-shot: a feather does not un-happen, and gold turns once
   const todo = [];          // shots that need rendering, drained in parallel below
   for (const shot of scenes.shots) {
     const html = path.join(FILM, 'shot-' + shot.id + '.html');
@@ -234,6 +386,173 @@ function narrationSecs(seg) {
       }
     }
 
+    /* THE LOG CONTRACT, part one: within the shot. He sits ON the log, the log sits ON the
+       ground, and the whole thing is in frame. Part two is across shots, after the loop. */
+    if (shot.log) {
+      const r = await page.evaluate(() => {
+        const g = document.querySelector('#log');
+        if (!g) return { err: 'no log group' };
+        const body = g.querySelector('.log-body'), back = g.querySelector('.log-back');
+        const on = g.querySelector('.log-astride'), wedge = g.querySelector('.log-wedge');
+        const box = e => { const b = e.getBoundingClientRect();
+          return [b.left, b.top, b.right, b.bottom]; };
+        return { ground: g.getBoundingClientRect().top,   // the zero-size group IS the ground
+                 state: body.dataset.log, body: box(body),
+                 back: back.getBoundingClientRect().top,  // and this one IS the log's back
+                 on: on ? box(on) : null, wedge: wedge ? box(wedge) : null };
+      });
+      if (r.err) { console.log('  !! ' + shot.id + ': ' + r.err); failures++; }
+      else {
+        const sink = r.body[3] - r.ground;
+        if (Math.abs(sink) > 2) {
+          console.log('  !! ' + shot.id + ': the log sits ' + sink.toFixed(0) +
+            'px off the ground line');
+          failures++;
+        }
+        if (r.on) {
+          /* HIS BOTTOM vs THE LOG'S BACK -- not the top of the log's BOX, which is the head
+             of the wedge standing proud of it. Measured against the box, he stood on top of
+             the wedge and the assertion said he was perfect. */
+          const gap = r.on[3] - r.back;
+          if (Math.abs(gap) > 2) {
+            console.log('  !! ' + shot.id + ': the monkey astride the log is ' + gap.toFixed(0) +
+              'px off its back — hovering over the gap, or sunk into it');
+            failures++;
+          }
+          if (r.back - r.body[1] < 4) {
+            console.log('  !! ' + shot.id + ': the log\'s back and the top of its box are the ' +
+              'same line, so the back was never measured off the drawing — check the manifest.');
+            failures++;
+          }
+          /* astride means ON it, not beside it: his middle has to be over the timber */
+          const mid = (r.on[0] + r.on[2]) / 2;
+          if (mid < r.body[0] || mid > r.body[2]) {
+            console.log('  !! ' + shot.id + ': the monkey is not over the log at all');
+            failures++;
+          }
+        }
+        if (r.wedge) {
+          const off = r.wedge[3] - r.ground;
+          if (Math.abs(off) > 2) {
+            console.log('  !! ' + shot.id + ': the loose wedge is ' + off.toFixed(0) +
+              'px off the ground'); failures++;
+          }
+          if (r.wedge[2] > r.body[0] && r.wedge[0] < r.body[2]) {
+            console.log('  !! ' + shot.id + ': the loose wedge is drawn over the log. It has ' +
+              'just come out of it — it lies clear of the timber or it reads as still in.');
+            failures++;
+          }
+        }
+        if (r.body[0] < 0 || r.body[2] > 1920 || r.body[1] < 0) {
+          console.log('  !! ' + shot.id + ': the log is not wholly in frame'); failures++;
+        }
+        logs.push({ id: shot.id, ground: r.ground, body: r.body, state: r.state });
+      }
+    }
+
+    /* THE COUNT, part one: within the shot. What is on screen is what the shot said, and the
+       gold ones are the gilded ones -- the field has an effect or it is not a field
+       (CLAUDE.md). Part two, the arithmetic across the film, is after the loop. */
+    if (shot.count) {
+      const r = await page.evaluate(() => [...document.querySelectorAll('.count-one')]
+        .map(e => { const b = e.getBoundingClientRect();
+          return { gold: e.dataset.gold === '1', filter: getComputedStyle(e).filter,
+                   l: b.left, r: b.right, t: b.top, b: b.bottom }; }));
+      const wantG = shot.count.gold || 0, wantP = shot.count.plain || 0;
+      const gotG = r.filter(x => x.gold).length, gotP = r.length - gotG;
+      if (gotG !== wantG || gotP !== wantP) {
+        console.log('  !! ' + shot.id + ': the shot says ' + wantG + ' gold and ' + wantP +
+          ' plain, and ' + gotG + ' and ' + gotP + ' rendered.');
+        failures++;
+      }
+      const g = r.find(x => x.gold), p = r.find(x => !x.gold);
+      /* one drawing, so they are the same SIZE whichever colour they are: a gold feather
+         that is bigger than the white one it becomes is a different feather */
+      if (g && p && Math.abs((g.r - g.l) - (p.r - p.l)) > 1) {
+        console.log('  !! ' + shot.id + ': the gold and plain feathers are different sizes. ' +
+          'They are meant to be the same feather.');
+        failures++;
+      }
+      const off = r.filter(x => x.l < 0 || x.r > 1920 || x.t < 0 || x.b > 1080);
+      if (off.length) {
+        console.log('  !! ' + shot.id + ': ' + off.length + ' of the ' + r.length +
+          ' feathers are out of frame — a child cannot count what is off the edge.');
+        failures++;
+      }
+      counts.push({ id: shot.id, gold: gotG, plain: gotP });
+    }
+
+    /* THE MANY. A hundred instances of one drawing has three ways to look wrong and all of
+       them are arithmetic, so all of them are checks rather than something a person squints
+       at: the count, the depth, the spacing, the pile-ups. */
+    if (shot.many) {
+      const t = await page.evaluate(() => [...document.querySelectorAll('.many-one')]
+        .map(e => { const b = e.getBoundingClientRect();
+          /* the LAID-OUT height, not the measured box: these breathe on staggered delays, so
+             a bounding rect is a snapshot of an animation and two identical turtles measure
+             differently. The first depth check failed on exactly that and it was the check
+             that was wrong, not the crowd. */
+          return { f: +e.dataset.many, band: +e.dataset.band, h: +e.dataset.h,
+                   x: (b.left + b.right) / 2, y: b.bottom,
+                   w: b.width, l: b.left, r: b.right, t: b.top }; }));
+      if (t.length !== shot.many.n) {
+        console.log('  !! ' + shot.id + ': the shot says ' + shot.many.n + ' and ' + t.length +
+          ' rendered.'); failures++;
+      }
+      if (t.length > 3) {
+        /* DEPTH HOLDS. Sort by how far back they stand; height must not go up as they recede,
+           or the beach is flat and the crowd has no size. */
+        const byDepth = [...t].sort((a, b) => a.f - b.f);
+        const bad = byDepth.filter((e, i) => i && e.h < byDepth[i - 1].h - 1);
+        if (bad.length) {
+          console.log('  !! ' + shot.id + ': ' + bad.length + ' of the crowd are further back ' +
+            'and drawn BIGGER. The beach has no depth.'); failures++;
+        }
+        if (byDepth[byDepth.length - 1].h / byDepth[0].h < 1.6) {
+          console.log('  !! ' + shot.id + ': front to back the crowd only changes ' +
+            (byDepth[byDepth.length - 1].h / byDepth[0].h).toFixed(2) + 'x. A beach running ' +
+            'to the surf has more depth in it than that.'); failures++;
+        }
+        /* NOT A LATTICE. Nearest-neighbour distance on a regular grid is almost constant; on
+           a real scatter it is not. A crowd whose spacing has no variance is wallpaper, and
+           wallpaper is the one thing a hundred copies of one drawing must never look like. */
+        const nn = t.map(a => Math.min(...t.filter(b => b !== a)
+          .map(b => Math.hypot(a.x - b.x, a.y - b.y))));
+        const mean = nn.reduce((s, v) => s + v, 0) / nn.length;
+        const cv = Math.sqrt(nn.reduce((s, v) => s + (v - mean) ** 2, 0) / nn.length) / mean;
+        if (cv < 0.18) {
+          console.log('  !! ' + shot.id + ': the crowd is spaced too evenly (variation ' +
+            cv.toFixed(2) + '). That reads as a repeating tile, not a beach.'); failures++;
+        }
+        /* NO PILE-UPS, AND THE PAIRS THAT MATTER ARE THE ONES AT THE SAME DEPTH. A near
+           turtle covering part of a far one is OCCLUSION -- it is what a dense beach looks
+           like, and the rows paint back to front so it reads correctly. Two at the SAME
+           depth overlapping have no such excuse: neither is in front, so they read as one
+           mangled animal. So this compares within a depth band, and is stricter there (a
+           quarter, not a half) than the first version was everywhere. */
+        let piled = 0;
+        for (let i = 0; i < t.length; i++) for (let j = i + 1; j < t.length; j++) {
+          const a = t[i], b = t[j];
+          if (a.band !== b.band) continue;
+          const ox = Math.min(a.r, b.r) - Math.max(a.l, b.l);
+          const oy = Math.min(a.y, b.y) - Math.max(a.t, b.t);
+          if (ox > 0 && oy > 0 && ox * oy > 0.25 * Math.min(a.w * a.h, b.w * b.h)) piled++;
+        }
+        if (piled) {
+          console.log('  !! ' + shot.id + ': ' + piled + ' pair(s) of the crowd are drawn ' +
+            'through each other.'); failures++;
+        }
+        const off = t.filter(e => e.l < -20 || e.r > 1940 || e.t < -20 || e.y > 1100);
+        if (off.length > t.length * 0.06) {
+          console.log('  !! ' + shot.id + ': ' + off.length + ' of the crowd are off the edge.');
+          failures++;
+        }
+        console.log('  many ' + shot.id + ': ' + t.length + ', ' +
+          (byDepth[byDepth.length - 1].h / byDepth[0].h).toFixed(1) + 'x front to back, ' +
+          'spacing variation ' + cv.toFixed(2));
+      }
+    }
+
     /* THE HOP CONTRACT. The arc is decoration; the touchdowns are the promise. Seek to each
        one and measure where his feet actually are -- on the stone's top surface, horizontally
        over it, and on solid ground at the far end. A jump that clips through the rock or ends
@@ -299,6 +618,64 @@ function narrationSecs(seg) {
       }
       /* leave the clock where the renderer expects it */
       await page.evaluate(() => document.getAnimations().forEach(a => { a.currentTime = 0; }));
+    }
+
+    /* THE SIZE LADDER, part one: within the shot. Anything the ladder names must be drawn at
+       the ladder's height times this shot's depth -- so two characters in one frame are always
+       in the declared ratio, whatever the shot is doing. And the tower's steps stand ON each
+       other: a bottom edge IS the top edge below it. */
+    {
+      const r = await page.evaluate(() => {
+        const out = { seen: {}, tower: [] };
+        for (const el of document.querySelectorAll('[data-who]')) {
+          const b = el.getBoundingClientRect();
+          out.seen[el.dataset.who] = b.height;
+          if (el.classList.contains('tower-step'))
+            out.tower.push({ who: el.dataset.who, top: b.top, bottom: b.bottom });
+        }
+        return out;
+      });
+      for (let i = 1; i < r.tower.length; i++) {
+        const gap = r.tower[i].bottom - r.tower[i - 1].top;
+        if (Math.abs(gap) > 3) {
+          console.log('  !! ' + shot.id + ': in the tower, ' + r.tower[i].who + ' is ' +
+            gap.toFixed(0) + 'px off ' + r.tower[i - 1].who + "'s back");
+          failures++;
+        }
+      }
+      if (Object.keys(r.seen).length) ladder.push({ id: shot.id, seen: r.seen });
+    }
+
+    /* THE TROOP CONTRACT. A crowd of one cell has exactly one way to fail and it fails
+       completely: identical animals, evenly spaced, facing the same way. So the two things a
+       viewer would notice are measured — no two NEIGHBOURS share both size and facing, and
+       nobody is standing inside anybody. */
+    if (shot.troop) {
+      const t = await page.evaluate(() => [...document.querySelectorAll('.troop-one')]
+        .map(e => { const b = e.getBoundingClientRect();
+          return { k: e.dataset.troop, l: b.left, r: b.right, w: b.width, t: b.top, b: b.bottom }; })
+        .sort((a, b) => a.l - b.l));
+      if (t.length < 2) { console.log('  !! ' + shot.id + ': troop did not render'); failures++; }
+      for (let i = 1; i < t.length; i++) {
+        if (t[i].k === t[i - 1].k) {
+          console.log('  !! ' + shot.id + ': two neighbours in the troop are the same size and ' +
+            'facing the same way — that reads as a sprite sheet, not a crowd');
+          failures++;
+          break;
+        }
+        const overlap = t[i - 1].r - t[i].l;
+        if (overlap > Math.min(t[i].w, t[i - 1].w) * 0.55) {
+          console.log('  !! ' + shot.id + ': two of the troop overlap by ' + overlap.toFixed(0) +
+            'px — they are standing inside each other');
+          failures++;
+          break;
+        }
+      }
+      const off = t.filter(x => x.l < 0 || x.r > 1920 || x.t < 0 || x.b > 1080);
+      if (off.length) {
+        console.log('  !! ' + shot.id + ': ' + off.length + ' of the troop are part-way out of frame');
+        failures++;
+      }
     }
 
     /* THE CALLOUT CONTRACT. A bubble must sit ABOVE the character speaking and must not
@@ -398,6 +775,134 @@ function narrationSecs(seg) {
     console.log('  ok ' + shot.id.padEnd(4) + ' checks, queued  ' +
                 dur.toFixed(2) + 's  ' + total + ' frames');
   }
+  /* THE SIZE LADDER, part two: ACROSS the film. The declared ratios are the story's argument,
+     so they are checked wherever two ladder characters share a frame, in every shot, against
+     one set of numbers. Per-shot authoring is what lets a bird creep up to a convenient size
+     over sixteen shots with no single shot looking wrong. */
+  if (ladder.length) {
+    const rig = scenes.rig || {}, L = rig.ladder || {};
+    for (const row of ladder) {
+      const who = Object.keys(row.seen);
+      for (let i = 0; i < who.length; i++) {
+        for (let j = i + 1; j < who.length; j++) {
+          const a = who[i], b = who[j];
+          const want = L[a] / L[b], got = row.seen[a] / row.seen[b];
+          if (Math.abs(got - want) / want > 0.02) {
+            console.log('  !! ' + row.id + ': ' + a + ' is ' + got.toFixed(2) + 'x ' + b +
+              ', the ladder says ' + want.toFixed(2) + 'x');
+            failures++;
+          }
+        }
+      }
+    }
+    /* WHEN SIZE IS THE ARGUMENT, it has to be dramatic: the elephant dwarfs the bird or "you
+       are the biggest" is a remark about nothing. But that is a promise film FIVE makes, not
+       something true of every film with a ladder in it -- film six uses the ladder only to
+       stop a man and a monkey drifting relative to each other, and 2.8x is exactly right for
+       a man and a monkey. So the film declares the span it is promising, in rig.ladderSpan,
+       and this checks the promise rather than assuming one. An assertion that fires on a
+       correct film teaches people to ignore assertions. */
+    const names = Object.keys(L);
+    const want = (scenes.rig || {}).ladderSpan;
+    if (names.length >= 2) {
+      const hi = Math.max(...names.map(n => L[n])), lo = Math.min(...names.map(n => L[n]));
+      const span = hi / lo;
+      if (want && span < want) {
+        console.log('  !! the size ladder only spans ' + span.toFixed(1) + 'x, and this film ' +
+          'promises ' + want + 'x in rig.ladderSpan. Size is its argument — it has to be ' +
+          'obvious at a glance.');
+        failures++;
+      } else {
+        console.log('\n  ladder: ' + names.map(n => n + ' ' + L[n]).join(', ') +
+          ' — ' + span.toFixed(1) + 'x across' + (want ? ' (promised ' + want + 'x)' : '') +
+          ', holding in ' + ladder.length + ' shots');
+      }
+    }
+  }
+
+  /* THE COUNT, part two: ACROSS the film, which is where this primitive actually lives.
+     Three promises, all of them arithmetic a nine-year-old could check:
+       - the total never goes down. A feather does not un-happen.
+       - once anything has turned plain, no gold comes back. "The moment it left him" is one
+         way; a gold feather in a later shot means the turn was a trick of the light.
+       - the film shows both, because "it turned to feathers in your hand" needs the gold on
+         screen first. Same argument as film three refusing a film that never shows the rock
+         as it usually sits. */
+  if (counts.length) {
+    let turned = false, total = 0;
+    for (const c of counts) {
+      if (c.gold + c.plain < total) {
+        console.log('  !! shot ' + c.id + ': the film is down to ' + (c.gold + c.plain) +
+          ' feathers from ' + total + '. A feather does not un-happen.');
+        failures++;
+      }
+      if (turned && c.gold) {
+        console.log('  !! shot ' + c.id + ': gold feathers are back after they turned plain. ' +
+          'The turn goes one way — that is the story.');
+        failures++;
+      }
+      /* AND AFTER THE TURN THE NUMBER IS FIXED. She pulled out a handful; the girls put that
+         handful in a box and kept them. Six on the roof and five in the box is a film that
+         cannot count, and a child watching it can. */
+      if (turned && c.gold + c.plain !== total) {
+        console.log('  !! shot ' + c.id + ': ' + (c.gold + c.plain) + ' feathers, and there ' +
+          'were ' + total + ' when they turned. That handful is the whole set from then on.');
+        failures++;
+      }
+      if (c.plain) turned = true;
+      total = Math.max(total, c.gold + c.plain);
+    }
+    const anyGold = counts.some(c => c.gold), anyPlain = counts.some(c => c.plain);
+    if (!anyGold || !anyPlain) {
+      console.log('  !! the film only ever shows ' + (anyGold ? 'gold' : 'plain') +
+        ' feathers. Both, or the turn is not on screen.');
+      failures++;
+    } else {
+      console.log('  count: ' + counts.map(c => c.id + ' ' + c.gold + 'g' +
+        (c.plain ? '+' + c.plain + 'w' : '')).join(', '));
+    }
+  }
+
+  /* THE LOG CONTRACT, part two: ACROSS shots. The carpenters left ONE log in ONE place, and
+     the cut where it snaps shut is the loudest cut in the film -- so the only thing allowed to
+     change across it is the gap. Same x, same length, same ground line, everywhere. And the
+     film has to show both states, for the same reason film three has to show the rock twice:
+     "the two halves came together" means nothing to a viewer who never saw them apart. */
+  if (logs.length) {
+    const px = n => (n > 0 ? '+' : '') + n.toFixed(0) + 'px';
+    const ref = logs[0];
+    for (const l of logs.slice(1)) {
+      const dl = l.body[0] - ref.body[0], dr = l.body[2] - ref.body[2];
+      const dg = l.ground - ref.ground;
+      if (Math.abs(dl) > 2 || Math.abs(dr) > 2 || Math.abs(dg) > 2) {
+        console.log('  !! shot ' + l.id + ': the log moved since shot ' + ref.id +
+          ' — left ' + px(dl) + ', right ' + px(dr) + ', ground ' + px(dg) +
+          '.\n     It is the one log the carpenters left; it does not wander.');
+        failures++;
+      }
+    }
+    const open = logs.filter(l => l.state === 'wedged'), shut = logs.filter(l => l.state === 'shut');
+    if (!open.length || !shut.length) {
+      console.log('  !! the film shows the log ' + (open.length ? 'only open' : 'only shut') +
+        '. Both states or the story has no moment in it.');
+      failures++;
+    } else {
+      /* the halves coming together has to be VISIBLE, not a two-pixel difference in a
+         drawing -- the same argument as the crocodile making the rock higher */
+      const hOf = l => l.body[3] - l.body[1];
+      const drop = hOf(open[0]) - hOf(shut[0]);
+      if (drop < 10) {
+        console.log('  !! the log is only ' + px(drop) + ' slimmer once it shuts. The two ' +
+          'halves coming together is the loudest thing in the film and a viewer has to see ' +
+          'it — draw the open cut wider, or the shut log tighter.');
+        failures++;
+      } else {
+        console.log('\n  log: ' + Math.round(ref.body[2] - ref.body[0]) + 'px long in ' +
+          logs.length + ' shots, ' + drop.toFixed(0) + 'px slimmer shut');
+      }
+    }
+  }
+
   /* THE WATERLINE CONTRACT, part two: ACROSS shots -- the new thing story three needed.
      carry and ride each promise something about one frame. This promises something about the
      FILM: that the rock the monkey has crossed by for years is the same rock, in the same

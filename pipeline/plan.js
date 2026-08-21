@@ -62,7 +62,12 @@ const COMMON = {
   dog: /\b(dogs?)\b/i, cat: /\b(cats?)\b/i, mongoose: /\b(mongooses?)\b/i,
   camel: /\b(camels?)\b/i, bear: /\b(bears?)\b/i, fish: /\b(fish)\b/i,
   frog: /\b(frogs?)\b/i, peacock: /\b(peacocks?)\b/i,
-  people: /\b(mother|father|daughters?|sons?|wife|husband|girls?|boys?|villagers?|carpenters?)\b/i,
+  /* THE TRADES ARE PEOPLE TOO, and leaving them out is not a small miss: this pattern said
+     jt-monkey-gardener needed no new cast, and its GARDENER has four lines of dialogue. Three
+     of the five films on the last slate turned out to need humans and the planner reported
+     two. A name search will always under-count -- read the story (step 3 in docs/03) -- but
+     the words for the jobs people do in these stories are cheap to list. */
+  people: /\b(mother|father|daughters?|sons?|wife|husband|girls?|boys?|children|villagers?|carpenters?|gardeners?|farmers?|potters?|merchants?|traders?|weavers?|fishermen|washerman|barbers?|cooks?|servants?|king|queen|prince|princess|thie(f|ves)|travellers?|beggars?|doctors?|teachers?|priests?|hunters?|shepherds?)\b/i,
 };
 function secsOf(file) {
   if (!fs.existsSync(file)) return null;

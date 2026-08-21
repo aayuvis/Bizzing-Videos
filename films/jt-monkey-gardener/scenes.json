@@ -1,0 +1,113 @@
+{
+ "_": [
+  "FILM 6 -- The Monkeys Who Watered the Garden (jataka-more).",
+  "",
+  "THE PRIMITIVE IS `world`, and it is the counterpart to film three's `rock`. `rock` promised",
+  "the world STAYED THE SAME across a film -- the same stone, the same waterline, every night.",
+  "This promises the opposite and just as strictly: the garden CHANGES, in one declared",
+  "direction, and never drifts back. Get it wrong and no single shot is wrong; a kept garden",
+  "in shot 12 looks perfectly fine on its own, and only the film is broken.",
+  "",
+  "So the stages are film-level and ORDERED, in rig.world, and a garden shot writes",
+  "",
+  "    \"world\": \"uprooted\"",
+  "",
+  "INSTEAD of a plate. A shot cannot name both, so it cannot show a stage that is not one of",
+  "these four, and film.js checks that the sequence never runs backwards and that the first",
+  "and last stage both appear -- a garden of wilted sticks is only a loss to a viewer who was",
+  "shown the kept one. Shots that are not in the garden name a plate as usual: the mango tree",
+  "is not a stage of the garden.",
+  "",
+  "AND THE PLATES ARE MEASURED NOW, not asked. Each stage names the one before it as its",
+  "canonical composition, and film.js correlates their edge maps: on the plates already in",
+  "this repo a canon-matched pair scores 0.64-0.96 and two different places 0.10-0.17, so a",
+  "stage that quietly came back re-framed is caught before a frame is rendered. Prose has",
+  "failed at this twice (film three's rivers, film four's yard) and both times a person had",
+  "to notice.",
+  "",
+  "CAST: the monkey is free. THE GARDENER IS THE CHANNEL'S FIRST HUMAN -- see",
+  "cast/gardener/cast.json, and read it before publishing anything he is in."
+ ],
+ "story": "jt.monkey-gardener",
+ "cast": ["monkey", "gardener"],
+ "stage": [1920, 1080],
+
+ "rig": {
+  "ladder": { "monkey": 200, "gardener": 530 },
+  "world": { "plate": "garden", "of": ["kept", "pulling", "uprooted", "wilted"] }
+ },
+
+ "shots": [
+  { "id": "00", "seg": "hook", "world": "kept", "camera": "push-in" },
+
+  { "id": "01a", "seg": "0", "world": "kept", "camera": "drift-right" },
+  { "id": "01b", "seg": "0", "world": "kept", "camera": "hold",
+    "layers": [
+      { "who": "gardener", "cell": "gardener-water", "perch": [0.30, 0.86] }
+    ] },
+
+  { "id": "02a", "seg": "1", "plate": "mango-tree", "camera": "hold",
+    "troop": { "cell": "monkey-sit", "n": 6, "who": "monkey",
+               "from": [0.14, 0.46], "to": [0.84, 0.44], "spread": 0.03,
+               "seed": 7, "anim": "idle" } },
+  { "id": "02b", "seg": "1", "plate": "mango-tree", "camera": "hold",
+    "layers": [
+      { "who": "gardener", "cell": "gardener-talk", "perch": [0.26, 0.92] },
+      { "say": "Water the saplings<br>this evening.", "at": 1.6, "dur": 4.4,
+        "from": "gardener-talk" }
+    ] },
+
+  { "id": "03a", "seg": "2", "plate": "mango-tree", "camera": "hold",
+    "layers": [
+      { "who": "monkey", "cell": "monkey-call", "perch": [0.58, 0.46], "anim": "chatter" },
+      { "say": "We are extremely<br>good at water.", "at": 1.5, "dur": 4.4,
+        "from": "monkey-call" }
+    ] },
+  { "id": "03b", "seg": "2", "plate": "garden-gate", "camera": "drift-right",
+    "layers": [
+      { "who": "gardener", "cell": "gardener-walk", "perch": [0.44, 0.90] }
+    ] },
+
+  { "id": "04", "seg": "3", "world": "kept", "camera": "hold",
+    "troop": { "cell": "monkey-climb", "n": 6, "who": "monkey",
+               "from": [0.14, 0.88], "to": [0.86, 0.84], "spread": 0.03,
+               "seed": 23, "anim": "bounce" } },
+
+  { "id": "05a", "seg": "4", "world": "kept", "camera": "hold",
+    "layers": [
+      { "who": "monkey", "cell": "monkey-offer", "perch": [0.34, 0.88] },
+      { "say": "Exactly the right amount —<br>according to the roots.", "at": 2.0, "dur": 4.8,
+        "from": "monkey-offer" }
+    ] },
+  { "id": "05b", "seg": "4", "world": "kept", "camera": "hold",
+    "troop": { "cell": "monkey-sit", "n": 5, "who": "monkey",
+               "from": [0.18, 0.88], "to": [0.82, 0.85], "spread": 0.02,
+               "seed": 61, "anim": "idle" } },
+
+  { "id": "06", "seg": "5", "world": "kept", "camera": "hold",
+    "layers": [
+      { "who": "monkey", "cell": "monkey-sit", "perch": [0.50, 0.88] }
+    ] },
+
+  { "id": "07a", "seg": "6", "world": "pulling", "camera": "hold",
+    "troop": { "cell": "monkey-climb", "n": 6, "who": "monkey",
+               "from": [0.13, 0.88], "to": [0.87, 0.84], "spread": 0.04,
+               "seed": 89, "anim": "bounce" } },
+  { "id": "07b", "seg": "6", "world": "uprooted", "camera": "hold" },
+
+  { "id": "08a", "seg": "7", "world": "wilted", "camera": "hold",
+    "layers": [
+      { "who": "gardener", "cell": "gardener-still", "perch": [0.32, 0.88] }
+    ] },
+  { "id": "08b", "seg": "7", "world": "wilted", "camera": "hold",
+    "layers": [
+      { "who": "gardener", "cell": "gardener-still", "perch": [0.30, 0.88] },
+      { "who": "monkey", "cell": "monkey-call", "perch": [0.62, 0.90] },
+      { "say": "We measured<br>every one.", "at": 4.0, "dur": 4.2, "from": "monkey-call" }
+    ] },
+
+  { "id": "09", "seg": "8", "world": "wilted", "camera": "hold" },
+
+  { "id": "10", "seg": "moral", "world": "wilted", "camera": "push-in" }
+ ]
+}

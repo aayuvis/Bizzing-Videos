@@ -1,0 +1,98 @@
+{
+ "_": [
+  "FILM 4 -- The Monkey and the Wedge (panch-more).",
+  "",
+  "THE PRIMITIVE IS `troop`: a crowd that is CAST, not scenery. docs/02 §5.7 puts crowds in",
+  "the plate because they never recur -- true of a village looking up, false of these",
+  "monkeys, who come down off the wall, try the saw and pull the wedge. A crowd of one cell",
+  "fails one way and fails completely: identical animals, evenly spaced, facing the same way,",
+  "breathing in step. So the rig places them AND varies them, from a seeded generator so the",
+  "render stays byte-identical, and film.js asserts no two neighbours share both size and",
+  "facing and that nobody stands inside anybody.",
+  "",
+  "`n` is the whole crowd; there is no per-instance field, so the variation cannot be quietly",
+  "undone by hand-placing one of them.",
+  "",
+  "THE LOG IS FILM-LEVEL, and that is not a second primitive -- it is the `rock` lesson at a",
+  "quarter of the size, and it is here because the first draft of this shot list got the log",
+  "wrong twice while it was still prose. The moral shot asked for a log held open by its",
+  "wedge AND a loose wedge lying beside it, which is two wedges in a story about one. And the",
+  "two cells came back at different proportions, so placing them by height -- as every other",
+  "sprite in the pipeline is placed -- would have made the log 24% LONGER at the exact cut",
+  "where it snaps shut. rig.log now owns its x, its ground line and its length; a shot may",
+  "write only:",
+  "",
+  "    \"log\": {}                                     as the carpenters left it",
+  "    \"log\": { \"shut\": true }                       after he heaves the wedge out",
+  "    \"log\": { \"astride\": { ... } }                 with somebody sitting on it",
+  "    \"log\": { \"shut\": true, \"wedge\": true }        the wedge now on the ground",
+  "",
+  "A loose wedge while the log is still open is refused at build time. `astride` puts his",
+  "bottom edge ON the log's top edge, so he cannot hover over the gap or sink into it.",
+  "",
+  "CAST COST: zero. The monkey was drawn for story two."
+ ],
+ "story": "pt.monkey-wedge",
+ "cast": ["monkey"],
+ "stage": [1920, 1080],
+
+ "rig": {
+  "ladder": { "monkey": 180 },
+  "log": { "x": 0, "ground": 0.87, "w": 1000, "wedgeH": 78, "wedgeDx": 580, "astrideDx": -150 }
+ },
+
+ "shots": [
+  { "id": "00", "seg": "hook", "plate": "yard-empty", "camera": "hold",
+    "log": {} },
+
+  { "id": "01", "seg": "0", "plate": "yard-work", "camera": "drift-right" },
+
+  { "id": "02a", "seg": "1", "plate": "yard-wall", "camera": "hold",
+    "troop": { "cell": "monkey-sit", "n": 6, "who": "monkey",
+               "from": [0.16, 0.62], "to": [0.86, 0.60], "spread": 0.02,
+               "seed": 11, "anim": "idle" } },
+  { "id": "02b", "seg": "1", "plate": "yard-wall", "camera": "hold",
+    "troop": { "cell": "monkey-sit", "n": 6, "who": "monkey",
+               "from": [0.14, 0.62], "to": [0.88, 0.60], "spread": 0.03,
+               "seed": 29, "anim": "idle" } },
+
+  { "id": "03a", "seg": "2", "plate": "yard-work", "camera": "hold" },
+  { "id": "03b", "seg": "2", "plate": "yard-empty", "camera": "hold",
+    "log": {} },
+
+  { "id": "04a", "seg": "3", "plate": "yard-empty", "camera": "hold",
+    "troop": { "cell": "monkey-climb", "n": 5, "who": "monkey",
+               "from": [0.18, 0.84], "to": [0.82, 0.80], "spread": 0.04,
+               "seed": 47, "anim": "bounce" } },
+  { "id": "04b", "seg": "3", "plate": "yard-empty", "camera": "hold",
+    "log": { "astride": { "who": "monkey", "cell": "monkey-sit", "anim": "idle" } } },
+
+  { "id": "05", "seg": "4", "plate": "yard-empty", "camera": "hold",
+    "log": { "astride": { "who": "monkey", "cell": "monkey-offer", "anim": "idle" } },
+    "layers": [
+      { "say": "That is obviously<br>in the way.", "at": 1.4, "dur": 4.2, "from": "monkey-offer" }
+    ] },
+
+  { "id": "06a", "seg": "5", "plate": "yard-empty", "camera": "hold",
+    "log": { "astride": { "who": "monkey", "cell": "monkey-climb", "anim": "bounce" } } },
+  { "id": "06b", "seg": "5", "plate": "yard-empty", "camera": "hold",
+    "log": { "shut": true, "wedge": true,
+             "astride": { "who": "monkey", "cell": "monkey-call", "anim": "chatter" } },
+    "layers": [
+      { "say": "OH.", "shout": true, "at": 3.4, "dur": 3.0, "from": "monkey-call" }
+    ] },
+
+  { "id": "07", "seg": "6", "plate": "yard-return", "camera": "hold",
+    "log": { "shut": true, "wedge": true } },
+
+  { "id": "08a", "seg": "7", "plate": "yard-wall", "camera": "hold",
+    "layers": [
+      { "who": "monkey", "cell": "monkey-climb", "perch": [0.74, 0.58] }
+    ] },
+  { "id": "08b", "seg": "7", "plate": "yard-empty", "camera": "hold",
+    "log": {} },
+
+  { "id": "09", "seg": "moral", "plate": "yard-empty", "camera": "hold",
+    "log": {} }
+ ]
+}

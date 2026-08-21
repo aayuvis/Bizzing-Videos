@@ -1,0 +1,125 @@
+{
+ "_": [
+  "FILM 7 -- The Goose Who Gave Gold (jataka-more).",
+  "",
+  "THE PRIMITIVE IS `count`: a set a child can count, that changes. docs/03 named the two",
+  "embarrassing outcomes exactly -- the feathers not matching the number of visits, and the",
+  "goose after the grab reading as a SECOND goose -- and both are solved the same way, which",
+  "is the `carry` lesson at its smallest. THE GOLD FEATHER AND THE WHITE ONE ARE THE SAME PNG.",
+  "The gold ones carry a gild filter; the plain ones do not. 'Every single one of them turned",
+  "into an ordinary white feather' is then literally true of the pixels, and the golden goose",
+  "and the plain goose are one drawing too, so he cannot come back as a different bird.",
+  "",
+  "rig.count owns the size, the spacing and the SPOTS -- a shot picks a declared spot by name",
+  "and says how many of each colour. There is no field for moving a feather. film.js then",
+  "checks the arithmetic across the whole film: the total never goes down, gold never comes",
+  "back once anything has turned, the total is FIXED once it has turned (the girls kept all",
+  "of them and no new ones appeared), and both states are on screen.",
+  "",
+  "EDITORIAL. The mother is not a villain and the film must not play her as one -- see",
+  "cast/mother/cast.json. There is no snatching, no bird in anyone's hands and no plucked",
+  "goose in any shot: she kneels and reaches with open hands, and the next picture is six",
+  "white feathers. The colour change IS the event, which is as elliptical as the app's own",
+  "telling. Never braver than the text."
+ ],
+ "story": "jt.golden-goose",
+ "cast": ["goose", "mother", "daughter"],
+ "stage": [1920, 1080],
+
+ "rig": {
+  "ladder": { "mother": 520, "daughter": 380, "goose": 260 },
+  "count": {
+   "sprite": "feather",
+   "h": 86,
+   "step": [70, 0],
+   "spots": { "step": [0.53, 0.87], "roof": [0.42, 0.80], "floor": [0.46, 0.90] }
+  }
+ },
+
+ "shots": [
+  { "id": "00", "seg": "hook", "plate": "house-front", "camera": "push-in",
+    "count": { "gold": 1, "at": "step" } },
+
+  { "id": "01a", "seg": "0", "plate": "house-room", "camera": "hold",
+    "layers": [
+      { "who": "mother", "cell": "mother-sew", "perch": [0.30, 0.90] }
+    ],
+    "troop": { "cell": "daughter-stand", "n": 3, "who": "daughter",
+               "from": [0.60, 0.90], "to": [0.88, 0.88], "spread": 0.02,
+               "seed": 13, "anim": "idle" } },
+  { "id": "01b", "seg": "0", "plate": "house-room", "camera": "drift-left",
+    "layers": [
+      { "who": "mother", "cell": "mother-sew", "perch": [0.42, 0.90] }
+    ] },
+
+  { "id": "02", "seg": "1", "plate": "house-roof", "camera": "hold",
+    "layers": [
+      { "who": "goose", "cell": "goose-body", "perch": [0.54, 0.72], "gild": true,
+        "anim": "small-breathe" }
+    ] },
+
+  { "id": "03a", "seg": "2", "plate": "house-roof", "camera": "hold",
+    "layers": [
+      { "who": "goose", "cell": "goose-body", "perch": [0.54, 0.72], "gild": true,
+        "anim": "small-breathe" },
+      { "say": "I know this house.<br>Sell that.", "at": 1.8, "dur": 4.6, "from": "goose-body" }
+    ] },
+  { "id": "03b", "seg": "2", "plate": "house-front", "camera": "hold",
+    "count": { "gold": 1, "at": "step" } },
+
+  { "id": "04a", "seg": "3", "plate": "house-mended", "camera": "drift-right" },
+  { "id": "04b", "seg": "3", "plate": "house-mended", "camera": "hold",
+    "count": { "gold": 1, "at": "step" },
+    "troop": { "cell": "daughter-stand", "n": 3, "who": "daughter",
+               "from": [0.66, 0.90], "to": [0.90, 0.87], "spread": 0.02,
+               "seed": 37, "anim": "idle" } },
+
+  { "id": "05a", "seg": "4", "plate": "house-mended", "camera": "hold",
+    "layers": [
+      { "who": "mother", "cell": "mother-still", "perch": [0.40, 0.88] }
+    ] },
+  { "id": "05b", "seg": "4", "plate": "house-roof", "camera": "hold",
+    "layers": [
+      { "who": "goose", "cell": "goose-body", "perch": [0.56, 0.72], "gild": true,
+        "anim": "small-breathe" }
+    ] },
+
+  { "id": "06", "seg": "5", "plate": "house-mended", "camera": "hold",
+    "layers": [
+      { "who": "mother", "cell": "mother-still", "perch": [0.34, 0.88] },
+      { "who": "daughter", "cell": "daughter-speak", "perch": [0.66, 0.90] },
+      { "say": "Ma, he comes<br>on his own.", "at": 2.2, "dur": 4.4, "from": "daughter-speak" }
+    ] },
+
+  { "id": "07a", "seg": "6", "plate": "house-roof", "camera": "hold",
+    "layers": [
+      { "who": "goose", "cell": "goose-body", "perch": [0.68, 0.72], "gild": true,
+        "anim": "small-breathe" },
+      { "who": "mother", "cell": "mother-reach", "perch": [0.28, 0.92] }
+    ] },
+  { "id": "07b", "seg": "6", "plate": "house-roof", "camera": "hold",
+    "count": { "plain": 6, "at": "roof" },
+    "layers": [
+      { "who": "mother", "cell": "mother-hold", "perch": [0.22, 0.92] }
+    ] },
+
+  { "id": "08a", "seg": "7", "plate": "house-roof", "camera": "hold",
+    "layers": [
+      { "who": "goose", "cell": "goose-body", "perch": [0.60, 0.72], "anim": "small-breathe" },
+      { "say": "It was a gift.<br>That is what made it gold.", "at": 2.0, "dur": 5.0,
+        "from": "goose-body" }
+    ] },
+  { "id": "08b", "seg": "7", "plate": "lane-away", "camera": "drift-right",
+    "layers": [
+      { "who": "goose", "cell": "goose-body", "perch": [0.46, 0.86], "flip": true }
+    ] },
+
+  { "id": "09", "seg": "8", "plate": "house-room", "camera": "hold",
+    "count": { "plain": 6, "at": "floor" },
+    "troop": { "cell": "daughter-stand", "n": 3, "who": "daughter",
+               "from": [0.14, 0.90], "to": [0.40, 0.88], "spread": 0.02,
+               "seed": 71, "anim": "idle" } },
+
+  { "id": "10", "seg": "moral", "plate": "house-mended", "camera": "push-in" }
+ ]
+}

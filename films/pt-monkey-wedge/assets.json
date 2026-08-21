@@ -1,0 +1,51 @@
+{
+ "_": [
+  "FILM 4 -- The Monkey and the Wedge (panch-more).",
+  "",
+  "THE CARPENTERS ARE SCENERY, NOT CAST (docs/02 §5.7). The story sends them to lunch at",
+  "noon and the whole film happens while they are gone, so they are painted into two plates",
+  "and never animated. The MONKEYS are the cast crowd -- they act -- which is the case §5.7",
+  "does not cover and the reason this film exists.",
+  "",
+  "THE YARD IS ONE PLACE at three moments, so yard-empty and yard-return name yard-work as",
+  "their canonical composition. The log sits in the same spot in all of them, so the plates",
+  "must agree about where the ground is.",
+  "",
+  "SAY WHICH WAY THE LOG IS POINTING. The first pass asked for a log 'lying on its side,",
+  "seen from the side, sawn half way down its length' and got a log seen END ON, standing",
+  "up, split like firewood -- which contradicted the plates, where the timber lies flat, and",
+  "gave the monkey nothing to sit astride. Prose about a solid object needs its AXIS stated:",
+  "which way the length runs across the frame, which face the cut is in, where the wedge",
+  "stands. A camera angle is a structural fact and gets the same treatment as any other.",
+  "",
+  "EDITORIAL: a temple under construction is a building site, not a religious image -- no",
+  "SAY HOW BIG THE WEDGE IS TOO. Round two drew the log right and the wedge as a splinter,",
+  "with the 'clear dark gap' as a hairline -- so the halves did not read as HELD APART, and",
+  "the snap shut, the loudest beat in the film, was a hairline going away. The title object",
+  "of a film gets its size stated in the prompt, in units of the thing beside it.",
+  "",
+  "shrine, no idol, no ritual. And the log cells carry the story's own ending: the app's",
+  "retelling lets him limp away, so there is no blood and no crushed animal, just a shut log",
+  "and a tail."
+ ],
+ "canon": {
+  "log": "log-wedged"
+ },
+ "sprites": {
+  "log-wedged": "A single great felled tree trunk lying FLAT ON THE GROUND, ALONE, with its LENGTH RUNNING LEFT TO RIGHT ACROSS THE WHOLE PICTURE -- a long horizontal cylinder of rough bark, about three times as long as it is thick, seen from the SIDE at eye level. It is NOT standing up and NOT seen end on: we see the long bark flank of the trunk. It has been sawn HALF WAY THROUGH lengthwise from the top, and the cut GAPES WIDE OPEN: the upper half is levered up into two lips of pale sawn timber with a BLACK SHADOW GAP between them, a gap as thick as a man's arm, running from the middle of the trunk all the way to the right-hand end. Holding it open, standing UPRIGHT in the middle of that gap, is ONE BIG CHUNKY WEDGE of pale sawn timber -- a fat tapered block as tall as the trunk is thick and half as wide as it is tall, unmistakably a solid object you could grab with both arms, driven down point-first into the cut with its broad blunt head standing well clear above the top of the log. Rough dark bark outside, pale sawn wood inside the cut. Thick soft warm-brown outlines, flat cel shading. NO tools, NO trestles, NO sawhorses, NO people, NO animals, NO ground, NO shadow on the floor -- just the one log and its one big wedge.",
+  "log-shut": "The SAME great felled tree trunk as the reference image, ALONE -- the same bark, the same colours, the same length and thickness, lying FLAT with its LENGTH RUNNING LEFT TO RIGHT across the whole picture, seen from the SIDE at eye level, filling the frame the same way. NOT standing up, NOT seen end on. The one thing that has changed: the WEDGE IS GONE and the cut has SNAPPED SHUT. There is no gap, no black shadow, no pale lips of sawn timber standing up, and nothing sticking out of the log -- the two halves have clapped together and all that is left is one FINE DARK LINE running along the top of the trunk where the cut was. The trunk is now visibly SLIMMER from top to bottom than it was with the gap in it. Thick soft warm-brown outlines, flat cel shading. NO tools, NO trestles, NO people, NO animals, NO ground, NO shadow -- just the log.",
+  "wedge-loose": "A single pale wooden wedge, ALONE, lying on its side -- a simple tapered block of light sawn timber with a blunt head and a thin edge, the sort a carpenter hammers into a split log. Thick soft warm-brown outlines, flat cel shading. Nothing else in the picture."
+ },
+ "plates": {
+  "yard-work": "A temple building yard at the edge of an Indian town in warm late-morning light, seen straight on. Bare packed earth in the foreground, stacks of cut timber and pale stone blocks, a half-built stone wall behind, a low boundary wall along the left. About eight carpenters at work, small in the frame and spread across the middle distance -- ordinary men of mixed ages in dhotis and simple cloth, sawing and chiselling, nobody a caricature. Keep them small enough that faces are not readable. Flat cel shading, thick soft warm-brown outlines. NO animals. NO idol, NO shrine, NO religious imagery -- this is a construction site.",
+  "yard-empty": {
+   "like": "yard-work",
+   "prompt": "EXACTLY the same temple building yard as the reference, at noon and COMPLETELY EMPTY. Keep the IDENTICAL camera position, the identical framing and the identical horizon: the same half-built temple in the same place at the same size, the same scaffolding, the same timber stacks and stone blocks in the same places, the same boundary wall, the same open ground in the middle. Do NOT re-frame, do NOT zoom in, do NOT add trees at the edges of the picture, and do NOT add a log, trestles or sawhorses. ONLY the people change: every carpenter is gone, and a few hand tools are left lying on the ground where they were put down. NO animals."
+  },
+  "yard-return": {
+   "like": "yard-work",
+   "prompt": "EXACTLY the same temple building yard as yard-work, same composition and same horizon, in warm afternoon light -- with the carpenters back and gathered toward the middle distance, small in frame, ordinary men of mixed ages, some with arms raised as if calling out. Keep them small enough that faces are not readable. NO animals."
+  },
+  "yard-wall": "A low mud-brick boundary wall along the edge of a building yard, seen close and straight on in warm late-morning light, with a broad flat top wide enough to sit on, dry grass at its foot and the yard's timber stacks soft and out of focus beyond it. Flat cel shading, thick soft warm-brown outlines. NO animals, NO people."
+ }
+}

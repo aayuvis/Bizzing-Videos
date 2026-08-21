@@ -1,16 +1,27 @@
 {
  "_": [
-  "FILM 5 -- Who Was Here First? (jataka-more). SCAFFOLD: cast declared so the library can",
-  "be drawn; the shot list and the `scale` primitive are still to author.",
+  "FILM 5 -- Who Was Here First? (Tittira Jataka, jataka-more).",
   "",
-  "THE PRIMITIVE WILL BE `scale`. Relative size is the argument -- 'You are the biggest.",
-  "That is not the same thing at all' -- so a declared size ladder for the film, characters",
-  "scaled from it rather than per shot, and a cross-shot assertion that the ordering and",
-  "the ratios hold wherever two of them share a frame. Same class as `rock`: get it wrong",
-  "and no single shot looks wrong.",
+  "THE PRIMITIVE IS `scale`, and it is the first about a RELATIONSHIP that has to hold",
+  "everywhere at once. The story is an argument about size -- 'You are the biggest. That is",
+  "not the same thing at all' -- so if the elephant does not dwarf the bird in every frame",
+  "they share, the argument is about nothing.",
   "",
-  "DRAWN, NOT AUTHORED. charsheet, elephant, partridge and the three banyan plates exist;",
-  "the shot list is empty. Author it against the narration next."
+  "Heights are therefore NOT a shot's business. `rig.ladder` declares one height per",
+  "character for the whole film and a layer names WHO it is:",
+  "",
+  "    { \"who\": \"partridge\", \"cell\": \"partridge-speak\", \"perch\": [0.42, 0.62] }",
+  "",
+  "`depth` scales a whole shot further away, which cannot disturb the ratios. There is no",
+  "per-character height field: the drift is not discouraged, it is unsayable. film.js checks",
+  "the ratios in every shot and across the film, and refuses a ladder that does not span at",
+  "least 4x, because this argument has to be obvious at a glance.",
+  "",
+  "THE TOWER is the ending and it is carved on gateways all over India, so it has to be",
+  "exactly right: each one's bottom edge IS the top edge of the one below, computed.",
+  "",
+  "CAST COST: zero for the monkey, two new characters (elephant, partridge) drawn once for",
+  "the channel. The model sheet put all three on one ground line before a shot existed."
  ],
  "story": "jt.partridge-elders",
  "cast": [
@@ -22,5 +33,454 @@
   1920,
   1080
  ],
- "shots": []
+ "rig": {
+  "ladder": {
+   "elephant": 620,
+   "monkey": 190,
+   "partridge": 74
+  },
+  "ladderSpan": 4
+ },
+ "shots": [
+  {
+   "id": "00",
+   "seg": "hook",
+   "plate": "banyan-shade",
+   "camera": "push-in",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-stand",
+     "perch": [
+      0.62,
+      0.88
+     ]
+    },
+    {
+     "who": "monkey",
+     "cell": "monkey-sit",
+     "perch": [
+      0.3,
+      0.9
+     ],
+     "flip": true
+    },
+    {
+     "who": "partridge",
+     "cell": "partridge-perch",
+     "perch": [
+      0.16,
+      0.86
+     ]
+    }
+   ]
+  },
+  {
+   "id": "01a",
+   "seg": "0",
+   "plate": "banyan-wide",
+   "camera": "drift-right",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-stand",
+     "perch": [
+      0.58,
+      0.9
+     ]
+    }
+   ]
+  },
+  {
+   "id": "01b",
+   "seg": "0",
+   "plate": "banyan-shade",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-stand",
+     "perch": [
+      0.66,
+      0.88
+     ]
+    },
+    {
+     "who": "monkey",
+     "cell": "monkey-sit",
+     "perch": [
+      0.33,
+      0.9
+     ],
+     "flip": true
+    },
+    {
+     "who": "partridge",
+     "cell": "partridge-perch",
+     "perch": [
+      0.19,
+      0.86
+     ]
+    }
+   ]
+  },
+  {
+   "id": "02",
+   "seg": "1",
+   "plate": "banyan-shade",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-settle",
+     "perch": [
+      0.66,
+      0.93
+     ]
+    },
+    {
+     "say": "I am the eldest, so I go first.",
+     "at": 1.2,
+     "dur": 4.0,
+     "from": "elephant-settle"
+    }
+   ],
+   "depth": 0.7
+  },
+  {
+   "id": "03",
+   "seg": "2",
+   "plate": "banyan-shade",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-settle",
+     "perch": [
+      0.74,
+      0.93
+     ]
+    },
+    {
+     "who": "monkey",
+     "cell": "monkey-call",
+     "perch": [
+      0.16,
+      0.93
+     ],
+     "flip": true
+    },
+    {
+     "say": "You are the biggest.<br>That is not the same thing.",
+     "at": 1.0,
+     "dur": 3.6,
+     "from": "monkey-call"
+    }
+   ],
+   "depth": 0.74
+  },
+  {
+   "id": "04",
+   "seg": "3",
+   "plate": "banyan-shade",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-listen",
+     "perch": [
+      0.7,
+      0.9
+     ]
+    },
+    {
+     "who": "monkey",
+     "cell": "monkey-sit",
+     "perch": [
+      0.4,
+      0.9
+     ],
+     "flip": true
+    },
+    {
+     "who": "partridge",
+     "cell": "partridge-speak",
+     "perch": [
+      0.16,
+      0.66
+     ]
+    },
+    {
+     "say": "How far back can each of you<br>remember this tree?",
+     "at": 2.4,
+     "dur": 5.2,
+     "from": "partridge-speak"
+    }
+   ]
+  },
+  {
+   "id": "05a",
+   "seg": "4",
+   "plate": "banyan-shade",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-stand",
+     "perch": [
+      0.58,
+      0.9
+     ]
+    },
+    {
+     "who": "monkey",
+     "cell": "monkey-sit",
+     "perch": [
+      0.24,
+      0.9
+     ],
+     "flip": true
+    }
+   ]
+  },
+  {
+   "id": "05b",
+   "seg": "4",
+   "plate": "banyan-wide",
+   "camera": "hold",
+   "depth": 0.62,
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-stand",
+     "perch": [
+      0.52,
+      0.86
+     ]
+    }
+   ]
+  },
+  {
+   "id": "06",
+   "seg": "5",
+   "plate": "banyan-shade",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-listen",
+     "perch": [
+      0.72,
+      0.9
+     ]
+    },
+    {
+     "who": "monkey",
+     "cell": "monkey-call",
+     "perch": [
+      0.3,
+      0.9
+     ],
+     "flip": true
+    },
+    {
+     "say": "I ate the topmost shoot<br>without stretching.",
+     "at": 1.6,
+     "dur": 4.4,
+     "from": "monkey-call"
+    }
+   ]
+  },
+  {
+   "id": "07",
+   "seg": "6",
+   "plate": "banyan-shade",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-listen",
+     "perch": [
+      0.74,
+      0.9
+     ]
+    },
+    {
+     "who": "monkey",
+     "cell": "monkey-sit",
+     "perch": [
+      0.46,
+      0.9
+     ],
+     "flip": true
+    },
+    {
+     "who": "partridge",
+     "cell": "partridge-perch",
+     "perch": [
+      0.18,
+      0.66
+     ]
+    }
+   ]
+  },
+  {
+   "id": "08a",
+   "seg": "7",
+   "plate": "banyan-shade",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "partridge",
+     "cell": "partridge-speak",
+     "perch": [
+      0.3,
+      0.72
+     ]
+    },
+    {
+     "say": "I dropped that seed<br>right here.",
+     "at": 2.0,
+     "dur": 5.0,
+     "from": "partridge-speak"
+    }
+   ],
+   "depth": 2.6
+  },
+  {
+   "id": "08b",
+   "seg": "7",
+   "plate": "banyan-wide",
+   "camera": "drift-left",
+   "depth": 3.2,
+   "layers": [
+    {
+     "who": "partridge",
+     "cell": "partridge-fly",
+     "perch": [
+      0.4,
+      0.32
+     ]
+    }
+   ]
+  },
+  {
+   "id": "09a",
+   "seg": "8",
+   "plate": "banyan-shade",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-stand",
+     "perch": [
+      0.68,
+      0.9
+     ]
+    },
+    {
+     "who": "monkey",
+     "cell": "monkey-sit",
+     "perch": [
+      0.34,
+      0.9
+     ],
+     "flip": true
+    },
+    {
+     "who": "partridge",
+     "cell": "partridge-perch",
+     "perch": [
+      0.2,
+      0.86
+     ]
+    }
+   ]
+  },
+  {
+   "id": "09b",
+   "seg": "8",
+   "plate": "banyan-wide",
+   "camera": "hold",
+   "tower": {
+    "ground": 0.9,
+    "x": -60,
+    "anim": "cruise",
+    "of": [
+     {
+      "who": "elephant",
+      "cell": "elephant-stand"
+     },
+     {
+      "who": "monkey",
+      "cell": "monkey-sit",
+      "flip": true
+     },
+     {
+      "who": "partridge",
+      "cell": "partridge-perch"
+     }
+    ]
+   }
+  },
+  {
+   "id": "10",
+   "seg": "9",
+   "plate": "banyan-dusk",
+   "camera": "pull-back",
+   "tower": {
+    "ground": 0.9,
+    "x": -40,
+    "anim": "cruise",
+    "of": [
+     {
+      "who": "elephant",
+      "cell": "elephant-stand"
+     },
+     {
+      "who": "monkey",
+      "cell": "monkey-sit",
+      "flip": true
+     },
+     {
+      "who": "partridge",
+      "cell": "partridge-perch"
+     }
+    ]
+   }
+  },
+  {
+   "id": "11",
+   "seg": "moral",
+   "plate": "banyan-dusk",
+   "camera": "hold",
+   "layers": [
+    {
+     "who": "elephant",
+     "cell": "elephant-settle",
+     "perch": [
+      0.6,
+      0.9
+     ]
+    },
+    {
+     "who": "monkey",
+     "cell": "monkey-sit",
+     "perch": [
+      0.32,
+      0.9
+     ],
+     "flip": true
+    },
+    {
+     "who": "partridge",
+     "cell": "partridge-perch",
+     "perch": [
+      0.18,
+      0.86
+     ]
+    }
+   ]
+  }
+ ]
 }
