@@ -27,28 +27,30 @@
    "resolution": "1920x1080",
    "bytes": 18027955,
    "sha1": "f3a9b28eec3de606d71e2491928c076f67156aa3",
-   "commit": null,
+   "commit": "bb44946090512d5bb6bb70da9d6cae710e1e6be4",
    "youtube": null,
    "master": null,
    "at": null,
    "current": true,
    "notes": [
-    "Film six. Master out of git; the 720p preview is what gets published."
+    "Film six. Master out of git; the 720p preview is what gets published.",
+    "Not in git, by the rule: a master is a build artefact and git does not forget. Rebuilds from this repo in minutes."
    ]
   },
   {
-   "published": null,
+   "published": "2026-08-21T06:20:00Z",
    "duration": 118.29,
    "resolution": "1280x720",
    "bytes": 4844976,
    "sha1": "fb7233047fa06a93c92c6295cba6758f2c914bc6",
-   "commit": null,
+   "commit": "bb44946090512d5bb6bb70da9d6cae710e1e6be4",
    "youtube": null,
    "master": null,
-   "at": null,
+   "at": "bizzing-videos gh-pages: video/monkey-gardener-720p.mp4 (and monkey-gardener-720p-1edea9b3.mp4)",
    "current": true,
    "notes": [
-    "The review preview."
+    "The review preview.",
+    "Review preview published to gh-pages. YouTube is still null: publishing to the channel is a human action (docs/01 §3)."
    ]
   }
  ]

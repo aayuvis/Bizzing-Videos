@@ -23,28 +23,30 @@
    "resolution": "1920x1080",
    "bytes": 13926807,
    "sha1": "b6bb7689d90e165fd8747e261c95f5f11973fb64",
-   "commit": null,
+   "commit": "bb44946090512d5bb6bb70da9d6cae710e1e6be4",
    "youtube": null,
    "master": null,
    "at": null,
    "current": true,
    "notes": [
-    "Film four. The master stays out of git (docs/01 §6); the 720p preview is what publish.sh puts on gh-pages."
+    "Film four. The master stays out of git (docs/01 §6); the 720p preview is what publish.sh puts on gh-pages.",
+    "Not in git, by the rule: a master is a build artefact and git does not forget. Rebuilds from this repo in minutes."
    ]
   },
   {
-   "published": null,
+   "published": "2026-08-21T06:20:00Z",
    "duration": 108.83,
    "resolution": "1280x720",
    "bytes": 4196395,
    "sha1": "534114b2b9318c5a0f79300d8a82cd4538dee54a",
-   "commit": null,
+   "commit": "bb44946090512d5bb6bb70da9d6cae710e1e6be4",
    "youtube": null,
    "master": null,
-   "at": null,
+   "at": "bizzing-videos gh-pages: video/monkey-wedge-720p.mp4 (and monkey-wedge-720p-bb72b78d.mp4)",
    "current": true,
    "notes": [
-    "The review preview."
+    "The review preview.",
+    "Review preview published to gh-pages. YouTube is still null: publishing to the channel is a human action (docs/01 §3)."
    ]
   }
  ]

@@ -28,28 +28,30 @@
    "resolution": "1920x1080",
    "bytes": 19665025,
    "sha1": "e28978a18efc6ecc05d7c3905cda58823ebb8a53",
-   "commit": null,
+   "commit": "bb44946090512d5bb6bb70da9d6cae710e1e6be4",
    "youtube": null,
    "master": null,
    "at": null,
    "current": true,
    "notes": [
-    "Film five. Master out of git; the 720p preview is what gets published."
+    "Film five. Master out of git; the 720p preview is what gets published.",
+    "Not in git, by the rule: a master is a build artefact and git does not forget. Rebuilds from this repo in minutes."
    ]
   },
   {
-   "published": null,
+   "published": "2026-08-21T06:20:00Z",
    "duration": 112.54,
    "resolution": "1280x720",
    "bytes": 5390440,
    "sha1": "ff832bef3a1d252c1786b8ab5a89b29d3ba0c7c2",
-   "commit": null,
+   "commit": "bb44946090512d5bb6bb70da9d6cae710e1e6be4",
    "youtube": null,
    "master": null,
-   "at": null,
+   "at": "bizzing-videos gh-pages: video/partridge-elders-720p.mp4 (and partridge-elders-720p-85c42ef8.mp4)",
    "current": true,
    "notes": [
-    "The review preview."
+    "The review preview.",
+    "Review preview published to gh-pages. YouTube is still null: publishing to the channel is a human action (docs/01 §3)."
    ]
   }
  ]

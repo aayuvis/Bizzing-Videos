@@ -77,7 +77,7 @@ all of it, along with the title, the description and the disclosure line.
 
 Uploading to YouTube stays a human action, on purpose.
 
-### The three habits that pay for themselves
+### The four habits that pay for themselves
 
 - **Assert what a viewer would complain about.** A harness, a bird-ride and a set of bared
   teeth all got through review by eye. Contact is measured out of the live DOM per shot and
@@ -87,6 +87,10 @@ Uploading to YouTube stays a human action, on purpose.
 - **One renderer per film.** `film.js` takes a pid lock. Two renderers sharing an output
   directory produce a film that is neither build, which from the outside looks exactly like
   your fixes being ignored.
+- **Break every new assertion once, and watch it fail.** Two checks in this pipeline were
+  worthless until that was done to them, and both looked perfectly healthy passing: one
+  compared a sprite against itself, and one measured the monkey against the top of a box that
+  was actually the top of the wedge he was standing on.
 
 ## Layout
 
@@ -110,8 +114,18 @@ distinct characters across 323 stories, so a character is drawn once for the cha
 than once per film: story three reuses story two's monkey and crocodile and pays nothing for
 either. A sprite that belongs to one film only still lives in `films/<story>/sprites/`.
 
+**Read a `cast.json` before drawing anything near it.** Each one carries the character's
+prompts *and* the reasoning — why the crocodile has no visible teeth in any cell, why the
+elephant is undecorated, and, for the three human characters, the whole list of what is
+deliberately absent from them and why. The humans are the newest and the least settled: see
+docs/03.
+
+**Eight films, eight rig primitives**, one per film, which is the unit of progress here:
+`carry`, `ride`, `rock`, `troop`, `scale`, `world`, `count`, `many`. CLAUDE.md has the table
+and what each one makes impossible to get wrong.
+
 ## History
 
 The pipeline was built inside `bizzingindia.com` and split out here with its history intact
-— `git log` runs back through both films, and the commit subjects are the record of what
-went wrong. `git log --follow` works across the move.
+— `git log` runs back through the first two films, and the commit subjects are the record of
+what went wrong. `git log --follow` works across the move.

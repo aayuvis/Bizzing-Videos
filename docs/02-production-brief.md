@@ -358,6 +358,22 @@ But **crowds are scenery, not cast.** A village that the story says runs out to 
 have people in it; they never recur, so they belong in the plate. An empty street under that
 narration is the shot failing its one job. State the rule per-plate, not globally.
 
+**A crowd that ACTS is cast, and the rule above does not cover it.** Film four's troop of
+monkeys come down off the wall, try the saw, sit in the bucket and one of them pulls the wedge.
+They are on screen for most of the film and they are made of a cell we already own — so they
+are cast, painted into nothing, and they need a rig. Film eight's wardens on the beach are the
+opposite and go in the plate, exactly as this rule says: nobody speaks, nobody recurs, nobody
+acts.
+
+The test is not how many of them there are. It is whether any of them does anything.
+
+A crowd of *cast* has one failure mode and it is total: identical animals, evenly spaced,
+facing the same way, breathing in step. So the rig places them **and** varies them — scale,
+facing, animation phase — from a **seeded** generator, so the render stays byte-identical
+between runs. There is no per-instance field, which is the point: the variation cannot be
+quietly undone by hand-placing one of them. At a hundred instances the same problem gets two
+more failure modes and its own primitive; see §5.20.
+
 ### 5.8 A number the renderer ignores is worse than a wrong number
 
 **Symptom:** you change a value, re-render, and nothing moves.
@@ -440,6 +456,129 @@ Assert the outcome, not the intermediate. `film.js` measures the rendered rectan
 fails the shot; that is what caught this, and no amount of reading the placement code did.
 
 ---
+
+### 5.16 A camera angle is a structural fact, and prose does not carry it
+
+The prompt asked for "a great felled log lying on its side on the ground, seen from the side,
+sawn half way down its length along the middle". What came back was a log seen **end on**,
+standing up, split like firewood — which contradicted the plates, where the timber lies flat,
+and gave the monkey nothing to sit astride.
+
+The words were not wrong. They were not *load-bearing*. "Lying on its side" and "seen from the
+side" both describe the view without ever saying which way the object's long axis runs across
+the picture, and a model will happily satisfy both with a stump.
+
+**Name the axis.** "Lying FLAT ON THE GROUND with its LENGTH RUNNING LEFT TO RIGHT ACROSS THE
+WHOLE PICTURE — a long horizontal cylinder, NOT standing up, NOT seen end on" produced it
+first time. Same class of fix as §5.2: state the geometry, then state what it is not.
+
+And **say how big the important part is, in units of the thing beside it.** Round two drew the
+log correctly and the wedge as a splinter, with the "clear dark gap" as a hairline — so the two
+halves did not read as held apart, and the snap shut, the loudest beat in the film, was a
+hairline going away. The title object of a film gets its size stated: "a fat tapered block as
+tall as the trunk is thick and half as wide as it is tall".
+
+### 5.17 A colour that lives in the tone curve cannot be reached with a hue operation
+
+Film seven needed a golden goose and an ordinary white one, and the strongest way to promise
+they are the same bird is for them to **be the same file**. A CSS `filter:` chain does that
+for nothing, so that is what it was.
+
+It cannot work on a white subject, and five rounds of tuning proved it rather than suggesting
+it. `sepia()` preserves luminance, so a near-white bird stays near-white however much
+`saturate()` follows; push the chroma far enough to see it and you get a lemon rubber duck,
+and `hue-rotate()` far enough to kill the lemon gives a traffic cone.
+
+**Gold is not a hue. It is a ramp** — brown in the shadows, amber in the mid-tones, pale cream
+in the highlights — and the information that makes it read as metal is in the tone curve, which
+no sequence of hue and saturation operations can put there.
+
+`pipeline/gild.py` maps luminance through that ramp and keeps the alpha channel **exactly**.
+Same promise, better picture, and now *checkable*: two PNGs can be compared and a filter could
+not be. `film.js` asserts identical alpha (same silhouette, same line, same drawing) and that
+the gold one is measurably warmer.
+
+Calibration note that generalises: a cartoon white subject is drawn almost entirely between
+luminance 0.88 and 1.0, so a ramp that only turns gold in the mid-tones leaves it pale.
+Everything above 0.8 has to already be metal.
+
+### 5.18 A sprite drawn on white glows at night
+
+Sprites come back on flat white because that is what keys out cleanly (§5.1). That also means
+every sprite is lit for daylight. Drop one onto a moonlit plate unchanged and it does not look
+like it is in the scene — it looks like it is lit by something the scene does not contain.
+
+A hundred olive ridleys came out looking like a hundred pale eggs under a floodlight, in a film
+whose moral is about switching lights off.
+
+A shot-level `"night": true` wraps the cast — **not the plate**, which is already painted dark
+— in a darkening filter. Darkening is the one thing a CSS filter is genuinely good at, which is
+worth saying next to §5.17: the tool is not bad, it was being asked for the wrong thing.
+
+### 5.19 An assertion that fires on a correct film is a bug in the assertion
+
+Film five's size-ladder check demanded a span of at least 4×, because "you are the biggest"
+means nothing if the elephant does not dwarf the bird. Film six uses the same ladder to stop a
+man and a monkey drifting relative to each other, and 2.8× is exactly right for a man and a
+monkey. The check fired on a correct film.
+
+The fix is **not** to loosen it — that is the thing CLAUDE.md forbids, and for good reason. The
+fix is that the check had assumed a promise instead of reading one. A film that means it now
+declares `rig.ladderSpan: 4`, and the assertion checks *that*.
+
+This matters more than one number. An assertion that cries wolf teaches people to skim the
+output, and then the real failure two lines below it gets skimmed too.
+
+### 5.20 Jitter and collision pull against each other, so do both: scatter, then relax
+
+A hundred instances of one drawing on a beach has three ways to look wrong, and only one of
+them is obvious:
+
+- **a visible lattice.** Six monkeys in a row read as a row; a hundred turtles in a grid read
+  as wallpaper, and a child sees wallpaper instantly.
+- **flat scale.** On a beach receding to the surf, a turtle at the back must be smaller than
+  one at the front, or the beach has no depth and the crowd has no size. Make the size a
+  **function of the row**, so a turtle cannot be at the back and the size of one at the front.
+- **pile-ups.** At a hundred instances, uniform random placement *will* overlap, and two drawn
+  through each other read as one broken shape.
+
+The trap is that the first and the third are the same knob. Turn the jitter up until the
+spacing looks natural and you get pile-ups; turn it down until the pile-ups stop and you get a
+tile. Both were measured happening, in that order.
+
+**Scatter freely, then relax.** Jitter inside a bricked lattice, then push overlapping
+neighbours apart along the row until nobody is inside anybody — which keeps the uneven spacing
+*and* separates them. Three details that each cost a round:
+
+- deal instances to rows by **inverse width**: a receding plane holds more at the back, and a
+  square lattice asks the near row to hold as many as the far one at three times the size.
+- **re-sort the row every relaxation pass.** A push can carry one instance past its neighbour,
+  and then the two that are actually side by side are no longer adjacent in the list.
+- compute a row's capacity against the span it can **actually use** — the declared band
+  narrowed by the half-sprite that has to stay inside the frame. Measured against the wider
+  band, the last pair in the widest row sits pinned at the edge with nowhere to be pushed.
+
+And **refuse a crowd that does not fit**, loudly. The alternative is drawing them through each
+other, which is the whole thing this layout exists to prevent; a silent shave reads as
+"covered everything" when it did not.
+
+### 5.21 A plate that claims a canonical composition should be measured, not trusted
+
+§5.1 says a plate that must match another names it as its canonical composition, and the
+generator passes that reference through. **A reference is a request, not a guarantee**, and it
+has failed silently twice: three river plates with three compositions on film three, which
+would have floated the rock in one shot and sunk it in the next; and a yard on film four that
+grew trees at both edges and moved the camera in, so "the carpenters have gone to lunch" read
+as a different yard. Both were caught by a person looking at a picture.
+
+Measuring it has one trap of its own. **Do not use pixel difference** — it is dominated by the
+*light*, not the composition. On the plates in this repo, one composition at day versus night
+scores 71 apart while two genuinely different places score 56. A day/night pair would fail and
+a wrong plate would pass.
+
+Composition is **where the edges are**. Downscale, take the edge map, normalise it and
+correlate. Canon-declared pairs here land between 0.62 and 0.97; different places between 0.10
+and 0.17. That is a wall with a canyon on either side of it.
 
 ## 6. Editorial (carries to any Bizzing property)
 
