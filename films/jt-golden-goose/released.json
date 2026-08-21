@@ -1,0 +1,65 @@
+{
+ "_": [
+  "WHAT SHIPPED. A film rebuilds from this repo, but the answer to 'which cut is live' does",
+  "not, so it is recorded here. docs/01 §6.",
+  "",
+  "FILM SEVEN. The primitive is `count` -- a set a child can count, that changes -- and the two",
+  "things docs/03 predicted would be embarrassing turned out to have one answer: THE GOLD AND",
+  "THE WHITE ARE THE SAME DRAWING. pipeline/gild.py maps luminance through a gold ramp and",
+  "keeps the alpha channel exactly, so 'every single one of them turned into an ordinary white",
+  "feather' is literally true of the pixels, the goose after the grab cannot read as a second",
+  "goose, and film.js can prove both by comparing two PNGs.",
+  "",
+  "IT CONTAINS TWO HUMAN CHARACTERS. Read cast/mother/cast.json and cast/daughter/cast.json",
+  "before this is published anywhere. The mother is not a villain and the film does not play",
+  "her as one: she kneels and reaches with open hands, there is no bird in anyone's hands and",
+  "no plucked goose in any shot, and the colour change IS the event -- as elliptical as the",
+  "app's own telling.",
+  "",
+  "THE HOUSE WAS DRAWN TWICE AND WAS BRIEFLY TWO HOUSES. The repaired plate came back with a",
+  "pitched thatched roof where the poor one has a flat roof with a parapet; the plate-canon",
+  "check scored it 0.70, over the wall, because every other landmark still matched. A still",
+  "caught it and it was redrawn (0.89). docs/02 §5.21.",
+  "",
+  "Picture and sound agree at 117.75s.",
+  "",
+  "NOTHING IS PUBLISHED TO YOUTUBE. Publishing is a human action and nothing in this repo",
+  "uploads."
+ ],
+ "film": "jt-golden-goose",
+ "title": "The Goose Who Gave Gold",
+ "expected": 117.75,
+ "cuts": [
+  {
+   "published": null,
+   "duration": 117.75,
+   "resolution": "1920x1080",
+   "bytes": 16334057,
+   "sha1": "54436cf4c7af7a29bcba90c1210f02e613e798fe",
+   "commit": "30507b7560a9470e9d15ad0de579b85e43d28389",
+   "youtube": null,
+   "master": null,
+   "at": null,
+   "current": true,
+   "notes": [
+    "Not in git, by the rule: a master is a build artefact and git does not forget. Rebuilds from this repo in minutes.",
+    "This is the re-cut with the mended house keeping its own roof; the first cut of this film changed the shape of the building halfway through."
+   ]
+  },
+  {
+   "published": "2026-08-21T06:50:00Z",
+   "duration": 117.75,
+   "resolution": "1280x720",
+   "bytes": 4259239,
+   "sha1": "bb65b4e42ba1f30ecea73a40eb57c2a87741a166",
+   "commit": "30507b7560a9470e9d15ad0de579b85e43d28389",
+   "youtube": null,
+   "master": null,
+   "at": "bizzing-videos gh-pages: video/golden-goose-720p.mp4 (and -beb3d10e.mp4)",
+   "current": true,
+   "notes": [
+    "Review preview published to gh-pages. YouTube is still null: publishing to the channel is a human action (docs/01 §3)."
+   ]
+  }
+ ]
+}

@@ -1,0 +1,61 @@
+{
+ "_": [
+  "WHAT SHIPPED. A film rebuilds from this repo, but the answer to 'which cut is live' does",
+  "not, so it is recorded here. docs/01 §6.",
+  "",
+  "FILM EIGHT, the channel's FIRST 🧭 AAJ FILM and its first non-fable. That badge changes what",
+  "the pictures owe: this is a claim about a real coast, so the plates are Gahirmatha and the",
+  "Rushikulya mouth as they actually are, the turtles are olive ridleys and not the Panchatantra",
+  "tortoise, and there is no hero turtle in any shot. It carries no callouts, deliberately --",
+  "nobody in it speaks, and a bubble over a wild animal would make a factual film into a cartoon.",
+  "",
+  "The primitive is `many`: 116 instances of one drawing that have to read as a crowd and not as",
+  "wallpaper. Instances are dealt to rows by inverse width, jittered, bricked, then relaxed until",
+  "nobody is drawn through anybody -- jitter alone cannot do both, and the layout refuses a crowd",
+  "that does not fit rather than shaving it silently.",
+  "",
+  "It also needed NIGHT GRADING. A sprite drawn on white for daylight glows on a moonlit beach:",
+  "the first pass looked like a hundred pale eggs under a floodlight, in a film whose moral is",
+  "about switching a light off.",
+  "",
+  "Picture and sound agree at 171.04s.",
+  "",
+  "NOTHING IS PUBLISHED TO YOUTUBE. Publishing is a human action and nothing in this repo",
+  "uploads."
+ ],
+ "film": "fk-ridley-night",
+ "title": "The Night the Sea Comes Ashore",
+ "expected": 171.04,
+ "cuts": [
+  {
+   "published": null,
+   "duration": 171.04,
+   "resolution": "1920x1080",
+   "bytes": 27881915,
+   "sha1": "5f0b4990fcbe675b9ebaae03f52fb3b5bfbe31e2",
+   "commit": "30507b7560a9470e9d15ad0de579b85e43d28389",
+   "youtube": null,
+   "master": null,
+   "at": null,
+   "current": true,
+   "notes": [
+    "Not in git, by the rule: a master is a build artefact and git does not forget. Rebuilds from this repo in minutes."
+   ]
+  },
+  {
+   "published": "2026-08-21T06:45:00Z",
+   "duration": 171.04,
+   "resolution": "1280x720",
+   "bytes": 6226677,
+   "sha1": "80bd492bfbf22b772df572ba5c0b51187474b235",
+   "commit": "30507b7560a9470e9d15ad0de579b85e43d28389",
+   "youtube": null,
+   "master": null,
+   "at": "bizzing-videos gh-pages: video/ridley-night-720p.mp4 (and -ba399d1b.mp4)",
+   "current": true,
+   "notes": [
+    "Review preview published to gh-pages. YouTube is still null: publishing to the channel is a human action (docs/01 §3)."
+   ]
+  }
+ ]
+}
