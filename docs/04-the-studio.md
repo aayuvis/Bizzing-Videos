@@ -289,3 +289,53 @@ they belong in `pipeline/adapters/`, not in prose, so there is one place to corr
 - Voice: OpenAI `tts-1` $15/1M chars, `tts-1-hd` $30/1M; Gemini 3.1 Flash TTS $20/1M;
   Inworld TTS-1.5 Max $10/1M; ElevenLabs Flash v2.5 $103/1M, Multilingual v3 $206/1M.
 - Interpolation: RIFE and FILM, local, no marginal cost.
+
+---
+
+## Appendix — a worked example, actually run
+
+Not a story film, not a Bizzing property, no cast, no app behind it: **"How a Lock Actually
+Works"**, eight plates, the `narrated stills` archetype, run through the existing pipeline.
+It is in `films/ex-pin-tumbler/`.
+
+Its one structural fact is the **shear line**: the plug/housing join is a single straight line,
+and the lock opens when all five pin gaps arrive on it at once. That is exactly the class of
+thing docs/02 §3 Rule 2 says belongs in a rig.
+
+### What the gates actually caught
+
+| Gate | Spend | Outcome |
+|---|---|---|
+| G1 · one sentence | $0 | *"A key does not turn a lock. It lifts five pins to exactly one height."* |
+| G2 · script + shots | $0 | 9 shots, ~54s, 3 callouts |
+| **G3 · two plates, round 1** | **$0.27** | **both wrong.** Key pins hung below the plug into the housing; the shear-line plate drew a confident continuous line straight through the *middle of the pins* — a well-made diagram teaching a false fact — and recoloured the mechanism from cool grey to brass. |
+| **G3 · two plates, round 2** | **$0.27** | geometry fixed. The shear-line plate then **lost the line entirely**. |
+| — | $0 | **The gate's real finding: the plate should not exist.** A line whose *position* carries the meaning is an annotation, and docs/01 has always said annotations are composited, never generated. Deleted the plate; measured the boundary off `lock-locked` (y=385 of 768, 249 of 458 sampled columns agreeing); added `rig.shear`, where a shot may write only `"shear": true`. |
+| G4 · contact sheet | $0.80 | 6 plates. **4 of 7 flagged before a frame rendered** — see below. |
+
+**Total spent: $1.34.** Nothing was rendered, and nothing downstream was ordered.
+
+### What G4 flagged
+
+- `lock-pins` — re-framed, background turned cream, key pins drawn orange. A plate-canon failure.
+- `lock-keyin` — the key is in, but **nothing is lifted**: all five pins sit at one height and the
+  key's cuts do not engage them. That beat's entire content is "each cut lifts one pin by a
+  different amount".
+- `lock-aligned` — the payoff plate. The key is drawn as a stub with no bitting, and the pin
+  heights are uniform, which contradicts the plate before it.
+- `lock-turned` — the plug is drawn *bent*, like rubber, with the pins sheared into fragments.
+  And a 30° rotation of a cylinder about its long axis is nearly invisible in a side orthographic
+  cutaway — which is a fault in the **shot design**, not the drawing.
+
+### The conclusion the example reached, which is the useful part
+
+All four failures are the same failure: **a mechanical relationship held across separate
+drawings.** The pin heights *are* the film's data — five numbers — and asking one model to keep
+them consistent over seven pictures is the thing this repo has already proved does not work.
+
+So the correct next move is not four more re-rolls. It is to draw the lock **once** and let a
+rig place the pins, the same way `carry` places a stick in two beaks. That is one more primitive
+and about forty lines, and it would make every remaining plate free.
+
+**The studio's job was to reach that conclusion for $1.34 instead of for an evening**, and it did.
+That is the whole proposal, demonstrated on a subject it was not designed for.

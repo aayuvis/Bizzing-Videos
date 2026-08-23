@@ -1,0 +1,39 @@
+{
+ "_": [
+  "EXAMPLE FILM · the studio's `narrated stills` archetype, run through the existing pipeline.",
+  "",
+  "NO RIG AND NO CAST. Eight plates and a camera move on each. That is the whole film, and it",
+  "is the point: the gates in docs/04 are about WHERE THE MONEY IS, not about story films. This",
+  "one has no sprites, no primitives and no `cast` list, and every stage below still runs.",
+  "",
+  "ITS WORDS ARE ITS OWN. There is no app behind this film, so it carries its narration in",
+  "films/ex-pin-tumbler/vo/ and sources.js prefers that over the app's library. A Bizzing story",
+  "film has no vo/ directory and so cannot pick one up by accident.",
+  "",
+  "CALLOUTS: three, on the three lines that carry the mechanism -- the bridges, the line, and",
+  "the moment they all arrive on it. docs/01 says three to five and this is a film with no",
+  "characters in it, so a bubble is a pointer rather than a voice."
+ ],
+ "story": "ex.pin-tumbler",
+ "title": "How a Lock Actually Works",
+ "cast": [],
+ "stage": [1920, 1080],
+ "rig": {
+  "shear": { "plate": "lock-locked" }
+ },
+
+ "shots": [
+  { "id": "00", "seg": "hook",  "plate": "lock-locked",    "camera": "push-in" },
+  { "id": "01", "seg": "0",     "plate": "lock-anatomy",   "camera": "drift-right" },
+  { "id": "02", "seg": "1",     "plate": "lock-pins",      "camera": "push-in" },
+  { "id": "03", "seg": "2",     "plate": "lock-bridged",   "camera": "hold",
+    "layers": [ { "say": "Five little bridges.", "at": 2.6, "dur": 3.6, "x": 0, "y": -300 } ] },
+  { "id": "04", "seg": "3",     "plate": "lock-locked",    "camera": "hold", "shear": true,
+    "layers": [ { "say": "The shear line.<br>One line, all the way along.", "at": 2.2, "dur": 4.2, "x": 0, "y": -300 } ] },
+  { "id": "05", "seg": "4",     "plate": "lock-keyin",     "camera": "drift-left" },
+  { "id": "06", "seg": "5",     "plate": "lock-aligned",   "camera": "hold",
+    "layers": [ { "say": "Not near it. On it.", "at": 3.4, "dur": 3.4, "x": 0, "y": -300 } ] },
+  { "id": "07", "seg": "6",     "plate": "lock-turned",    "camera": "drift-right" },
+  { "id": "08", "seg": "moral", "plate": "lock-bridged",   "camera": "push-in" }
+ ]
+}

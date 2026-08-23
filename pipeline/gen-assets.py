@@ -69,7 +69,7 @@ CANON_RULE = {
 }
 
 
-def gen(prompt, out, ar, canon=None, canon_kind='character'):
+def gen(prompt, out, ar, canon=None, canon_kind='character', anchored=True):
     key = os.environ.get('GEMKEY') or sys.exit('GEMKEY is not set')
     def inline(p):
         m = 'image/png' if p.endswith('.png') else 'image/jpeg'
@@ -81,7 +81,12 @@ def gen(prompt, out, ar, canon=None, canon_kind='character'):
     # Requiring charsheet.png unconditionally meant the first cast-reuse film crashed on its
     # very first asset call, which is a poor way to find out.
     refs = [inline(p) for p in (SHEET, PAINT) if os.path.exists(p)]
-    if not refs and not canon:
+    # A CAST CELL WITH NOTHING TO MATCH IS THE BUG THIS CATCHES -- a new character drawn with
+    # no sheet drifts, which is what ruined four rounds of video. A PLATE with no `like` is a
+    # different thing entirely: it is drawn cold on purpose and becomes the canon everything
+    # else matches. Every first plate in this repo was drawn that way. So the refusal applies
+    # to things that are supposed to be anchored, not to everything.
+    if not refs and not canon and anchored:
         sys.exit('nothing to draw against: no films/%s/charsheet.png, no story painting, and '
                  'no canonical cell.\nA NEW character needs a model sheet; a borrowed one needs '
                  'its canon drawn first.' % STORY)
@@ -186,13 +191,15 @@ def gen_sheet(prompt, out, refs):
     return False
 
 
-def draw(name, prompt, out, canon, only, force, ar='1:1', canon_kind='character'):
+def draw(name, prompt, out, canon, only, force, ar='1:1', canon_kind='character',
+         anchored=True):
     if only and name not in only:
         return
     if os.path.exists(out) and not force:
         print('  %-16s cached' % name)
         return
-    ok = gen(prompt + (SPRITE_TAIL if ar == '1:1' else PLATE_TAIL), out, ar, canon, canon_kind)
+    ok = gen(prompt + (SPRITE_TAIL if ar == '1:1' else PLATE_TAIL), out, ar, canon,
+             canon_kind, anchored)
     print('  %-16s %s  %s' % (name, 'drawn' if ok else 'FAILED', key_out(out) if ok and ar == '1:1' else ''))
 
 
@@ -267,8 +274,9 @@ def main(argv):
         desc = v['prompt'] if isinstance(v, dict) else v
         like = v.get('like') if isinstance(v, dict) else None
         canon = os.path.join(FILM, 'plates', like + '.png') if like else None
+        # a plate that names no `like` is the one being drawn cold; it needs no anchor
         draw(name, desc, os.path.join(FILM, 'plates', name + '.png'), canon, only, force,
-             ar='16:9', canon_kind='place')
+             ar='16:9', canon_kind='place', anchored=bool(like))
 
 
 if __name__ == '__main__':

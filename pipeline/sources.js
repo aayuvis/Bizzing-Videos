@@ -61,8 +61,21 @@ const app = (...p) => path.join(appDir(), ...p);
 /** The same, as an absolute file: URL — for a generated page that is not next to the app. */
 const url = (...p) => 'file://' + app(...p);
 
-/** The narration clip a shot is cut to: app/voice/st/<slug>-<seg>.mp3 */
-const narration = (slug, seg) => app('voice', 'st', slug + '-' + seg + '.mp3');
+/** The narration clip a shot is cut to.
+ *
+ * TWO PROVENANCES, AND THE FILM DECLARES WHICH. A Bizzing story film is cut to the APP's
+ * narration and may not be cut to anything else — that is docs/02 §3 Rule 1, and it is why
+ * this file exists. But this pipeline also makes films that are not story films and have no
+ * app behind them; those carry their own voice track in `films/<story>/vo/<seg>.mp3`.
+ *
+ * The local track wins if it is there, so a non-app film cannot silently fall through to a
+ * story clip that happens to share a segment name — and an app film cannot silently acquire
+ * a local one, because it has no vo/ directory to acquire it from. */
+function narration(slug, seg) {
+  const own = path.join(REPO, 'films', slug, 'vo', seg + '.mp3');
+  if (fs.existsSync(own)) return own;
+  return app('voice', 'st', slug + '-' + seg + '.mp3');
+}
 
 /** The story's own painting, the source of the palette and the landscape (docs/01 §1). */
 const painting = slug => app('art', 'story', slug + '.jpg');

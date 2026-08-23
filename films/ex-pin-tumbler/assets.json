@@ -1,0 +1,60 @@
+{
+ "_": [
+  "EXAMPLE FILM · not a Bizzing story film, and that is the point of it.",
+  "",
+  "This is the studio's `narrated stills` archetype run through the existing pipeline with no",
+  "new rig at all: eight plates, a camera move on each, no cast, no sprites. It exists to show",
+  "that the gates in docs/04 are not specific to Panchatantra story films.",
+  "",
+  "THE ONE STRUCTURAL FACT is the shear line, and it is exactly the class of thing a prompt",
+  "cannot promise: it is a single straight line and five separate pin gaps have to sit ON it in",
+  "one plate and OFF it in another. Every plate below states it in those words, and the",
+  "contact-sheet gate is where a wrong one gets caught.",
+  "",
+  "CANON: lock-locked is drawn first and every other cutaway names it, so the mechanism is the",
+  "THERE IS NO SHEAR-LINE PLATE, and that is the film's whole lesson. It was asked for twice:",
+  "round one drew a confident continuous line straight through the middle of the pins -- a",
+  "well-drawn diagram teaching the wrong fact, which is worse than a bad drawing -- and round",
+  "two fixed the geometry and lost the line altogether. A line whose POSITION carries the",
+  "meaning is an annotation, and docs/01 has always said annotations are composited and never",
+  "generated. It is measured off lock-locked and drawn by the rig. See rig.shear.",
+  "",
+  "same mechanism throughout. Same mechanism as a character's canon cell (docs/02 §5.1) -- a",
+  "lock that changes the number of pins between shots is the same defect as a goose that",
+  "changes colour.",
+  "",
+  "NO LETTERING IN ANY PLATE. Labels are composited afterwards in the app's own type, which is",
+  "docs/01's rule and holds for a film with no story in it too."
+ ],
+ "canon": {},
+ "sprites": {},
+ "plates": {
+  "lock-locked": "A clean technical CUTAWAY ILLUSTRATION of a five-pin tumbler door lock, seen from the SIDE in flat orthographic view, filling the frame horizontally. GEOMETRY, AND IT MUST BE EXACTLY THIS. A fixed outer HOUSING in cool grey fills the picture. Lying horizontally through the LOWER HALF of that housing is the PLUG: one solid brass BAND, about a third of the picture tall, running from the left edge to the right, with a narrow keyway slot cut into its left end. THE TOP EDGE OF THAT BRASS BAND IS ONE PERFECTLY STRAIGHT HORIZONTAL LINE and it is the most important line in the drawing. FIVE evenly spaced vertical shafts are drilled DOWN from the top of the grey housing and pass THROUGH that line into the brass plug below. In each shaft, from the bottom up: a brass KEY PIN sitting entirely INSIDE the brass plug with its bottom resting on the floor of the keyway; a steel-blue DRIVER PIN stacked directly on top of it; and a small coil spring above that, pressing down from the closed top of the shaft. NO KEY is inserted, so every spring has pushed its stack fully down. THE CONSEQUENCE, WHICH IS THE WHOLE POINT OF THIS PICTURE: in all five shafts the JOIN between the brass key pin and the steel driver pin sits BELOW the top edge of the plug, so each steel driver pin STRADDLES that line -- its lower part inside the brass plug, its upper part still in the grey housing. No pin extends below the bottom edge of the brass plug. Flat vector-diagram style, clean confident dark outlines, muted engineering palette of cool grey housing, warm brass plug, steel-blue driver pins, off-white ground, subtle paper grain. NO text, NO labels, NO letters, NO numbers, NO arrows, NO dimension lines, NO dashed construction lines anywhere in the picture.",
+  "lock-anatomy": {
+   "like": "lock-locked",
+   "prompt": "EXACTLY the same cutaway lock as the reference from the IDENTICAL angle, position and scale -- the same housing, the same plug, the same keyway, the same five shafts in the same places. Do NOT re-frame and do NOT zoom. The one thing that changes: the five pin stacks and their springs are FADED ALMOST AWAY to a pale ghost, so that the two nested cylinders themselves are what the eye lands on -- the fixed outer housing and the turnable inner plug. NO text, NO labels, NO arrows."
+  },
+  "lock-pins": {
+   "like": "lock-locked",
+   "prompt": "EXACTLY the same cutaway lock as the reference from the IDENTICAL angle, position and scale. Do NOT re-frame and do NOT zoom. The one thing that changes: the five pin stacks and their springs are drawn at FULL STRENGTH and high contrast while the housing and plug around them drop back to a pale ghost, so the row of five spring-loaded stacks is what the eye lands on. Still NO key. NO text, NO labels, NO arrows."
+  },
+  "lock-bridged": {
+   "like": "lock-locked",
+   "prompt": "EXACTLY the same cutaway lock as the reference from the IDENTICAL angle, position and scale, still with NO key inserted and every pin stack pushed fully down. Do NOT re-frame and do NOT zoom. The one thing that changes: the five places where a driver pin CROSSES the join between plug and housing are picked out in a warm alert red, so that the five little bridges nailing the plug in place are unmistakable. NO text, NO labels, NO arrows."
+  },
+  "lock-keyin": {
+   "like": "lock-locked",
+   "prompt": "EXACTLY the same cutaway lock as the reference from the IDENTICAL angle, position and scale. Do NOT re-frame and do NOT zoom. The one thing that changes: a brass KEY has been pushed fully into the keyway from the left, drawn in the same cutaway so its toothed upper edge is visible running under all five pin stacks. The key's five cuts are all at DIFFERENT depths, and each one has lifted its own pin stack by a DIFFERENT amount, so the five key pins now sit at five different heights. The pin stacks are still not aligned with each other. NO text, NO labels, NO arrows.",
+   "note": "five different depths — the bitting is five measurements"
+  },
+  "lock-aligned": {
+   "like": "lock-locked",
+   "prompt": "EXACTLY the same cutaway lock as the reference from the IDENTICAL angle, position and scale, with the same brass key fully inserted from the left. Do NOT re-frame and do NOT zoom. THE ONE THING THAT CHANGES AND THE MOST IMPORTANT FACT IN THE PICTURE: in ALL FIVE shafts, the join between the key pin below and the driver pin above now sits EXACTLY ON the horizontal line where the plug meets the housing -- all five joins level with each other, all five on that one line, none above it and none below it. Every key pin is entirely inside the plug and every driver pin is entirely inside the housing. That single continuous line is drawn crisply from edge to edge. NO text, NO labels, NO arrows.",
+   "note": "the payoff plate: five gaps, one line, exactly"
+  },
+  "lock-turned": {
+   "like": "lock-locked",
+   "prompt": "The same cutaway lock as the reference, the same housing in the same place at the same scale, with the same brass key inserted -- but now the inner PLUG together with the key and the five lower key pins has ROTATED about thirty degrees clockwise inside the fixed housing, so the keyway is tilted. The five driver pins have been left behind, pushed up into the housing by the turning plug, and the tops of the key pins ride against the plug's upper edge. Behind the plug at the right, a flat cam arm has swung round with it. NO text, NO labels, NO arrows."
+  }
+ }
+}

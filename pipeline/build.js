@@ -594,6 +594,73 @@ function troopHTML(t, man) {
   return out.join('');
 }
 
+/* THE SHEAR LINE — the example film's primitive, and the shortest argument in this repo for
+ * why a rig beats a prompt.
+ *
+ * "How a Lock Actually Works" turns on one fact: the shear line is ONE line, and the lock
+ * opens when all five pin joins arrive on it at once. So the film needs a plate with that
+ * line drawn across it, and the obvious way to get one is to ask for it.
+ *
+ * That was tried. Twice. The first attempt drew a continuous line edge to edge exactly as
+ * asked and put it through the MIDDLE OF THE PINS — a confident, well-drawn diagram teaching
+ * the wrong fact, which is worse than a bad drawing. The second attempt fixed the geometry
+ * and lost the line altogether.
+ *
+ * A line that must be in one exact place is an ANNOTATION, and docs/01 has always said
+ * annotations are composited afterwards and never generated — that rule was written about
+ * lettering, and it turns out to be about anything whose position carries meaning.
+ *
+ * So: no shear-line plate. `rig.shear` names the plate, the boundary is MEASURED off that
+ * drawing (docs/02 §3, Rule 3 — anchors come off the picture, never off a guess), and a shot
+ * writes only
+ *
+ *     "shear": true
+ *
+ * There is no field for where the line goes, which is the point: the one thing this film must
+ * not get wrong is the one thing nobody can express wrongly. */
+function shearY(man) {
+  const rig = (scenes.rig || {}).shear;
+  if (!rig) throw new Error('a shot has "shear": true but scenes.json has no rig.shear.');
+  const plate = path.join(FILM, 'plates', rig.plate + '.png');
+  if (!fs.existsSync(plate)) throw new Error('rig.shear names plate "' + rig.plate + '", ' +
+    'which is not drawn yet.');
+  const out = execFileSync('python3', ['-c', `
+import sys
+from PIL import Image
+im = Image.open(sys.argv[1]).convert('RGB'); w,h = im.size; px = im.load()
+warm = lambda p: p[0]-p[2] > 30 and p[0] > 120
+cool = lambda p: p[2]-p[0] > 6 and 90 < p[1] < 190
+best = (0, None)
+for y in range(6, h-6):
+    n = sum(1 for x in range(0, w, 3) if warm(px[x, y+4]) and cool(px[x, y-4]))
+    if n > best[0]: best = (n, y)
+print('%d %d %d' % (best[1] or 0, best[0], w//3))
+`, plate], { encoding: 'utf8' }).trim().split(' ').map(Number);
+  const [y, hits, cols] = out;
+  /* A MEASUREMENT THAT FOUND NOTHING IS NOT A MEASUREMENT. The pins and the keyway interrupt
+     the boundary, so a real one scores well short of every column — but a plate with no plug
+     in it scores near zero, and drawing the film's central line at a y nobody measured is
+     exactly the failure this rig exists to prevent. */
+  if (hits < cols * 0.35)
+    throw new Error('rig.shear: no plug/housing boundary found in "' + rig.plate + '" (' +
+      hits + ' of ' + cols + ' columns agree).\nThe line the whole film is about cannot be ' +
+      'placed by guessing — redraw the plate so the boundary is there to measure.');
+  const plateH = Number(execFileSync('python3', ['-c',
+    'import sys;from PIL import Image;print(Image.open(sys.argv[1]).size[1])', plate],
+    { encoding: 'utf8' }).trim());
+  return { frac: y, hits, cols, plateH };
+}
+
+function shearHTML(man) {
+  const m = shearY(man);
+  /* a point on the PLATE, so it goes through the same 1.12 the plate does */
+  const frac = m.frac / m.plateH;
+  const stageY = Math.round((frac - 0.5) * 1080 * 1.12);
+  return `<div id="shear" data-frac="${frac.toFixed(4)}" data-hits="${m.hits}" ` +
+    `style="position:absolute;left:0;right:0;top:calc(50% + ${stageY}px);height:3px;` +
+    `margin-top:-1.5px;background:#1b1b1b;box-shadow:0 0 0 1px rgba(255,255,255,.35)"></div>`;
+}
+
 /* THE COUNT — film seven's primitive: a set that a child can count, and that changes.
  *
  * "One golden feather every visit, for as long as you need it" only lands if the feathers on
@@ -1099,6 +1166,7 @@ function shotHTML(shot, man) {
   const nightOpen = shot.night ? '<div id="night" style="position:absolute;inset:0;' +
     'filter:brightness(0.46) saturate(0.55) contrast(1.08)">' : '';
   if (shot.troop) body.push(troopHTML(shot.troop, man));
+  if (shot.shear) body.push(shearHTML(man));
   if (shot.many) body.push(manyHTML(shot.many, man));
   if (shot.count) body.push(countHTML(shot.count, man));
   if (shot.tower) body.push(towerHTML(shot.tower, man));
