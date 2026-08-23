@@ -121,6 +121,62 @@ input[type=range]{width:130px; accent-color:var(--spend); cursor:pointer}
 .track{height:5px; background:var(--rule-soft); border-radius:3px; margin-top:9px; overflow:hidden}
 .track i{display:block; height:100%; background:var(--spend); width:0; transition:width .5s cubic-bezier(.2,.7,.3,1)}
 
+/* ---- tabs ---- */
+.tabs{display:flex; gap:0; border-bottom:1px solid var(--rule); background:var(--card); padding:0 22px}
+.tab{
+  font-family:Archivo,sans-serif; font-size:12px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; padding:13px 16px 11px; border:0; border-bottom:2px solid transparent;
+  background:none; color:var(--dim); cursor:pointer; border-radius:0; margin-bottom:-1px;
+}
+.tab:hover{color:var(--text)}
+.tab[aria-selected=true]{color:var(--text); border-bottom-color:var(--spend)}
+.tab .n{font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--spend); margin-left:6px}
+.pane{display:none}
+.pane.on{display:block}
+
+/* ---- source + keys panes ---- */
+.pane-in{padding:24px 26px 28px}
+.pane-in h3{font-size:21px; font-weight:700; margin:0 0 8px; letter-spacing:-.018em}
+.pane-in>p{margin:0 0 20px; color:var(--ink-3); max-width:64ch; font-size:15.5px}
+.urlbar{display:flex; gap:9px; margin-bottom:20px; flex-wrap:wrap}
+.urlbar input[type=text]{
+  flex:1 1 300px; min-width:0; font-family:"IBM Plex Mono",monospace; font-size:13px;
+  padding:9px 12px; border:1px solid var(--rule); border-radius:var(--r);
+  background:var(--card); color:var(--text);
+}
+.urlbar input:focus-visible{outline:2px solid var(--spend); outline-offset:1px}
+table.kv{width:100%; border-collapse:collapse; font-size:14px}
+table.kv th{
+  font-family:Archivo,sans-serif; font-size:10px; font-weight:600; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--dim); text-align:left; padding:9px 12px 9px 0;
+  border-bottom:1px solid var(--rule); white-space:nowrap;
+}
+table.kv td{padding:10px 12px 10px 0; border-bottom:1px solid var(--rule-soft); vertical-align:top}
+table.kv tr:last-child td{border-bottom:0}
+table.kv td:last-child,table.kv th:last-child{padding-right:0}
+table.kv.rt td:last-child,table.kv.rt th:last-child{text-align:right}
+.pill{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; padding:2px 7px; border-radius:2px;
+  border:1px solid var(--rule); background:var(--sunk); color:var(--dim); white-space:nowrap;
+  display:inline-block;
+}
+.pill.need{border-color:var(--spend); color:var(--spend); background:var(--spend-soft); font-weight:600}
+.pill.have{border-color:var(--gate); color:var(--gate); background:var(--gate-soft)}
+.pill.no{opacity:.5}
+tr.dim td{opacity:.42}
+.env{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--spend)}
+.keyin{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; width:190px; padding:6px 9px;
+  border:1px solid var(--rule); border-radius:var(--r); background:var(--card); color:var(--text);
+}
+.keyin:focus-visible{outline:2px solid var(--spend); outline-offset:1px}
+.what{font-size:13.5px; color:var(--dim); display:block; margin-top:3px; line-height:1.45}
+.reuse{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:10px; margin-bottom:18px}
+.rcard{border:1px solid var(--rule); border-radius:var(--r); padding:12px 14px; background:var(--sunk)}
+.rcard .b{font-family:Archivo,sans-serif; font-weight:800; font-size:24px; letter-spacing:-.02em; line-height:1; font-variant-numeric:tabular-nums}
+.rcard .l{font-size:12.5px; color:var(--dim); margin-top:5px; line-height:1.35}
+.rcard.free .b{color:var(--gate)}
+
 /* ---- ladder ---- */
 .body{display:grid; grid-template-columns:326px minmax(0,1fr)}
 @media (max-width:880px){.body{grid-template-columns:1fr}}
@@ -326,7 +382,7 @@ footer p{margin:0 0 8px; max-width:70ch}
       <div class="field">
         <label for="voice">Narration</label>
         <select id="voice">
-          <option value="0.03">Already recorded — free</option>
+          <option value="0.00">Already recorded — free</option>
           <option value="0.03" selected>Synthesised — $30/1M chars</option>
           <option value="0.21">Premium synth — $206/1M</option>
           <option value="0">Silent / music only</option>
@@ -348,10 +404,48 @@ footer p{margin:0 0 8px; max-width:70ch}
       </div>
     </div>
 
-    <div class="body">
-      <div class="ladder" id="ladder"></div>
-      <div class="stage" id="stage"></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="ladder" aria-selected="true">The ladder</button>
+      <button class="tab" role="tab" data-tab="source" aria-selected="false">Projects<span class="n" id="srcN"></span></button>
+      <button class="tab" role="tab" data-tab="keys" aria-selected="false">Keys<span class="n" id="keyN"></span></button>
     </div>
+
+    <div class="pane on" id="pane-ladder">
+      <div class="body">
+        <div class="ladder" id="ladder"></div>
+        <div class="stage" id="stage"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-source"><div class="pane-in">
+      <h3>Which project is this film for?</h3>
+      <p>A project is the durable thing: a product, its asset library, its voice, its typefaces,
+      its editorial rules, and every film ever made under it. A film is an <em>instance</em> of a
+      project and inherits all of it without being asked. This runs before G1, costs nothing, and
+      every asset it finds is one that G3 and G4 never have to draw.</p>
+      <div class="urlbar">
+        <select id="proj" style="flex:0 0 auto"></select>
+        <input type="text" id="srcUrl" placeholder="https://…  ·  a repo  ·  a Drive folder  ·  a design system"
+               value="github.com/aayuvis/bizzingindia.com" spellcheck="false">
+        <button class="go" id="scan">Read its library</button>
+      </div>
+      <div id="srcOut"></div>
+    </div></div>
+
+    <div class="pane" id="pane-keys"><div class="pane-in">
+      <h3>What you need a key for</h3>
+      <p id="keysLede"></p>
+      <div class="scroll" style="border:0">
+        <table class="kv rt" id="keyTable"></table>
+      </div>
+      <div class="note" style="margin-top:22px">
+        <b>This page stores nothing and sends nothing.</b> The boxes above only format the text
+        below. Paste it into <code>studio/.env.local</code>, which is already in
+        <code>.gitignore</code> — the daemon reads the environment, and no key ever goes near
+        the HTML or the repo.
+      </div>
+      <pre id="envOut" style="margin-top:14px"></pre>
+    </div></div>
 
     <div class="ledger">
       <div class="eyebrow">Ledger · every call, what authorised it</div>
@@ -759,6 +853,245 @@ footer p{margin:0 0 8px; max-width:70ch}
     t.parentNode.scrollTop=t.parentNode.scrollHeight;
   }
 
+
+  // ---- projects -------------------------------------------------------------
+  // A PROJECT IS THE DURABLE THING and a film is an instance of one. The film list is
+  // not decoration: it is the amortisation ledger, and it is why the second film under a
+  // project costs a fraction of the first. Real numbers, measured from the checkouts
+  // beside this repo on 2026-08-23; the file format is studio/projects/*.json.
+  var PROJECTS = {
+    "bizzing-india": {
+      name:"Bizzing India", product:"bizzingindia.com", archetype:"composited",
+      library:[
+        {n:"323",   l:"stories — every word, written and edited"},
+        {n:"6,454", l:"narration clips · 529 MB"},
+        {n:"344",   l:"story paintings · 122 MB"},
+        {n:"11",    l:"cast members in cast/"},
+        {n:"2",     l:"stylesheets: type and colour tokens"}
+      ],
+      voice:[["English","en-IN-Chirp3-HD-Laomedeia","rate 1.02"],
+             ["Hindi","hi-IN-Neural2-A","rate 0.88"]],
+      voiceNote:"An Indian narrator is the point, not a preference — the old en-US voice read "+
+                "the names as a foreigner would, and it was noticed the first time a film ended.",
+      type:[["Display · titles and callouts","Fraunces"],
+            ["Text","Hanken Grotesk"],
+            ["Indic","Mukta · Noto Sans Bengali / Kannada / Malayalam · Noto Nastaliq Urdu"]],
+      typeNote:"Read out of the app's own fonts.css, never re-specified here — a second copy of "+
+               "a typeface list is a second source of truth. Devanagari is set properly or not "+
+               "at all: real face, unbroken shirorekha, never letter-spaced.",
+      films:[
+        ["pt-talkative-tortoise","The Tortoise Who Had to Have the Last Word",86.13,"carry",3],
+        ["pt-monkey-crocodile","The Monkey Who Kept His Heart in a Tree",119.83,"ride",2],
+        ["jt-crocodile-rock","The Rock That Answered Back",133.79,"rock",0],
+        ["pt-monkey-wedge","The Monkey and the Wedge",108.83,"troop",0],
+        ["jt-partridge-elders","Who Was Here First?",112.54,"scale",2],
+        ["jt-monkey-gardener","The Monkeys Who Watered the Garden",118.29,"world",1],
+        ["jt-golden-goose","The Goose Who Gave Gold",117.75,"count",2],
+        ["fk-ridley-night","The Night the Sea Comes Ashore",171.04,"many",1]
+      ],
+      rules:["Nothing on the channel is invented for the channel",
+             "No generated motion at all for story films",
+             "The badge travels — 🪔 Katha / 📜 Itihaas / 🧭 Aaj",
+             "Never make the video braver than the text",
+             "Publishing is a human action"]
+    },
+    "bizzing-bee": {
+      name:"Bizzing Bee", product:"Bizzing-Bee", archetype:"stills",
+      library:[{n:"—",l:"library not read yet"}],
+      voice:[["Narrator","not chosen","—"]],
+      voiceNote:"A sibling product with its own channel to start. Nothing is inherited from "+
+                "Bizzing India: a project's voice, type and rules are its own.",
+      type:[["Display","from its own design system"]],
+      typeNote:"ds-src carries the shared design tokens; the studio reads them rather than "+
+               "restating them.",
+      films:[], rules:["Its own editorial policy, not Bizzing India's"]
+    },
+    "none": {
+      name:"No project", product:"—", archetype:"stills",
+      library:[], voice:[], type:[], films:[],
+      voiceNote:"", typeNote:"",
+      rules:["A film with nothing behind it draws everything and carries its own voice track"]
+    }
+  };
+
+  function proj(){ return PROJECTS[el("proj").value] || PROJECTS.none; }
+  var mmss = function(t){ t=Math.round(t); return Math.floor(t/60)+":"+String(t%60).padStart(2,"0"); };
+
+  function drawSource(){
+    var P = proj(), o = el("srcOut");
+    el("srcN").textContent = P.films.length ? "✓" : "";
+    if (P.name === "No project"){
+      o.innerHTML = '<div class="note hot"><b>Then everything is drawn and everything is paid for.</b> '+
+        'That is a legitimate way to make a film — the lock explainer in this repo is one — but '+
+        'it is the expensive column, and it forfeits the thing a project is really for. A child '+
+        'who watches a film and then opens the product has to meet the same tortoise. Anything '+
+        'invented for the video that the product also has is a second version of the truth, and '+
+        'the two drift.</div>';
+      return;
+    }
+    var totalSecs = P.films.reduce(function(a,f){ return a+f[2]; },0);
+    var firstCast = P.films.length ? P.films[0][4] : 0;
+    var laterCast = P.films.slice(1).reduce(function(a,f){ return a+f[4]; },0);
+
+    o.innerHTML =
+      (P.library.length ? '<div class="reuse">'+ P.library.map(function(f){
+        return '<div class="rcard free"><div class="b">'+f.n+'</div><div class="l">'+f.l+'</div></div>';
+      }).join("") +'</div>' : '') +
+
+      '<table class="kv rt"><thead><tr><th>Voice</th><th>Identifier</th><th></th></tr></thead><tbody>'+
+      P.voice.map(function(v){
+        return '<tr><td><strong>'+v[0]+'</strong></td><td><span class="env">'+v[1]+'</span></td>'+
+               '<td><span class="pill">'+v[2]+'</span></td></tr>'; }).join("")+
+      '</tbody></table>'+
+      (P.voiceNote ? '<div class="note">'+P.voiceNote+'</div>' : '')+
+
+      '<table class="kv" style="margin-top:22px"><thead><tr><th>Type</th><th>Face</th></tr></thead><tbody>'+
+      P.type.map(function(t){
+        return '<tr><td><strong>'+t[0]+'</strong></td><td>'+t[1]+'</td></tr>'; }).join("")+
+      '</tbody></table>'+
+      (P.typeNote ? '<div class="note">'+P.typeNote+'</div>' : '')+
+
+      (P.films.length ?
+      '<table class="kv rt" style="margin-top:22px"><thead><tr><th>Films made · '+P.films.length+
+      '</th><th>Primitive it added</th><th>New cast</th><th>Runtime</th></tr></thead><tbody>'+
+      P.films.map(function(f){
+        return '<tr><td><strong>'+f[1]+'</strong><span class="what">'+f[0]+'</span></td>'+
+               '<td><span class="env">'+f[3]+'</span></td>'+
+               '<td><span class="pill '+(f[4]?"":"have")+'">'+(f[4]||"none")+'</span></td>'+
+               '<td><span class="pill">'+mmss(f[2])+'</span></td></tr>'; }).join("")+
+      '</tbody></table>'+
+      '<div class="note good"><b>That last column is the point of keeping this list.</b> The '+
+      'first film here drew '+firstCast+' characters; the seven after it drew '+laterCast+
+      ' between them, and two drew none at all. A project gets cheaper the longer it runs, and '+
+      'only if it remembers what it already owns — delete this history and the studio '+
+      'rediscovers the monkey, which is how a channel ends up with two tortoises.</div>'
+      : '<div class="note"><b>No films yet.</b> The first one under a project is the expensive '+
+        'one: it pays for the cast, the plates and the look, and every film after it inherits '+
+        'them.</div>')+
+
+      '<table class="kv" style="margin-top:22px"><thead><tr><th>Editorial · binding on every film</th></tr></thead><tbody>'+
+      P.rules.map(function(r){ return '<tr><td>'+r+'</td></tr>'; }).join("")+'</tbody></table>';
+  }
+
+  // ---- keys ----------------------------------------------------------------
+  // `need` is a function of the archetype, so the tab answers the only question
+  // worth asking: which of these do I need for the film I actually picked.
+  var PROVIDERS = [
+    { role:"The agent itself", who:"Anthropic", env:"ANTHROPIC_API_KEY",
+      what:"Writes the script, plans the shots, judges the contact sheet.",
+      where:"console.anthropic.com", price:"claude-opus-5 · $5 / $25 per Mtok",
+      need:function(){ return "always"; } },
+    { role:"Images", who:"Google AI Studio", env:"GEMKEY",
+      what:"Model sheets, plates, sprites, keyframes. What this repo already uses.",
+      where:"aistudio.google.com/apikey", price:"$0.02 – $0.24 an image",
+      need:function(a){ return a.assetsPerMin>0 || a.key==="composited" ? "always" : "no"; } },
+    { role:"Narration", who:"the product", env:"—",
+      what:"If the product already has a voice library, this costs nothing and is the only "+
+           "provenance a story film is allowed.",
+      where:"the Source tab", price:"free",
+      need:function(a,v){ return v==="0.00" ? "no" : "check first"; } },
+    { role:"Narration", who:"OpenAI", env:"OPENAI_API_KEY",
+      what:"For a film with no product behind it. tts-1-hd is the sane default.",
+      where:"platform.openai.com/api-keys", price:"$15 – $30 per 1M characters",
+      need:function(a,v){ return v==="0" ? "no" : "if no library"; } },
+    { role:"Narration · premium", who:"ElevenLabs", env:"ELEVENLABS_API_KEY",
+      what:"Only when a voice has to carry the film. Seven times the price.",
+      where:"elevenlabs.io", price:"$103 – $206 per 1M characters",
+      need:function(a,v){ return v==="0.21" ? "yes" : "optional"; } },
+    { role:"Motion", who:"Google Veo", env:"GEMKEY",
+      what:"Same key as images. Fast is the one to start on; Standard is five times the price "+
+           "and carries its own audio.",
+      where:"aistudio.google.com/apikey", price:"$0.15 – $0.75 a second",
+      need:function(a){ return a.motion ? "yes" : "no"; } },
+    { role:"Motion · cheaper", who:"Kling", env:"KLING_ACCESS_KEY + KLING_SECRET_KEY",
+      what:"Roughly half Veo Fast, and good at holding a subject across a multi-shot sequence.",
+      where:"klingai.com developer console", price:"$0.07 – $0.14 a second",
+      need:function(a){ return a.motion ? "alternative" : "no"; } },
+    { role:"Motion · alt", who:"Runway", env:"RUNWAYML_API_SECRET",
+      what:"Gen-4.5. The best creative-control tooling of the three.",
+      where:"dev.runwayml.com", price:"$0.15 a second",
+      need:function(a){ return a.motion ? "alternative" : "no"; } },
+    { role:"Archive", who:"Google Drive", env:"GDRIVE_FOLDER_ID",
+      what:"Where masters go, because they never go in git.",
+      where:"a folder you already own", price:"free",
+      need:function(){ return "optional"; } },
+    { role:"Publishing", who:"nobody", env:"—",
+      what:"There is deliberately no YouTube key. Publishing to a channel is a human action and "+
+           "nothing in this repo uploads.",
+      where:"—", price:"—",
+      need:function(){ return "never"; } }
+  ];
+
+  var RANK = { always:0, yes:0, "if no library":1, "check first":1, alternative:2, optional:2,
+               no:3, never:4 };
+
+  function drawKeys(){
+    var a = arch(); a.key = el("arch").value;
+    var v = el("voice").value;
+    var rows = PROVIDERS.map(function(p){ return { p:p, need:p.need(a,v) }; });
+    var required = rows.filter(function(r){ return RANK[r.need]===0; });
+    el("keyN").textContent = required.length;
+    el("keysLede").innerHTML = '<strong>You picked '+a.name.toLowerCase()+', so you need '+
+      (required.length===1 ? 'one key' : required.length+' keys')+
+      '.</strong> Everything else on this list is greyed out because this archetype never calls '+
+      'it. Change the kind of film in the bar above and the list changes with it.';
+    el("keyTable").innerHTML =
+      '<thead><tr><th>What for</th><th>Provider</th><th>Variable</th><th>Rate</th>'+
+      '<th>Key</th></tr></thead><tbody>'+
+      rows.map(function(r){
+        var dim = RANK[r.need]>=3 ? ' class="dim"' : '';
+        var cls = RANK[r.need]===0 ? 'need' : (RANK[r.need]>=3 ? 'no' : '');
+        var input = (r.p.env==="—" || RANK[r.need]>=3) ? '<span class="pill '+cls+'">'+r.need+'</span>'
+          : '<input class="keyin" type="password" autocomplete="off" spellcheck="false" '+
+            'data-env="'+r.p.env+'" placeholder="paste key"><br><span class="pill '+cls+
+            '" style="margin-top:5px">'+r.need+'</span>';
+        return '<tr'+dim+'><td><strong>'+r.p.role+'</strong><span class="what">'+r.p.what+
+          '</span></td><td>'+r.p.who+'<span class="what">'+r.p.where+'</span></td>'+
+          '<td><span class="env">'+r.p.env+'</span></td>'+
+          '<td><span class="what" style="margin:0">'+r.p.price+'</span></td>'+
+          '<td>'+input+'</td></tr>';
+      }).join("") + '</tbody>';
+    [].forEach.call(document.querySelectorAll(".keyin"), function(i){ i.oninput = drawEnv; });
+    drawEnv();
+  }
+
+  function drawEnv(){
+    var lines = [];
+    [].forEach.call(document.querySelectorAll(".keyin"), function(i){
+      var names = i.dataset.env.split(" + ");
+      if(i.value) names.forEach(function(n,k){
+        lines.push(n+"="+(k ? "…" : i.value.replace(/./g,"•").slice(0,12)+i.value.slice(-4)));
+      });
+    });
+    el("envOut").textContent = lines.length
+      ? "# studio/.env.local — gitignored, never committed\n" + lines.join("\n")
+      : "# studio/.env.local — gitignored, never committed\n# (nothing pasted yet)";
+  }
+
+  // ---- tabs ----------------------------------------------------------------
+  [].forEach.call(document.querySelectorAll(".tab"), function(t){
+    t.onclick = function(){
+      [].forEach.call(document.querySelectorAll(".tab"), function(x){
+        x.setAttribute("aria-selected", String(x===t)); });
+      [].forEach.call(document.querySelectorAll(".pane"), function(x){
+        x.classList.toggle("on", x.id === "pane-"+t.dataset.tab); });
+    };
+  });
+  el("proj").innerHTML = Object.keys(PROJECTS).map(function(k){
+    return '<option value="'+k+'">'+PROJECTS[k].name+'</option>'; }).join("")
+    + '<option value="new">+ New project…</option>';
+  el("proj").onchange = function(){
+    var P = proj();
+    if (el("proj").value === "new"){ el("proj").value = "none"; }
+    el("srcUrl").value = proj().product === "—" ? "" : proj().product;
+    /* a project carries its archetype and its narration provenance into the brief */
+    if (proj().archetype){ el("arch").value = proj().archetype; }
+    el("voice").value = proj().films.length ? "0.00" : "0.03";
+    state.i = 0; state.spent = 0; state.log = [];
+    drawSource(); render();
+  };
+  el("scan").onclick = drawSource;
+
   function render(){
     var f=forecast(), cap=+el("cap").value;
     el("lenv").textContent=mins()+" min";
@@ -770,7 +1103,7 @@ footer p{margin:0 0 8px; max-width:70ch}
       : "forecast "+money(f)+" · cap "+money(cap);
     el("capline").style.color = over ? "var(--spend)" : "var(--dim)";
     el("bar").style.width=Math.min(100,(state.spent/cap)*100)+"%";
-    drawLadder(); drawStage(); drawLedger();
+    drawLadder(); drawStage(); drawLedger(); drawKeys();
   }
 
   ["arch","len","voice","cap"].forEach(function(id){
@@ -780,6 +1113,6 @@ footer p{margin:0 0 8px; max-width:70ch}
     });
   });
 
-  render();
+  render(); drawSource();
 })();
 </script>

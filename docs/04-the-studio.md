@@ -176,6 +176,80 @@ assertions **refuse**. The agent's tools are the scripts this repo already has:
 
 ---
 
+## 4a. Projects — the container a film belongs to
+
+A **film is an instance of a project.** The project is the durable thing and it holds five
+things, all of which a film inherits without being asked:
+
+| | Bizzing India, measured 2026-08-23 |
+|---|---|
+| **Asset library** | 323 stories · 6,454 narration clips (529 MB) · 344 paintings (122 MB) · 11 cast members · 2 stylesheets |
+| **Voice** | `en-IN-Chirp3-HD-Laomedeia` @ 1.02 · `hi-IN-Neural2-A` @ 0.88 |
+| **Type** | Fraunces · Hanken Grotesk · Mukta and the Noto Indic faces — read out of the app's own `fonts.css`, never restated |
+| **Editorial** | the binding rules, carried into every film's gates |
+| **History** | every film ever made under it |
+
+`studio/projects/<slug>.json` is the format; `bizzing-india.json` is a real one.
+
+### The history is the amortisation ledger, not a list
+
+This is the part worth being explicit about. Bizzing India's eight films:
+
+| film | primitive | new cast |
+|---|---|---|
+| The Tortoise Who Had to Have the Last Word | `carry` | 3 |
+| The Monkey Who Kept His Heart in a Tree | `ride` | 2 |
+| The Rock That Answered Back | `rock` | **0** |
+| The Monkey and the Wedge | `troop` | **0** |
+| Who Was Here First? | `scale` | 2 |
+| The Monkeys Who Watered the Garden | `world` | 1 |
+| The Goose Who Gave Gold | `count` | 2 |
+| The Night the Sea Comes Ashore | `many` | 1 |
+
+The first film drew three characters. The seven after it drew eight between them and **two drew
+none at all.** That is the whole economics of a channel: the first film is expensive because it
+buys the cast, the look and the rules, and every film after it inherits them.
+
+Which only works if the project remembers what it owns. Delete the history and the studio
+rediscovers the monkey — and a channel with two tortoises has broken Rule 1 without anyone
+deciding to.
+
+### It is also not only about money
+
+A child who watches a film and then opens the product has to meet the *same* tortoise. Anything
+invented for the video that the product also has is a second version of the truth, and the two
+drift. The project tab is where that gets prevented, before a shot list exists.
+
+---
+
+## 4b. Keys — what you actually have to sign up for
+
+The console has a **Keys** tab, and its one useful property is that it is **filtered by the
+archetype you picked**. Pick composited cut-out and it says *"you need 2 keys"* and greys out
+the rest.
+
+| What for | Provider | Variable | Rate |
+|---|---|---|---|
+| The agent itself | Anthropic | `ANTHROPIC_API_KEY` | `claude-opus-5` · $5 / $25 per Mtok |
+| Images | Google AI Studio | `GEMKEY` | $0.02 – $0.24 an image |
+| Narration | **the product** | — | free, and the only provenance a story film is allowed |
+| Narration | OpenAI | `OPENAI_API_KEY` | $15 – $30 per 1M chars |
+| Narration · premium | ElevenLabs | `ELEVENLABS_API_KEY` | $103 – $206 per 1M chars |
+| Motion | Google Veo | `GEMKEY` | $0.15 – $0.75 a second |
+| Motion · cheaper | Kling | `KLING_ACCESS_KEY` + `KLING_SECRET_KEY` | $0.07 – $0.14 a second |
+| Motion · alt | Runway | `RUNWAYML_API_SECRET` | $0.15 a second |
+| Archive | Google Drive | `GDRIVE_FOLDER_ID` | free |
+| **Publishing** | **nobody** | — | there is deliberately no YouTube key |
+
+**The composited and narrated-stills paths need two keys.** Everything else is the motion
+column, and it is optional by construction.
+
+`studio/.env.example` is in the repo; `.env.local` is already gitignored. The console's key
+boxes store nothing and send nothing — they format the file for you to paste, and the daemon
+reads the environment. No key goes near the HTML or the repo.
+
+---
+
 ## 5. Frontend
 
 **One self-contained HTML file, no build step.** It opens from disk, from `gh-pages`, or from a

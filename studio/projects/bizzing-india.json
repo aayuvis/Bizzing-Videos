@@ -1,0 +1,69 @@
+{
+ "_": [
+  "A PROJECT, not a film. This is the durable thing: a product, its asset library, its voice,",
+  "its type, its editorial rules, and every film ever made under it. A film is an instance of a",
+  "project and it inherits all of this without being asked.",
+  "",
+  "THE FILM LIST IS NOT DECORATION. It is the amortisation ledger, and it is the reason the",
+  "second film under a project costs a fraction of the first: film 4 drew NO new characters",
+  "because films 1-3 had already paid for the monkey, and film 8 drew one. Delete this list and",
+  "the studio has to rediscover what it already owns, which is how a channel ends up with two",
+  "tortoises."
+ ],
+ "project": "bizzing-india",
+ "name": "Bizzing India",
+ "product": "https://bizzingindia.com",
+ "repo": "github.com/aayuvis/bizzingindia.com",
+
+ "library": {
+  "words":     { "at": "app/data-stories*.js", "n": 323, "unit": "stories", "cost": "free" },
+  "narration": { "at": "app/voice/st/", "n": 6454, "unit": "clips", "bytes": "529 MB", "cost": "free" },
+  "art":       { "at": "app/art/story/", "n": 344, "unit": "paintings", "bytes": "122 MB", "cost": "free" },
+  "type":      { "at": "app/fonts.css", "cost": "free" },
+  "palette":   { "at": "app/tokens.css", "cost": "free" },
+  "cast":      { "at": "cast/", "n": 11, "unit": "characters", "cost": "free after the first film" }
+ },
+
+ "voice": {
+  "_": "An Indian narrator is the point, not a preference. The old en-US-Neural2-F read the names as a foreigner would and it was noticed the first time a film ended.",
+  "english": { "id": "en-IN-Chirp3-HD-Laomedeia", "rate": 1.02 },
+  "hindi":   { "id": "hi-IN-Neural2-A", "rate": 0.88 }
+ },
+
+ "type": {
+  "_": "Set from the app's own stylesheet, never re-specified here — a second copy of a typeface list is a second source of truth. Devanagari is set properly or not at all: real face, unbroken shirorekha, never letter-spaced.",
+  "display": "Fraunces",
+  "text": "Hanken Grotesk",
+  "indic": ["Mukta", "Mukta Mahee", "Mukta Malar", "Mukta Vaani", "Noto Sans Bengali", "Noto Sans Kannada", "Noto Sans Malayalam", "Noto Nastaliq Urdu"]
+ },
+
+ "editorial": {
+  "binding": ["docs/01-look-and-feel.md §3", "bizzingindia.com docs/05-editorial-policy.md"],
+  "rules": [
+   "Nothing on the channel is invented for the channel.",
+   "No generative video. No generated motion at all for story films.",
+   "The badge travels — 🪔 Katha / 📜 Itihaas / 🧭 Aaj, in the app's own words.",
+   "Never make the video braver than the text.",
+   "No generated lettering in a shot.",
+   "Deities are not on the channel's list.",
+   "No child-directed engagement bait. Comments off, Made for Kids on.",
+   "Publishing is a human action."
+  ],
+  "open": "The human cast has not had a person's judgement yet. docs/03."
+ },
+
+ "archetype": "composited",
+
+ "films": [
+  { "id": "pt-talkative-tortoise", "title": "The Tortoise Who Had to Have the Last Word", "secs": 86.13,  "primitive": "carry", "newCast": 3 },
+  { "id": "pt-monkey-crocodile",   "title": "The Monkey Who Kept His Heart in a Tree",    "secs": 119.83, "primitive": "ride",  "newCast": 2 },
+  { "id": "jt-crocodile-rock",     "title": "The Rock That Answered Back",                "secs": 133.79, "primitive": "rock",  "newCast": 0 },
+  { "id": "pt-monkey-wedge",       "title": "The Monkey and the Wedge",                   "secs": 108.83, "primitive": "troop", "newCast": 0 },
+  { "id": "jt-partridge-elders",   "title": "Who Was Here First?",                        "secs": 112.54, "primitive": "scale", "newCast": 2 },
+  { "id": "jt-monkey-gardener",    "title": "The Monkeys Who Watered the Garden",         "secs": 118.29, "primitive": "world", "newCast": 1 },
+  { "id": "jt-golden-goose",       "title": "The Goose Who Gave Gold",                    "secs": 117.75, "primitive": "count", "newCast": 2 },
+  { "id": "fk-ridley-night",       "title": "The Night the Sea Comes Ashore",             "secs": 171.04, "primitive": "many",  "newCast": 1 }
+ ],
+
+ "primitives": ["carry", "ride", "rock", "troop", "scale", "world", "count", "many", "shear"]
+}
