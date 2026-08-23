@@ -1,0 +1,785 @@
+<title>The Spend Ladder</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+
+<style>
+:root{
+  --ink:#0E1F1D; --ink-2:#1C312E; --ink-3:#3B534E;
+  --paper:#F3F6F2; --card:#FFFFFF; --sunk:#EAEFE9;
+  --rule:#C6D0CA; --rule-soft:#DDE4DC;
+  --spend:#C4451C; --spend-soft:#F2DCD3;
+  --gate:#2E6E60; --gate-soft:#DBE9E4;
+  --hold:#B0801F; --hold-soft:#F4E9CE;
+  --text:#0E1F1D; --dim:#546862; --faint:#869790;
+  --shadow:0 1px 0 rgba(14,31,29,.05), 0 8px 24px -16px rgba(14,31,29,.35);
+  --r:3px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#D7E2DC; --ink-2:#B4C4BD; --ink-3:#8CA099;
+    --paper:#0B1817; --card:#111F1D; --sunk:#0F1C1A;
+    --rule:#263A36; --rule-soft:#1B2C29;
+    --spend:#F0724A; --spend-soft:#3A1C12;
+    --gate:#63B8A4; --gate-soft:#152D28;
+    --hold:#DCAE4B; --hold-soft:#2C2413;
+    --text:#DEE8E2; --dim:#8FA39C; --faint:#677C76;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#D7E2DC; --ink-2:#B4C4BD; --ink-3:#8CA099;
+  --paper:#0B1817; --card:#111F1D; --sunk:#0F1C1A;
+  --rule:#263A36; --rule-soft:#1B2C29;
+  --spend:#F0724A; --spend-soft:#3A1C12;
+  --gate:#63B8A4; --gate-soft:#152D28;
+  --hold:#DCAE4B; --hold-soft:#2C2413;
+  --text:#DEE8E2; --dim:#8FA39C; --faint:#677C76;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--text);
+  font-family:Newsreader,Georgia,serif; font-size:17px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:0 28px 96px}
+h1,h2,h3,h4,.d{font-family:Archivo,"Helvetica Neue",sans-serif; text-wrap:balance}
+.mono,code,.num{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+
+/* ---- eyebrow / rule ---- */
+.eyebrow{
+  font-family:Archivo,sans-serif; font-size:11px; font-weight:600; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--dim);
+}
+hr.rule{border:0; border-top:1px solid var(--rule); margin:0}
+
+/* ---- masthead ---- */
+header.mast{padding:62px 0 30px}
+.mast .kicker{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:26px}
+.mast h1{
+  font-size:clamp(40px,6.4vw,74px); line-height:.94; font-weight:800;
+  letter-spacing:-.028em; margin:0 0 20px; max-width:15ch;
+  font-stretch:expanded;
+}
+.mast .lede{font-size:20px; line-height:1.55; max-width:60ch; color:var(--ink-3); margin:0}
+.mast .lede strong{color:var(--text); font-weight:500}
+
+/* ---- the thesis figure ---- */
+.thesis{
+  margin:44px 0 0; border-top:2px solid var(--ink); border-bottom:1px solid var(--rule);
+  padding:26px 0 28px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:0;
+}
+@media (max-width:760px){.thesis{grid-template-columns:1fr}}
+.thesis>div{padding:0 30px}
+.thesis>div:first-child{border-right:1px solid var(--rule); padding-left:0}
+@media (max-width:760px){
+  .thesis>div:first-child{border-right:0; border-bottom:1px solid var(--rule); padding:0 0 22px; margin-bottom:22px}
+  .thesis>div:last-child{padding:0}
+}
+.big{
+  font-family:Archivo,sans-serif; font-weight:800; font-size:clamp(38px,5vw,58px);
+  line-height:1; letter-spacing:-.03em; color:var(--spend); display:block; margin-bottom:8px;
+  font-variant-numeric:tabular-nums;
+}
+.big.calm{color:var(--gate)}
+.thesis p{margin:8px 0 0; font-size:16px; color:var(--ink-3); line-height:1.55}
+
+/* ---- section furniture ---- */
+section{margin-top:78px}
+.sechead{display:flex; align-items:baseline; gap:16px; margin-bottom:6px}
+.sechead .n{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:500; color:var(--spend);
+  letter-spacing:.04em; padding-top:6px;
+}
+section h2{font-size:clamp(26px,3.2vw,34px); font-weight:700; letter-spacing:-.022em; margin:0}
+.sub{color:var(--ink-3); max-width:66ch; margin:10px 0 30px; font-size:17px}
+
+/* ---- console ---- */
+.console{
+  background:var(--card); border:1px solid var(--rule); border-radius:var(--r);
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.bar{
+  display:flex; flex-wrap:wrap; align-items:flex-end; gap:18px 22px;
+  padding:18px 22px; border-bottom:1px solid var(--rule); background:var(--sunk);
+}
+.field{display:flex; flex-direction:column; gap:5px; min-width:0}
+.field label{font-family:Archivo,sans-serif; font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--dim)}
+select,input[type=range]{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--text)}
+select{
+  background:var(--card); border:1px solid var(--rule); border-radius:var(--r);
+  padding:7px 10px; min-width:150px; cursor:pointer;
+}
+select:focus-visible,button:focus-visible{outline:2px solid var(--spend); outline-offset:2px}
+input[type=range]{width:130px; accent-color:var(--spend); cursor:pointer}
+.field .val{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--dim)}
+
+.meter{margin-left:auto; text-align:right; flex:0 0 200px; width:200px}
+.meter .amt{font-family:Archivo,sans-serif; font-weight:800; font-size:30px; letter-spacing:-.02em; line-height:1; font-variant-numeric:tabular-nums}
+.meter .cap{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--dim); margin-top:5px}
+.track{height:5px; background:var(--rule-soft); border-radius:3px; margin-top:9px; overflow:hidden}
+.track i{display:block; height:100%; background:var(--spend); width:0; transition:width .5s cubic-bezier(.2,.7,.3,1)}
+
+/* ---- ladder ---- */
+.body{display:grid; grid-template-columns:326px minmax(0,1fr)}
+@media (max-width:880px){.body{grid-template-columns:1fr}}
+.ladder{border-right:1px solid var(--rule); padding:8px 0 14px}
+@media (max-width:880px){.ladder{border-right:0; border-bottom:1px solid var(--rule)}}
+.gate{
+  display:grid; grid-template-columns:30px minmax(0,1fr); gap:12px;
+  padding:14px 20px; border-bottom:1px solid var(--rule-soft); position:relative;
+}
+.gate:last-child{border-bottom:0}
+.dot{
+  width:22px; height:22px; border-radius:50%; border:2px solid var(--rule);
+  margin-top:3px; display:grid; place-items:center; font-family:"IBM Plex Mono",monospace;
+  font-size:10px; font-weight:600; color:var(--faint); background:var(--card);
+  transition:all .3s ease;
+}
+.gate .nm{font-family:Archivo,sans-serif; font-weight:600; font-size:14.5px; letter-spacing:-.005em}
+.gate .ds{font-size:13.5px; color:var(--dim); line-height:1.45; margin-top:2px}
+.gate .cost{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; margin-top:7px;
+  display:inline-block; padding:2px 7px; border-radius:2px;
+  background:var(--sunk); color:var(--dim); border:1px solid var(--rule-soft);
+}
+.gate[data-s=done] .dot{border-color:var(--gate); background:var(--gate); color:var(--card)}
+.gate[data-s=done] .nm{color:var(--dim)}
+.gate[data-s=live]{background:var(--hold-soft)}
+.gate[data-s=live] .dot{border-color:var(--hold); color:var(--hold); animation:pulse 2.2s infinite}
+.gate[data-s=live] .cost{background:var(--card); border-color:var(--hold); color:var(--hold)}
+.gate[data-s=live] .nm::after{content:" — your call"; color:var(--hold); font-weight:500}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(176,128,31,.4)}50%{box-shadow:0 0 0 6px rgba(176,128,31,0)}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none!important} .track i{transition:none}}
+
+/* ---- stage ---- */
+.stage{padding:24px 26px 28px; min-height:406px; display:flex; flex-direction:column}
+.stage .eyebrow{margin-bottom:8px}
+.stage h3{font-size:22px; font-weight:700; margin:0 0 8px; letter-spacing:-.018em}
+.stage>p{margin:0 0 18px; color:var(--ink-3); max-width:62ch; font-size:15.5px}
+.actions{margin-top:auto; padding-top:20px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+button{
+  font-family:Archivo,sans-serif; font-size:13px; font-weight:600; letter-spacing:.01em;
+  padding:10px 17px; border-radius:var(--r); cursor:pointer; border:1px solid transparent;
+  transition:transform .1s ease, background .2s ease;
+}
+button:active{transform:translateY(1px)}
+.go{background:var(--ink); color:var(--paper)}
+.go:hover{background:var(--ink-2)}
+.ghost{background:transparent; color:var(--dim); border-color:var(--rule)}
+.ghost:hover{color:var(--text); border-color:var(--ink-3)}
+.hint{font-size:13px; color:var(--faint); font-family:"IBM Plex Mono",monospace}
+
+/* ---- panels inside the stage ---- */
+.grid-assets{display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:9px}
+.asset{
+  aspect-ratio:4/3; border:1px solid var(--rule); border-radius:2px; background:var(--sunk);
+  position:relative; overflow:hidden; display:grid; place-items:center;
+  font-family:"IBM Plex Mono",monospace; font-size:9.5px; color:var(--faint); text-align:center; padding:6px;
+}
+.asset.flag{border-color:var(--spend); border-width:2px; background:var(--spend-soft)}
+.asset.flag::after{
+  content:"✕"; position:absolute; top:3px; right:5px; color:var(--spend); font-size:11px; font-weight:700;
+}
+.asset.ok::after{content:"✓"; position:absolute; top:3px; right:5px; color:var(--gate); font-size:11px}
+.shots{display:flex; flex-direction:column; gap:1px; background:var(--rule-soft); border:1px solid var(--rule); border-radius:2px; overflow:hidden}
+.shot{display:grid; grid-template-columns:52px minmax(0,1fr) 78px; gap:12px; padding:9px 12px; background:var(--card); align-items:center}
+.shot .id{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--faint)}
+.shot .tx{font-size:14px; line-height:1.4}
+.shot .pr{font-family:"IBM Plex Mono",monospace; font-size:11.5px; text-align:right; color:var(--dim)}
+.shot .pr.hot{color:var(--spend); font-weight:600}
+.timeline{display:flex; gap:2px; height:56px; margin-bottom:14px}
+.clip{flex:1; background:var(--gate-soft); border:1px solid var(--gate); border-radius:2px; position:relative; cursor:pointer; min-width:0}
+.clip:hover{background:var(--gate)}
+.clip.gen{background:var(--spend-soft); border-color:var(--spend)}
+.clip span{position:absolute; bottom:3px; left:4px; font-family:"IBM Plex Mono",monospace; font-size:8.5px; color:var(--dim)}
+.note{
+  border-left:2px solid var(--ink-3); background:var(--sunk); padding:11px 14px;
+  font-size:14px; line-height:1.5; border-radius:0 2px 2px 0; margin-top:16px;
+}
+.note.hot{border-left-color:var(--spend); background:var(--spend-soft)}
+.note.good{border-left-color:var(--gate); background:var(--gate-soft)}
+.note b{font-family:Archivo,sans-serif; font-weight:600}
+
+/* ---- ledger ---- */
+.ledger{border-top:1px solid var(--rule); background:var(--sunk); padding:14px 22px 16px; max-height:172px; overflow-y:auto}
+.ledger .eyebrow{margin-bottom:9px}
+.ledger table{width:100%; border-collapse:collapse; font-family:"IBM Plex Mono",monospace; font-size:11.5px}
+.ledger td{padding:3px 0; color:var(--dim); vertical-align:top}
+.ledger td:nth-child(2){color:var(--text); width:100%; padding-left:14px}
+.ledger td:last-child{text-align:right; white-space:nowrap; padding-left:14px}
+.ledger td.z{color:var(--gate)}
+.ledger td.p{color:var(--spend); font-weight:500}
+
+/* ---- tables ---- */
+.scroll{overflow-x:auto; border:1px solid var(--rule); border-radius:var(--r); background:var(--card)}
+table.data{width:100%; border-collapse:collapse; font-size:14px; min-width:720px}
+table.data th{
+  font-family:Archivo,sans-serif; font-size:10px; font-weight:600; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--dim); text-align:left; padding:12px 14px;
+  border-bottom:1px solid var(--rule); white-space:nowrap;
+}
+table.data td{padding:11px 14px; border-bottom:1px solid var(--rule-soft); vertical-align:top}
+table.data tr:last-child td{border-bottom:0}
+table.data td.n{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; white-space:nowrap}
+table.data td.n.hot{color:var(--spend); font-weight:600}
+table.data td.n.cool{color:var(--gate); font-weight:600}
+table.data .nm{font-family:Archivo,sans-serif; font-weight:600; font-size:14px}
+table.data .why{color:var(--dim); font-size:13px; display:block; margin-top:2px; line-height:1.4}
+tr.pick td{background:var(--gate-soft)}
+
+/* ---- flow ---- */
+.flow{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:14px}
+.box{border:1px solid var(--rule); border-radius:var(--r); padding:16px 18px; background:var(--card)}
+.box h4{font-size:14.5px; font-weight:600; margin:0 0 4px; letter-spacing:-.005em}
+.box .fn{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--spend); margin-bottom:9px}
+.box p{margin:0; font-size:14px; color:var(--ink-3); line-height:1.5}
+.box ul{margin:9px 0 0; padding-left:17px; font-size:13.5px; color:var(--ink-3); line-height:1.55}
+.box li{margin-bottom:3px}
+
+.two{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:26px}
+.two h4{font-size:16px; font-weight:600; margin:0 0 7px}
+.two p{margin:0 0 12px; font-size:15.5px; color:var(--ink-3)}
+.two code{font-size:12.5px; background:var(--sunk); padding:1px 5px; border-radius:2px; border:1px solid var(--rule-soft)}
+
+pre{
+  background:var(--ink); color:var(--paper); padding:18px 20px; border-radius:var(--r);
+  overflow-x:auto; font-family:"IBM Plex Mono",monospace; font-size:12.5px; line-height:1.65;
+  margin:0; border:1px solid var(--rule);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) pre{background:#060F0E; color:#C9D8D2}}
+:root[data-theme="dark"] pre{background:#060F0E; color:#C9D8D2}
+pre .c{color:var(--gate)}
+pre .k{color:var(--hold)}
+
+ol.steps{counter-reset:s; list-style:none; padding:0; margin:0; display:grid; gap:14px}
+ol.steps li{
+  counter-increment:s; display:grid; grid-template-columns:34px minmax(0,1fr); gap:14px;
+  font-size:15.5px; color:var(--ink-3); line-height:1.55;
+}
+ol.steps li::before{
+  content:counter(s,decimal-leading-zero); font-family:"IBM Plex Mono",monospace; font-size:11px;
+  color:var(--spend); padding-top:5px; font-weight:500;
+}
+ol.steps b{color:var(--text); font-family:Archivo,sans-serif; font-weight:600; font-size:15px}
+
+footer{margin-top:82px; padding-top:26px; border-top:2px solid var(--ink); color:var(--dim); font-size:14px}
+footer p{margin:0 0 8px; max-width:70ch}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="kicker">
+    <span class="eyebrow">A proposal · Bizzing Videos</span>
+    <span class="eyebrow" style="color:var(--spend)">studio/index.html</span>
+  </div>
+  <h1>The Spend Ladder</h1>
+  <p class="lede">A video-making agent that lives as one HTML file in this repo. It asks a
+  handful of questions, plans the film, and then <strong>stops five times to look you in the
+  eye</strong> — each time immediately before it is about to spend real money, and never after.</p>
+
+  <div class="thesis">
+    <div>
+      <span class="big">$0.75</span>
+      <span class="eyebrow">one second of premium generated motion</span>
+      <p>Veo 3.1 Standard, per second of output. That single second costs more than the
+      <em>entire narration track of a twenty-minute film</em> — and more than thirty-seven
+      generated stills.</p>
+    </div>
+    <div>
+      <span class="big calm">$0.08</span>
+      <span class="eyebrow">one minute, composited, second film onward</span>
+      <p>The path this repo already runs. Eight films in, the cast is drawn and paid for, so a
+      new film costs a few plates and a render. The ratio between these two numbers is the
+      whole design.</p>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="sechead"><span class="n">01</span><h2>The console</h2></div>
+  <p class="sub">Pick a kind of film. The ladder on the left rebuilds itself, the forecast
+  re-costs, and the gates change — a composited film has nothing worth stopping for after the
+  contact sheet; a generative one has everything. Walk it.</p>
+
+  <div class="console">
+    <div class="bar">
+      <div class="field">
+        <label for="arch">Kind of film</label>
+        <select id="arch">
+          <option value="stills">Narrated stills — explainer</option>
+          <option value="composited" selected>Composited cut-out — story film</option>
+          <option value="storybook">Interpolated storybook — flipbook</option>
+          <option value="i2v">Keyframe → motion — 5s clips</option>
+          <option value="gen">Pure generative — stitched</option>
+          <option value="hybrid">Hybrid — generative plates, composited cast</option>
+          <option value="mograph">Motion graphics — data / kinetic type</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="len">Runtime</label>
+        <input type="range" id="len" min="1" max="12" value="2" step="1">
+        <span class="val" id="lenv">2 min</span>
+      </div>
+      <div class="field">
+        <label for="voice">Narration</label>
+        <select id="voice">
+          <option value="0.03">Already recorded — free</option>
+          <option value="0.03" selected>Synthesised — $30/1M chars</option>
+          <option value="0.21">Premium synth — $206/1M</option>
+          <option value="0">Silent / music only</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="cap">Hard cap</label>
+        <select id="cap">
+          <option value="2">$2</option>
+          <option value="10" selected>$10</option>
+          <option value="50">$50</option>
+          <option value="250">$250</option>
+        </select>
+      </div>
+      <div class="meter">
+        <div class="amt" id="spent">$0.00</div>
+        <div class="track"><i id="bar"></i></div>
+        <div class="cap" id="capline">forecast $0.54 · cap $10</div>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="ladder" id="ladder"></div>
+      <div class="stage" id="stage"></div>
+    </div>
+
+    <div class="ledger">
+      <div class="eyebrow">Ledger · every call, what authorised it</div>
+      <table id="led"><tbody><tr><td>—</td><td>nothing spent yet</td><td>$0.00</td></tr></tbody></table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><span class="n">02</span><h2>Seven ways to make a minute</h2></div>
+  <p class="sub">Measured from published API rates in August 2026, for one finished minute,
+  including the re-roll tax — the takes you throw away. That last column is the one nobody
+  puts on a pricing page, and it is where budgets actually die.</p>
+
+  <div class="scroll">
+    <table class="data">
+      <thead><tr>
+        <th>Kind</th><th>Where motion comes from</th><th>Sticker</th><th>Takes</th><th>Real</th><th>Control</th>
+      </tr></thead>
+      <tbody>
+        <tr><td><span class="nm">Motion graphics</span><span class="why">Kinetic type, data, titles. Rendered from code.</span></td>
+            <td>CSS / React → frames → ffmpeg</td><td class="n">$0.03</td><td class="n">1.0×</td><td class="n cool">$0.03</td><td>Total</td></tr>
+        <tr class="pick"><td><span class="nm">Composited cut-out</span><span class="why">This repo. Sprites on plates, driven by a rig with assertions.</span></td>
+            <td>A rig. Nothing is generated in motion.</td><td class="n">$0.27</td><td class="n">1.3×</td><td class="n cool">$0.08–0.35</td><td>Total, and <em>provable</em></td></tr>
+        <tr><td><span class="nm">Narrated stills</span><span class="why">The documentary default. One image a beat, slow push.</span></td>
+            <td>CSS transforms over stills</td><td class="n">$0.27</td><td class="n">1.2×</td><td class="n cool">$0.32</td><td>Total</td></tr>
+        <tr><td><span class="nm">Interpolated storybook</span><span class="why">A painting every five seconds; the inbetweens are computed.</span></td>
+            <td>RIFE / FILM between keyframes — local, free</td><td class="n">$1.59</td><td class="n">1.4×</td><td class="n">$2.23</td><td>High</td></tr>
+        <tr><td><span class="nm">Hybrid</span><span class="why">Generated plates and hero seconds; cast composited on top.</span></td>
+            <td>Mixed: rig for the cast, model for the world</td><td class="n">$2.43</td><td class="n">1.8×</td><td class="n">$4.37</td><td>High where it matters</td></tr>
+        <tr><td><span class="nm">Keyframe → motion</span><span class="why">First and last frame pinned, 4–8s clips between them.</span></td>
+            <td>Image-to-video, Kling 3.0 @ $0.10/s</td><td class="n">$6.51</td><td class="n">2.5×</td><td class="n hot">$16.28</td><td>Medium</td></tr>
+        <tr><td><span class="nm">Pure generative</span><span class="why">Prompt to clip to cut. Fastest to a rough, hardest to fix.</span></td>
+            <td>Veo 3.1 Fast @ $0.15/s · Standard @ $0.75/s</td><td class="n">$9.00</td><td class="n">3.0×</td><td class="n hot">$27–135</td><td>Low</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note hot" style="max-width:none">
+    <b>The one that is not on the table.</b> Sora 2 was deprecated in April 2026 and its API
+    shuts down on 24 September 2026. Any archetype wired to it is a film you cannot re-cut next
+    year. The adapter layer exists so a dead model is a config change, not a rewrite.
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><span class="n">03</span><h2>Why the gates sit where they sit</h2></div>
+  <p class="sub">Not evenly spaced through the process — bunched immediately before each order-of-magnitude
+  jump in what a mistake costs. Everything above a gate is cheap to redo. Everything below it is not.</p>
+
+  <ol class="steps">
+    <li><b>G1 · One sentence.</b> Before any prose exists. The message, the audience, the badge, the
+    archetype. Costs nothing, decides everything — three drafts of a Bizzing Bee episode were written
+    because two of them started at the script and skipped this.</li>
+    <li><b>G2 · Script and shot list.</b> Every beat with its measured runtime and its own price tag,
+    so an expensive shot is visible as a number before it is a picture. You cut beats here; rephrasing
+    them bought 12 words once, cutting them bought 530.</li>
+    <li><b>G3 · The look — two images, then stop.</b> <em>This is the gate that saves the money.</em>
+    One model sheet, one hero plate, at full size. If the hand is wrong you have spent ten cents
+    instead of eight dollars. Every character this repo has drawn since is anchored on a sheet
+    generated first, because the one film that skipped it came back with an airbrushed elephant beside
+    a flat-shaded monkey and one cell that was inexplicably gold.</li>
+    <li><b>G4 · The contact sheet.</b> Every asset on one page before a single frame renders. This is
+    the gate that saves the evening. Today it caught a log drawn end-on, a yard that grew trees and
+    moved the camera, a house whose roof changed shape when it was repaired, and a "golden" goose that
+    was a lemon rubber duck.</li>
+    <li><b>G4½ · One second.</b> Motion archetypes only. Before ninety seconds of generated video,
+    buy <em>one</em>. Seventy-five cents against sixty-seven dollars, and it answers the only question
+    a still cannot: does it move like the thing it is meant to be.</li>
+    <li><b>G5 · The cut.</b> A still from every shot, then the preview. Rendered, not remembered —
+    check the timestamps, because a cut that predates a note is indistinguishable from the note being
+    ignored, and that has cost a whole evening before.</li>
+  </ol>
+</section>
+
+<section>
+  <div class="sechead"><span class="n">04</span><h2>The agent is a state machine, not a chat box</h2></div>
+  <p class="sub">A chat box re-derives what it already knew on every turn, and pays for it in tokens.
+  Each state below loads only its own slice of the brief, calls a model sized to the job, and hands
+  back a patch for a human to accept.</p>
+
+  <div class="flow">
+    <div class="box">
+      <h4>Brief</h4><div class="fn">brief.json ← the console</div>
+      <p>The dropdowns above, plus the one sentence. Written to disk before any model is called, so the
+      whole production is a file in git rather than a conversation nobody can find.</p>
+    </div>
+    <div class="box">
+      <h4>Script</h4><div class="fn">plan.js · check-voice.py</div>
+      <p>Beats, cue phrases, runtime measured from the narration rather than guessed. Refuses a story
+      whose voice track fails the batch check, and flags anything sacred for a person.</p>
+    </div>
+    <div class="box">
+      <h4>Look</h4><div class="fn">gen-assets.py --only sheet</div>
+      <p>Exactly two calls. Model sheet first, always — a borrowed cast pays nothing here, which is why
+      film eight cost one character and film four cost none.</p>
+    </div>
+    <div class="box">
+      <h4>Assets</h4><div class="fn">gen-assets.py · gild.py</div>
+      <p>The rest of the library, content-hash cached. Re-running an unchanged prompt costs nothing;
+      derived art (a gold cell from a white one) is computed, never re-drawn.</p>
+    </div>
+    <div class="box">
+      <h4>Rig</h4><div class="fn">build.js → shot pages</div>
+      <p>Picks primitives from the library the eight films built: <code>carry · ride · rock · troop ·
+      scale · world · count · many</code>. Structural truths go here, where they cannot be expressed
+      wrongly.</p>
+    </div>
+    <div class="box">
+      <h4>Check</h4><div class="fn">film.js --check</div>
+      <p>Assertions measured off the live DOM before a frame exists. An exit code, not something a
+      person has to notice. This is the step no other video tool has.</p>
+    </div>
+    <div class="box">
+      <h4>Render</h4><div class="fn">film.js · cut.js</div>
+      <p>Per-shot cache and a pid lock. One changed shot costs one render. Picture and sound are
+      gated against each other before a master is written.</p>
+    </div>
+    <div class="box">
+      <h4>Ship</h4><div class="fn">publish.sh · released.json</div>
+      <p>The 720p preview goes to a content-addressed URL. The master never enters git. What actually
+      shipped is recorded, because that is the one fact the repo cannot rebuild.</p>
+    </div>
+  </div>
+
+  <div class="two" style="margin-top:34px">
+    <div>
+      <h4>Five mechanics that keep the token bill down</h4>
+      <p><b>1. The agent does not look at pictures.</b> Assertions are code. A passing check returns one
+      line of text, not an image — vision calls happen only when a check fails or a gate opens.</p>
+      <p><b>2. Contact sheets, not files.</b> Twelve assets judged in one vision call instead of twelve.</p>
+      <p><b>3. The brief is the context.</b> Each state reads its own slice, never the transcript.</p>
+      <p><b>4. Cache on content, not names.</b> Same prompt and same references, no call.</p>
+      <p><b>5. Escalate by stage.</b> A cheap model lays out shots; the expensive one writes the script
+      and judges the contact sheet.</p>
+    </div>
+    <div>
+      <h4>Two things the ledger makes true rather than hoped-for</h4>
+      <p>Every call appends one line: what it cost, what it produced, and <em>which gate authorised
+      it</em>. An unauthorised call is a bug that shows up in an audit rather than in a bill.</p>
+      <p>And each adapter declares its own price, so the forecast on the console and the ledger at the
+      bottom read from the same number. A forecast that drifts from the invoice is worse than no
+      forecast, because people stop reading it.</p>
+      <pre><span class="c"># ledger.jsonl</span>
+{"g":"G3","call":"image","model":"imagen-4-fast",
+ "n":2,"usd":0.04,"sha":"7f2a…","cached":false}
+{"g":"G4","call":"image","model":"imagen-4-fast",
+ "n":9,"usd":0.00,"cached":<span class="k">true</span>}
+{"g":"G4½","call":"video","model":"veo-3.1-fast",
+ "secs":1,"usd":0.15,"shot":"04b"}</pre>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><span class="n">05</span><h2>The editor edits the film, not the video</h2></div>
+  <p class="sub">A timeline that writes JSON. Drag a boundary and it moves a narration cue, not a
+  stretch filter; swap an asset and one shot re-renders. There is deliberately no re-timing step,
+  because a timestamp rots the moment a sentence changes and a cue phrase does not.</p>
+
+  <div class="two">
+    <div>
+      <h4>What a click does</h4>
+      <p><b>Trim or reorder</b> → rewrites <code>scenes.json</code>, re-renders the shots that moved.</p>
+      <p><b>Swap an asset</b> → redraws one cell, keeps the rest of the library, re-renders the shots
+      that name it.</p>
+      <p><b>Re-record a line</b> → one cue, seconds, not the whole track. Cue-level granularity is the
+      entire argument for the voice pipeline being built the way it is.</p>
+      <p><b>Promote a shot to generative</b> → the clip turns orange on the timeline and the forecast
+      jumps by a visible amount before you confirm. Expensive things should look expensive.</p>
+    </div>
+    <div>
+      <h4>What it refuses</h4>
+      <p>Stretching a shot to fit audio. Deleting an assertion to make a render pass. Publishing a
+      master over the size cap. Rendering two copies of one film at once. Each of those is a real
+      evening that was lost once, and each is now an exit code.</p>
+      <p>None of this is new work — it is the pipeline that already made eight films, given a front
+      door and a price tag.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><span class="eyebrow" style="color:var(--spend)">What this proposal is not</span></p>
+  <p>It is not built. Nothing here calls an API yet; the console above is a working mock with real
+  rates behind it, so the shape can be argued with before any of it is written. The costs are from
+  published August 2026 rates and will move.</p>
+  <p style="margin-top:14px">The differentiator, if it is worth building: every other tool in this
+  space will generate. None of them will <em>refuse</em>. This one already knows how to say no to a
+  film where two geese are not both holding the stick.</p>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- real rates, August 2026 (usd) -----------------------------------------
+  var RATE = {
+    img_fast:0.02, img_pro:0.134, veo_fast:0.15, veo_std:0.75, kling:0.10,
+    tts:0.03            // per finished minute of narration, tts-1-hd
+  };
+
+  var ARCH = {
+    stills:{ name:"Narrated stills",
+      blurb:"One image a beat, a slow push across it, cross-dissolve between. The documentary default, and the cheapest thing that still looks made.",
+      assetsPerMin:12, assetRate:RATE.img_fast, motionPerMin:0, takes:1.2, motion:false,
+      risk:"Nothing moves that you did not move. The risk is monotony, not cost." },
+    composited:{ name:"Composited cut-out",
+      blurb:"Sprites on plates, driven by a rig that makes structural truths impossible to express wrongly. Eight films, eight primitives, and a cast that is drawn once for the whole channel.",
+      assetsPerMin:6, assetRate:0.04, motionPerMin:0, takes:1.3, motion:false,
+      risk:"Slowest to author, cheapest to own. The second film with the same cast costs almost nothing." },
+    storybook:{ name:"Interpolated storybook",
+      blurb:"A painting every five seconds; the frames between them are computed by RIFE locally rather than bought. A flipbook, at the cost of the keyframes alone.",
+      assetsPerMin:12, assetRate:RATE.img_pro, motionPerMin:0, takes:1.4, motion:false,
+      risk:"Interpolation is free but it is not animation — it drifts on large motion. Keep the change between keyframes small." },
+    i2v:{ name:"Keyframe → motion",
+      blurb:"Both ends of every clip pinned to an image you approved, and a model asked only to travel between them. Far steadier than prompting a shot cold.",
+      assetsPerMin:12, assetRate:0.04, motionPerMin:60*RATE.kling, takes:2.5, motion:true,
+      risk:"Short clips hold identity; long ones do not. Every clip is bounded by two frames you have already seen." },
+    gen:{ name:"Pure generative",
+      blurb:"Prompt to clip to cut. Quickest route to something that looks like a film, and the hardest to fix when one thing in it is wrong.",
+      assetsPerMin:0, assetRate:0, motionPerMin:60*RATE.veo_fast, takes:3.0, motion:true,
+      risk:"A model with no scene cannot guarantee a structural fact — only be asked for one. Four rounds on one film proved each re-roll fixes a fault by introducing another." },
+    hybrid:{ name:"Hybrid",
+      blurb:"Generated plates and a handful of generated hero seconds, with the cast composited on top so the things that must stay the same, stay the same.",
+      assetsPerMin:8, assetRate:0.05, motionPerMin:12*RATE.veo_fast, takes:1.8, motion:true,
+      risk:"The recommended default. Spend generative seconds where the picture is atmosphere, never where it carries a fact." },
+    mograph:{ name:"Motion graphics",
+      blurb:"Kinetic type, charts that draw themselves, titles. Rendered from code, so it is exact, re-renderable and effectively free.",
+      assetsPerMin:0, assetRate:0, motionPerMin:0, takes:1.0, motion:false,
+      risk:"No generation at all. The cost is authoring time, not tokens." }
+  };
+
+  var GATES = [
+    {id:"G1", nm:"One sentence",    ds:"Message, audience, archetype. Before any prose exists.", cost:function(){return 0}},
+    {id:"G2", nm:"Script + shots",  ds:"Beats with measured runtime and a price tag each.",      cost:function(){return 0.01}},
+    {id:"G3", nm:"The look",        ds:"Two images — a model sheet and one plate. Then stop.",   cost:function(a){return a.assetRate*2}},
+    {id:"G4", nm:"Contact sheet",   ds:"Every asset on one page, before a frame renders.",       cost:function(a,m){return a.assetsPerMin*a.assetRate*m}},
+    {id:"G4½",nm:"One second",      ds:"Buy one second of motion before you buy ninety.",
+     cost:function(a){return a.motion?RATE.veo_fast:0}, motionOnly:true, once:true},
+    {id:"G5", nm:"The cut",         ds:"A still from every shot, then the preview.",             cost:function(a,m){return a.motionPerMin*m}}
+  ];
+
+  var el = function(id){ return document.getElementById(id); };
+  var state = { i:0, spent:0, log:[] };
+
+  function arch(){ return ARCH[el("arch").value]; }
+  function mins(){ return +el("len").value; }
+  function gates(){ var a=arch(); return GATES.filter(function(g){ return !g.motionOnly || a.motion; }); }
+  function forecast(){
+    var a=arch(), m=mins();
+    var assets=(a.assetsPerMin*a.assetRate*m + a.assetRate*2)*a.takes;
+    var motion=a.motionPerMin*m*a.takes;
+    var voice=(+el("voice").value)*m;
+    return assets+motion+voice+0.01;
+  }
+  var money = function(n){ return "$"+n.toFixed(2); };
+
+  // ---- ladder ---------------------------------------------------------------
+  function drawLadder(){
+    var gs=gates(), a=arch(), m=mins();
+    el("ladder").innerHTML = gs.map(function(g,i){
+      var s = i<state.i ? "done" : (i===state.i ? "live" : "wait");
+      var c = g.cost(a,m)*(g.once?1:a.takes);
+      var label = i<state.i ? "spent "+money(c)
+                : i===state.i ? (c>0 ? "unlocks "+money(c) : "costs nothing")
+                : "—";
+      return '<div class="gate" data-s="'+s+'">'+
+        '<div class="dot">'+(s==="done"?"✓":g.id)+'</div>'+
+        '<div><div class="nm">'+g.nm+'</div><div class="ds">'+g.ds+'</div>'+
+        '<span class="cost">'+label+'</span></div></div>';
+    }).join("");
+  }
+
+  // ---- stage ----------------------------------------------------------------
+  var PANELS = {
+    G1: function(a){
+      return '<span class="eyebrow">Gate one · costs nothing</span><h3>What is this film about, in one sentence?</h3>'+
+        '<p>Not a theme. A declarative sentence every beat has to prove — the thing you delete beats against.</p>'+
+        '<div class="shots"><div class="shot"><span class="id">msg</span>'+
+        '<span class="tx"><em>Somebody reaches for a word, and afterwards the world is different.</em></span>'+
+        '<span class="pr">accepted</span></div></div>'+
+        '<div class="note"><b>'+a.name+'.</b> '+a.blurb+'</div>';
+    },
+    G2: function(a,m){
+      var n = Math.max(4, Math.round(m*4.2));
+      var rows = [["00","Hook — the carpenters go to lunch",0],
+                  ["01","The yard, full of opinions",0],
+                  ["02a","The troop on the wall, watching",0],
+                  ["04b","He sits astride the log and takes hold",0],
+                  ["06b","The wedge comes out — cut to shut",a.motion?RATE.veo_fast*4:0]];
+      return '<span class="eyebrow">Gate two · '+n+' shots · '+m+':00 measured, not guessed</span>'+
+        '<h3>The shot list, with a price on every line</h3>'+
+        '<p>Runtime comes from the narration, so a beat that runs long is visible here rather than in the cut. Delete beats; do not rephrase them.</p>'+
+        '<div class="shots">'+rows.map(function(r){
+          return '<div class="shot"><span class="id">'+r[0]+'</span><span class="tx">'+r[1]+'</span>'+
+            '<span class="pr'+(r[2]>0?" hot":"")+'">'+(r[2]>0?money(r[2]):"rig")+'</span></div>';
+        }).join("")+'</div>'+
+        (a.motion?'<div class="note hot"><b>One shot is expensive.</b> 06b is the only beat asking for generated motion. It is 4 seconds of the '+m+'-minute film and '+
+          Math.round(RATE.veo_fast*4/forecast()*100)+'% of the budget. Worth it, or rig it?</div>':'');
+    },
+    G3: function(a){
+      return '<span class="eyebrow">Gate three · 2 images · '+money(a.assetRate*2)+'</span>'+
+        '<h3>Two pictures, then it stops and waits</h3>'+
+        '<p>A model sheet and one hero plate, full size. Every other asset will be drawn against these, so if the hand is wrong here it is wrong everywhere — and it costs ten cents to find out instead of eight dollars.</p>'+
+        '<div class="grid-assets">'+
+          '<div class="asset ok" style="aspect-ratio:16/7; grid-column:span 2">model sheet<br>cast at true relative scale</div>'+
+          '<div class="asset ok" style="aspect-ratio:16/7; grid-column:span 2">hero plate<br>the place, once</div>'+
+        '</div>'+
+        '<div class="note"><b>Anchor, do not re-ask.</b> Asking a model to draw the same character twice is the mistake; it will never be the same twice. Everything downstream references these two files.</div>';
+    },
+    G4: function(a,m){
+      var n = Math.max(4, Math.round(a.assetsPerMin*m));
+      var cells=[];
+      for(var i=0;i<Math.min(n,12);i++){
+        var flag = (i===3);
+        cells.push('<div class="asset '+(flag?"flag":"ok")+'">'+(flag?"log-wedged<br>drawn END-ON":"asset "+(i+1))+'</div>');
+      }
+      return '<span class="eyebrow">Gate four · '+n+' assets · '+money(a.assetsPerMin*a.assetRate*m)+'</span>'+
+        '<h3>Everything, on one page, before a frame exists</h3>'+
+        '<p>Not a sample — every one. The agent judges the sheet in a single vision call and flags what it cannot defend; you overrule it in either direction.</p>'+
+        '<div class="grid-assets">'+cells.join("")+'</div>'+
+        '<div class="note hot"><b>One flagged.</b> The log came back seen end-on and standing up, which contradicts the plates and gives the monkey nothing to sit astride. A camera angle is a structural fact — state the axis and redraw. <span class="mono">'+money(a.assetRate)+'</span></div>';
+    },
+    "G4½": function(a,m){
+      var full = a.motionPerMin*m;
+      return '<span class="eyebrow">Gate four and a half · 1 second · '+money(RATE.veo_fast)+'</span>'+
+        '<h3>Buy one second before you buy ninety</h3>'+
+        '<p>The only question a still cannot answer is whether it moves like the thing it is meant to be. So the agent buys exactly one second of exactly one shot, and shows it.</p>'+
+        '<div class="timeline">'+
+          '<div class="clip gen" style="flex:0 0 46px"><span>1s</span></div>'+
+          '<div class="clip" style="opacity:.35"><span>not yet ordered · '+money(full)+'</span></div>'+
+        '</div>'+
+        '<div class="note hot"><b>'+money(RATE.veo_fast)+' against '+money(full)+'.</b> If the motion is wrong you have spent the price of a stamp. This gate exists because four full rounds on one film proved that each re-roll fixes one fault by introducing another.</div>';
+    },
+    G5: function(a,m){
+      var clips=[];
+      for(var i=0;i<9;i++) clips.push('<div class="clip'+(a.motion&&i===5?" gen":"")+'"><span>'+(i<10?"0":"")+i+'</span></div>');
+      return '<span class="eyebrow">Gate five · rendered '+new Date().toISOString().slice(11,16)+'</span>'+
+        '<h3>The cut, and a still from every shot</h3>'+
+        '<p>Picture and sound are checked against each other before a master is written. Drag a boundary here and it moves a narration cue — never a stretch filter.</p>'+
+        '<div class="timeline">'+clips.join("")+'</div>'+
+        '<div class="shots"><div class="shot"><span class="id">len</span><span class="tx">Video and narration agree</span><span class="pr">'+(m*60).toFixed(2)+'s</span></div>'+
+        '<div class="shot"><span class="id">chk</span><span class="tx">All contact assertions pass</span><span class="pr">exit 0</span></div></div>'+
+        '<div class="note"><b>Never show a cut you have not just rendered.</b> The timestamp above is the render, not the request. A cut that predates a note is indistinguishable from the note being ignored.</div>';
+    }
+  };
+
+  function drawStage(){
+    var gs=gates(), a=arch(), m=mins(), g=gs[state.i];
+    var s=el("stage");
+    if(!g){
+      s.innerHTML='<span class="eyebrow" style="color:var(--gate)">Complete</span>'+
+        '<h3>'+m+':00 of '+a.name.toLowerCase()+', for '+money(state.spent)+'</h3>'+
+        '<p>'+a.risk+'</p>'+
+        '<div class="note good"><b>Preview published.</b> The master stays out of git; what shipped is recorded in <code>released.json</code>, because that is the one fact this repo cannot rebuild. Uploading to a channel stays a human action.</div>'+
+        '<div class="actions"><button class="go" id="next">Start again</button>'+
+        '<span class="hint">forecast was '+money(forecast())+' · spent '+money(state.spent)+'</span></div>';
+    } else {
+      var c=g.cost(a,m)*(g.once?1:a.takes);
+      s.innerHTML = PANELS[g.id](a,m) +
+        '<div class="actions"><button class="go" id="next">'+
+        (c>0 ? "Approve — release "+money(c) : "Approve")+'</button>'+
+        '<button class="ghost" id="back">Send back</button>'+
+        '<span class="hint" id="hint">'+(c>0?"nothing below this line is ordered until you click":"costs nothing to change your mind here")+'</span></div>';
+    }
+    var b=el("next"); if(b) b.onclick=advance;
+    var k=el("back"); if(k) k.onclick=function(){
+      el("hint").textContent="sent back — rewrite above this gate, nothing was spent";
+    };
+  }
+
+  function advance(){
+    var gs=gates(), a=arch(), m=mins(), g=gs[state.i];
+    if(!g){ state.i=0; state.spent=0; state.log=[]; render(); return; }
+    var c=g.cost(a,m)*(g.once?1:a.takes);
+    var cap=+el("cap").value;
+    if(state.spent+c>cap){
+      el("hint").textContent="refused — "+money(state.spent+c)+" would pass the "+money(cap)+" cap. Raise it deliberately.";
+      return;
+    }
+    state.spent+=c;
+    if(c>0) state.log.push({g:g.id, what:labelFor(g,a,m), usd:c});
+    state.i++;
+    render();
+  }
+
+  function labelFor(g,a,m){
+    if(g.id==="G2") return "script + shot list · llm";
+    if(g.id==="G3") return "2 × image · model sheet, hero plate";
+    if(g.id==="G4") return Math.round(a.assetsPerMin*m)+" × image · asset library";
+    if(g.id==="G4½") return "1s × video · probe shot";
+    if(g.id==="G5") return a.motion ? Math.round(m*60)+"s × video + narration + render" : "narration + render";
+    return "—";
+  }
+
+  function drawLedger(){
+    var t=el("led");
+    if(!state.log.length){ t.innerHTML='<tbody><tr><td>—</td><td>nothing spent yet</td><td>$0.00</td></tr></tbody>'; return; }
+    t.innerHTML='<tbody>'+state.log.map(function(r){
+      return '<tr><td>'+r.g+'</td><td>'+r.what+'</td><td class="'+(r.usd>1?"p":"z")+'">'+money(r.usd)+'</td></tr>';
+    }).join("")+'</tbody>';
+    t.parentNode.scrollTop=t.parentNode.scrollHeight;
+  }
+
+  function render(){
+    var f=forecast(), cap=+el("cap").value;
+    el("lenv").textContent=mins()+" min";
+    el("spent").textContent=money(state.spent);
+    el("spent").style.color = state.spent>cap*0.8 ? "var(--spend)" : "var(--text)";
+    var over = f>cap;
+    el("capline").textContent = over
+      ? "forecast "+money(f)+" — over the "+money(cap)+" cap"
+      : "forecast "+money(f)+" · cap "+money(cap);
+    el("capline").style.color = over ? "var(--spend)" : "var(--dim)";
+    el("bar").style.width=Math.min(100,(state.spent/cap)*100)+"%";
+    drawLadder(); drawStage(); drawLedger();
+  }
+
+  ["arch","len","voice","cap"].forEach(function(id){
+    el(id).addEventListener("input", function(){
+      if(id!=="cap"){ state.i=0; state.spent=0; state.log=[]; }
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
